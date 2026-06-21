@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Shot of Whisky white oversized tee">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f4ee"/><stop offset="1" stop-color="#e7ddca"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#efece4"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="26" flood-color="#7a6a4a" flood-opacity="0.28"/>
+    </filter>
+    <style>
+      .serif{font-family:"Playfair Display",Georgia,serif;font-weight:800;fill:#141210}
+      .script{font-family:"Pinyon Script","Brush Script MT",cursive;fill:#141210}
+      .lbl{font-family:"Playfair Display",Georgia,serif;font-weight:700;fill:#141210}
+    </style>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#bg)"/>
+
+  <!-- T-shirt body -->
+  <g filter="url(#soft)">
+    <path fill="url(#shirt)" stroke="#d9d2c2" stroke-width="2" d="
+      M400 150
+      C 350 150 320 162 300 178
+      L 196 226
+      C 176 235 168 256 176 276
+      L 214 372
+      C 220 388 238 396 254 392
+      L 296 380
+      L 296 836
+      C 296 852 308 864 324 864
+      L 476 864
+      C 492 864 504 852 504 836
+      L 504 380
+      L 546 392
+      C 562 396 580 388 586 372
+      L 624 276
+      C 632 256 624 235 604 226
+      L 500 178
+      C 480 162 450 150 400 150 Z"/>
+    <!-- Collar -->
+    <path fill="none" stroke="#d4cdbc" stroke-width="6" stroke-linecap="round" d="
+      M338 168 C 360 206 440 206 462 168"/>
+    <path fill="none" stroke="#e6dfce" stroke-width="2" d="M330 176 C 358 220 442 220 470 176"/>
+    <!-- Sleeve seams -->
+    <path fill="none" stroke="#e2dbc9" stroke-width="2" d="M300 196 L 244 372 M500 196 L 556 372"/>
+  </g>
+
+  <!-- Whiskey label print -->
+  <g transform="translate(400 510) scale(0.92)">
+    <g fill="none" stroke="#141210" stroke-width="3" stroke-linecap="round">
+      <path d="M-150 -210 q-18 -40 22 -52 q-44 26 -10 64"/>
+      <path d="M150 -210 q18 -40 -22 -52 q44 26 10 64"/>
+      <path d="M-150 210 q-18 40 22 52 q-44 -26 -10 -64"/>
+      <path d="M150 210 q18 40 -22 52 q44 -26 10 -64"/>
+      <path d="M-128 -200 L -128 200" stroke-width="2"/>
+      <path d="M128 -200 L 128 200" stroke-width="2"/>
+      <path d="M-112 -212 q112 -20 224 0" stroke-width="2"/>
+      <path d="M-112 212 q112 20 224 0" stroke-width="2"/>
+    </g>
+    <text x="0" y="-150" text-anchor="middle" class="serif" font-size="42">I&#8217;D RATHER BE</text>
+    <text x="0" y="-102" text-anchor="middle" class="serif" font-size="46">SOMEONE&#8217;S</text>
+    <ellipse cx="0" cy="-10" rx="112" ry="60" fill="none" stroke="#141210" stroke-width="3"/>
+    <ellipse cx="0" cy="-10" rx="100" ry="50" fill="none" stroke="#141210" stroke-width="1.4" stroke-dasharray="2 5"/>
+    <text x="0" y="-28" text-anchor="middle" class="lbl" font-size="28" letter-spacing="2">SHOT</text>
+    <text x="0" y="-2" text-anchor="middle" class="lbl" font-size="20" letter-spacing="2">OF</text>
+    <text x="0" y="28" text-anchor="middle" class="lbl" font-size="28" letter-spacing="3">WHISKEY</text>
+    <text x="0" y="110" text-anchor="middle" class="serif" font-size="40" letter-spacing="2">THAN</text>
+    <text x="0" y="168" text-anchor="middle" class="script" font-size="62">Everyone&#8217;s</text>
+    <text x="0" y="214" text-anchor="middle" class="serif" font-size="42" letter-spacing="2">CUP OF TEA</text>
+  </g>
+</svg>

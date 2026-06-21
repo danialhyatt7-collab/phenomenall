@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PHENOMENAL — Shot of Whisky Tee</title>
+  <meta name="description" content="I'd rather be someone's shot of whiskey than everyone's cup of tea. The SHOT OF WHISKY oversized tee — bold, vintage, unapologetic. Only from PHENOMENAL." />
+  <meta name="theme-color" content="#0e0b09" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <meta property="og:image" content="assets/img/product-main.jpg" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="PHENOMENAL — Shot of Whisky Tee" />
+  <meta property="og:description" content="Bold, vintage, unapologetic. The SHOT OF WHISKY oversized tee." />
+  <meta property="og:type" content="product" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;0,900;1,500;1,600&family=Pinyon+Script&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <!-- Announcement bar -->
+  <div class="announce" id="announce">
+    <div class="announce__track">
+      <span>FREE SHIPPING OVER $75</span><span aria-hidden="true">✦</span>
+      <span>30-DAY NO-NONSENSE RETURNS</span><span aria-hidden="true">✦</span>
+      <span>LIMITED VINTAGE DROP</span><span aria-hidden="true">✦</span>
+      <span>PRINTED &amp; SHIPPED IN THE USA</span><span aria-hidden="true">✦</span>
+      <span>FREE SHIPPING OVER $75</span><span aria-hidden="true">✦</span>
+      <span>30-DAY NO-NONSENSE RETURNS</span><span aria-hidden="true">✦</span>
+      <span>LIMITED VINTAGE DROP</span><span aria-hidden="true">✦</span>
+      <span>PRINTED &amp; SHIPPED IN THE USA</span><span aria-hidden="true">✦</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="#top" class="brand">
+        <span class="brand__mark">P</span>
+        <span class="brand__name">PHENOMENAL</span>
+      </a>
+      <nav class="nav__links" id="navLinks">
+        <a href="#product">Shop</a>
+        <a href="#story">Story</a>
+        <a href="#details">Details</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav__actions">
+        <button class="iconbtn" id="searchBtn" aria-label="Search">
+          <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <button class="iconbtn cart-toggle" id="cartBtn" aria-label="Open cart">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero__bg" id="heroBg"></div>
+      <div class="hero__overlay"></div>
+      <div class="hero__content reveal">
+        <p class="eyebrow">PHENOMENAL · VINTAGE DROP Nº 001</p>
+        <h1 class="hero__title">
+          Be Someone&rsquo;s<br /><em>Shot&nbsp;of&nbsp;Whisky</em>
+        </h1>
+        <p class="hero__sub">
+          Not everyone&rsquo;s cup of tea — and proud of it. A heavyweight oversized tee
+          built for the bold, printed with a hand-drawn vintage whiskey label.
+        </p>
+        <div class="hero__cta">
+          <a href="#product" class="btn btn--gold">Shop the Tee — $39</a>
+          <a href="#story" class="btn btn--ghost">The Story</a>
+        </div>
+        <div class="hero__proof">
+          <div class="stars" aria-label="4.9 out of 5 stars">★★★★★</div>
+          <span>4.9 · Loved by 3,200+ rebels</span>
+        </div>
+      </div>
+      <a href="#product" class="hero__scroll" aria-label="Scroll down">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- PRODUCT -->
+    <section class="product" id="product">
+      <div class="product__media reveal">
+        <div class="gallery">
+          <div class="gallery__main">
+            <img id="mainImg" src="assets/img/product-main.jpg" alt="SHOT OF WHISKY oversized white tee, front view"
+                 onerror="this.onerror=null;this.classList.add('is-svg');this.src='assets/img/shirt-mockup.svg'" />
+            <span class="badge-drop">LIMITED</span>
+          </div>
+          <div class="gallery__thumbs" id="thumbs"></div>
+        </div>
+      </div>
+
+      <div class="product__info reveal">
+        <p class="eyebrow">PHENOMENAL ORIGINALS</p>
+        <h2 class="product__title">Shot of Whisky Oversized Tee</h2>
+        <div class="product__rating">
+          <span class="stars">★★★★★</span>
+          <a href="#reviews">3,214 reviews</a>
+        </div>
+        <div class="product__price">
+          <span class="price">$39.00</span>
+          <span class="price--old">$58.00</span>
+          <span class="save">SAVE 33%</span>
+        </div>
+        <p class="product__desc">
+          &ldquo;I&rsquo;d rather be someone&rsquo;s shot of whiskey than everyone&rsquo;s cup of tea.&rdquo;
+          A statement worth wearing. Premium 240gsm combed cotton, drop-shoulder oversized fit,
+          and a crisp screen-printed vintage label that only gets better with every wash.
+        </p>
+
+        <!-- Color -->
+        <div class="option">
+          <div class="option__label">Color: <strong id="colorName">Vintage White</strong></div>
+          <div class="swatches" id="swatches">
+            <button class="swatch is-active" style="--c:#f6f3ec" data-color="Vintage White" aria-label="Vintage White"></button>
+            <button class="swatch" style="--c:#1c1a17" data-color="Whiskey Black" aria-label="Whiskey Black"></button>
+            <button class="swatch" style="--c:#d8c4a0" data-color="Bourbon Sand" aria-label="Bourbon Sand"></button>
+          </div>
+        </div>
+
+        <!-- Size -->
+        <div class="option">
+          <div class="option__label">
+            Size: <strong id="sizeName">M</strong>
+            <button class="size-guide" id="sizeGuideBtn">Size guide</button>
+          </div>
+          <div class="sizes" id="sizes">
+            <button class="size" data-size="XS">XS</button>
+            <button class="size" data-size="S">S</button>
+            <button class="size is-active" data-size="M">M</button>
+            <button class="size" data-size="L">L</button>
+            <button class="size" data-size="XL">XL</button>
+            <button class="size" data-size="2XL">2XL</button>
+          </div>
+        </div>
+
+        <!-- Quantity + Add -->
+        <div class="buyrow">
+          <div class="qty" aria-label="Quantity">
+            <button id="qtyMinus" aria-label="Decrease">−</button>
+            <input id="qty" value="1" inputmode="numeric" aria-label="Quantity" />
+            <button id="qtyPlus" aria-label="Increase">+</button>
+          </div>
+          <button class="btn btn--gold btn--block" id="addToCart">Add to Cart · <span id="btnPrice">$39.00</span></button>
+        </div>
+
+        <div class="reassure">
+          <div><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 12l4 4 14-14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Free shipping over $75</div>
+          <div><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 12l4 4 14-14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 30-day easy returns</div>
+          <div><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 12l4 4 14-14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Ships in 24 hours</div>
+        </div>
+
+        <div class="pay">
+          <span>Secure checkout</span>
+          <div class="pay__icons" aria-hidden="true">VISA · MASTERCARD · AMEX · APPLE&nbsp;PAY · PAYPAL</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="strip">
+      <div class="strip__track">
+        <span>SHOT OF WHISKY</span><span class="dot">●</span>
+        <span>NOT YOUR CUP OF TEA</span><span class="dot">●</span>
+        <span>PHENOMENAL ORIGINALS</span><span class="dot">●</span>
+        <span>SHOT OF WHISKY</span><span class="dot">●</span>
+        <span>NOT YOUR CUP OF TEA</span><span class="dot">●</span>
+        <span>PHENOMENAL ORIGINALS</span><span class="dot">●</span>
+      </div>
+    </div>
+
+    <!-- STORY -->
+    <section class="story" id="story">
+      <div class="story__img reveal">
+        <img id="lifestyleImg" src="assets/img/lifestyle.jpg" alt="Model wearing the Shot of Whisky tee"
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.classList.add('no-img')" />
+        <div class="story__fallback">
+          <img src="assets/img/whiskey-label.svg" alt="Shot of Whisky label artwork" />
+        </div>
+      </div>
+      <div class="story__copy reveal">
+        <p class="eyebrow">THE STORY</p>
+        <h2>For the ones who were never meant to blend in.</h2>
+        <p>
+          Tea is polite. Tea is safe. Tea is for everyone. But you?
+          You&rsquo;re the shot that wakes the room up. PHENOMENAL was born for people
+          who&rsquo;d rather be unforgettable to a few than forgettable to many.
+        </p>
+        <p>
+          Every tee is screen-printed by hand in small batches on heavyweight combed
+          cotton, then garment-washed for that broken-in vintage feel from day one.
+          No fast fashion. No filler. Just a phenomenal shirt with something to say.
+        </p>
+        <div class="story__stats">
+          <div><strong>240<span>gsm</span></strong><em>Heavyweight cotton</em></div>
+          <div><strong>100<span>%</span></strong><em>Combed &amp; ringspun</em></div>
+          <div><strong>3.2<span>k</span></strong><em>5-star fans</em></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DETAILS / FEATURES -->
+    <section class="features" id="details">
+      <div class="features__head reveal">
+        <p class="eyebrow">CRAFTED TO LAST</p>
+        <h2>Details that drink well.</h2>
+      </div>
+      <div class="features__grid">
+        <article class="feature reveal">
+          <div class="feature__ic">🧵</div>
+          <h3>Heavyweight 240gsm</h3>
+          <p>Substantial, structured cotton that drapes beautifully and never goes see-through.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="feature__ic">🖤</div>
+          <h3>Hand screen-printed</h3>
+          <p>Crisp, water-based ink that sinks into the fabric — soft to the touch, built to endure.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="feature__ic">🌀</div>
+          <h3>Oversized drop-shoulder</h3>
+          <p>That perfect relaxed streetwear silhouette. Size down for classic, true-to-size for oversized.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="feature__ic">🇺🇸</div>
+          <h3>Printed in the USA</h3>
+          <p>Made to order in small batches and shipped within 24 hours. Zero landfill overstock.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="reviews" id="reviews">
+      <div class="reviews__head reveal">
+        <p class="eyebrow">THE VERDICT</p>
+        <h2>4.9 / 5 from 3,200+ rebels</h2>
+        <div class="stars stars--lg">★★★★★</div>
+      </div>
+      <div class="reviews__grid">
+        <figure class="review reveal">
+          <div class="stars">★★★★★</div>
+          <blockquote>&ldquo;Single best tee I own. The print quality is insane and the fit is exactly that perfect oversized slouch.&rdquo;</blockquote>
+          <figcaption>— Jordan M. <span>Verified buyer</span></figcaption>
+        </figure>
+        <figure class="review reveal">
+          <div class="stars">★★★★★</div>
+          <blockquote>&ldquo;Got three compliments the first day. Heavy, soft, and the whiskey label looks even better in person.&rdquo;</blockquote>
+          <figcaption>— Alexis R. <span>Verified buyer</span></figcaption>
+        </figure>
+        <figure class="review reveal">
+          <div class="stars">★★★★★</div>
+          <blockquote>&ldquo;Finally a graphic tee that doesn&rsquo;t crack after one wash. PHENOMENAL is my new go-to.&rdquo;</blockquote>
+          <figcaption>— Sam W. <span>Verified buyer</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <div class="faq__head reveal">
+        <p class="eyebrow">GOOD TO KNOW</p>
+        <h2>Questions, answered</h2>
+      </div>
+      <div class="faq__list reveal">
+        <details>
+          <summary>How does the oversized fit run?<span class="faq__plus"></span></summary>
+          <p>It&rsquo;s a true oversized, drop-shoulder cut. For a relaxed oversized look, order your normal size. Prefer a classic fit? Size down one.</p>
+        </details>
+        <details>
+          <summary>How should I wash it?<span class="faq__plus"></span></summary>
+          <p>Machine wash cold inside-out, tumble dry low. The water-based print stays crisp wash after wash — no cracking, no peeling.</p>
+        </details>
+        <details>
+          <summary>When will it ship?<span class="faq__plus"></span></summary>
+          <p>Every tee is made to order and ships within 24 hours. US delivery is typically 3–5 business days. Free over $75.</p>
+        </details>
+        <details>
+          <summary>What&rsquo;s your return policy?<span class="faq__plus"></span></summary>
+          <p>30-day no-nonsense returns. If it&rsquo;s not phenomenal, send it back for a full refund or exchange.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="news">
+      <div class="news__inner reveal">
+        <h2>Join the rebellion.</h2>
+        <p>Get 10% off your first order plus early access to every limited drop.</p>
+        <form class="news__form" id="newsForm">
+          <input type="email" required placeholder="you@example.com" aria-label="Email address" />
+          <button class="btn btn--gold" type="submit">Get 10% Off</button>
+        </form>
+        <p class="news__note" id="newsNote">No spam. Just phenomenal things.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="brand__mark">P</span>
+        <span class="brand__name">PHENOMENAL</span>
+        <p>Bold apparel for people who were never meant to blend in.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Shop</h4>
+        <a href="#product">Shot of Whisky Tee</a>
+        <a href="#product">New Arrivals</a>
+        <a href="#product">Best Sellers</a>
+      </div>
+      <div class="footer__col">
+        <h4>Help</h4>
+        <a href="#faq">FAQ</a>
+        <a href="#faq">Shipping</a>
+        <a href="#faq">Returns</a>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <a href="#story">Our Story</a>
+        <a href="#reviews">Reviews</a>
+        <a href="mailto:hello@phenomenal.shop">Contact</a>
+      </div>
+    </div>
+    <div class="footer__bar">
+      <span>© <span id="year"></span> PHENOMENAL. All rights reserved.</span>
+      <span class="footer__legal"><a href="#">Privacy</a> · <a href="#">Terms</a></span>
+    </div>
+  </footer>
+
+  <!-- CART DRAWER -->
+  <div class="drawer-backdrop" id="backdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Shopping cart">
+    <div class="drawer__head">
+      <h3>Your Cart</h3>
+      <button class="iconbtn" id="cartClose" aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer__items" id="cartItems">
+      <p class="drawer__empty">Your cart is empty — go be phenomenal.</p>
+    </div>
+    <div class="drawer__foot">
+      <div class="drawer__total"><span>Subtotal</span><strong id="cartTotal">$0.00</strong></div>
+      <p class="drawer__ship">Shipping &amp; taxes calculated at checkout.</p>
+      <button class="btn btn--gold btn--block" id="checkout">Checkout</button>
+    </div>
+  </aside>
+
+  <!-- SIZE GUIDE MODAL -->
+  <div class="modal" id="sizeModal" aria-hidden="true">
+    <div class="modal__box">
+      <button class="iconbtn modal__close" id="sizeClose" aria-label="Close">✕</button>
+      <h3>Size Guide</h3>
+      <p class="modal__sub">Measurements in inches. Oversized fit — order your usual size.</p>
+      <table class="sizetable">
+        <thead><tr><th>Size</th><th>Chest</th><th>Length</th></tr></thead>
+        <tbody>
+          <tr><td>XS</td><td>40</td><td>27</td></tr>
+          <tr><td>S</td><td>42</td><td>28</td></tr>
+          <tr><td>M</td><td>44</td><td>29</td></tr>
+          <tr><td>L</td><td>46</td><td>30</td></tr>
+          <tr><td>XL</td><td>48</td><td>31</td></tr>
+          <tr><td>2XL</td><td>50</td><td>32</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
