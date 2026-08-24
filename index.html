@@ -151,6 +151,21 @@
   }
   .field input::placeholder{color:var(--dim)}
   .field input:focus{outline:none;border-color:var(--ice-blue)}
+  .optin{
+    display:flex;align-items:flex-start;gap:.65rem;margin-top:1.3rem;cursor:pointer;
+    font-size:.88rem;color:var(--dim);line-height:1.45;
+  }
+  .optin input{
+    appearance:none;-webkit-appearance:none;flex:none;margin-top:.15rem;
+    width:1rem;height:1rem;border:1px solid var(--line);border-radius:2px;background:var(--panel);
+    cursor:pointer;position:relative;
+  }
+  .optin input:checked{background:var(--ice);border-color:var(--ice)}
+  .optin input:checked::after{
+    content:"";position:absolute;inset:2px 3px 4px 3px;
+    border-left:2px solid var(--void);border-bottom:2px solid var(--void);transform:rotate(-45deg);
+  }
+  .optin input:focus-visible{outline:2px solid var(--ice-blue);outline-offset:2px}
   .total-row{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:1.8rem;padding-top:1.3rem}
   .total-row .t-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
   .total-row .t-val{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
@@ -291,6 +306,18 @@
           <label for="f-city">City</label>
           <input id="f-city" type="text" autocomplete="address-level2" placeholder="For delivery estimate">
         </div>
+        <div class="field">
+          <label for="f-address">Delivery address</label>
+          <input id="f-address" type="text" autocomplete="street-address" placeholder="House, street, area">
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" type="email" autocomplete="email" placeholder="For your order confirmation">
+        </div>
+        <label class="optin">
+          <input id="f-optin" type="checkbox">
+          <span>Send me updates and offers on new drops and sales</span>
+        </label>
         <div class="total-row">
           <span class="t-label">Total · Cash on delivery</span>
           <span class="t-val" id="total">Rs 2,199</span>
@@ -344,9 +371,14 @@
   function message(){
     var name = $("#f-name").value.trim();
     var city = $("#f-city").value.trim();
+    var address = $("#f-address").value.trim();
+    var email = $("#f-email").value.trim();
     var m = "Hi! I'd like to order the " + PRODUCT + " — Size " + size + " × " + qty + " (" + fmt(PRICE*qty) + ").";
     if(name) m += " Name: " + name + ".";
+    if(address) m += " Address: " + address + ".";
     if(city) m += " City: " + city + ".";
+    if(email) m += " Email: " + email + ".";
+    if($("#f-optin").checked) m += " (Keep me posted on new drops.)";
     return m;
   }
   function render(){
@@ -364,15 +396,20 @@
   });
   $("#q-minus").addEventListener("click", function(){ if(qty>1){ qty--; render(); } });
   $("#q-plus").addEventListener("click", function(){ if(qty<10){ qty++; render(); } });
-  $("#f-name").addEventListener("input", render);
-  $("#f-city").addEventListener("input", render);
+  ["f-name","f-city","f-address","f-email"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", render);
+  });
+  $("#f-optin").addEventListener("change", render);
   $("#order-form").addEventListener("submit", function(e){
     e.preventDefault();
     var payload = {
       product: PRODUCT, size: size, qty: qty,
       unit_price: PRICE, total: PRICE*qty,
       name: $("#f-name").value.trim() || null,
-      city: $("#f-city").value.trim() || null
+      city: $("#f-city").value.trim() || null,
+      address: $("#f-address").value.trim() || null,
+      email: $("#f-email").value.trim() || null,
+      marketing_opt_in: $("#f-optin").checked
     };
     // Records the order when served by server.js; fails silently on static hosting.
     try{
