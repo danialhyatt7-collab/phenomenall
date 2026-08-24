@@ -59,18 +59,19 @@
     white-space:nowrap;
   }
   .hdr-nav{display:flex;gap:1.6rem;align-items:center}
-  .hdr-nav a{
+  .hdr-nav a,.hdr-nav button{
     font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
     color:var(--ice);text-decoration:none;opacity:.82;position:relative;padding:.4rem 0;
+    background:none;border:none;cursor:pointer;line-height:inherit;
     transition:opacity .18s ease;
   }
-  .hdr-nav a::after{
+  .hdr-nav a::after,.hdr-nav button::after{
     content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
     background:var(--ice);transform:scaleX(0);transform-origin:left;
     transition:transform .22s ease;
   }
-  .hdr-nav a:hover{opacity:1}
-  .hdr-nav a:hover::after{transform:scaleX(1)}
+  .hdr-nav a:hover,.hdr-nav button:hover{opacity:1}
+  .hdr-nav a:hover::after,.hdr-nav button:hover::after{transform:scaleX(1)}
   .hdr-utils{display:flex;align-items:center;gap:.35rem;justify-self:end}
   .hdr-btn{
     display:grid;place-items:center;width:2.2rem;height:2.2rem;
@@ -128,8 +129,8 @@
       transform:translateY(-120%);transition:transform .3s ease;
     }
     .hdr-nav.open{transform:none}
-    .hdr-nav a{padding:.95rem 0;border-bottom:1px solid rgba(201,194,180,.08);font-size:.8rem}
-    .hdr-nav a::after{display:none}
+    .hdr-nav a,.hdr-nav button{padding:.95rem 0;border-bottom:1px solid rgba(201,194,180,.08);font-size:.8rem;text-align:left;background:none;border-left:none;border-right:none;border-top:none;width:100%}
+    .hdr-nav a::after,.hdr-nav button::after{display:none}
     .hdr-burger{display:grid}
     .hdr-logo{justify-self:center;font-size:.8rem;letter-spacing:.26em}
     .hdr-region{display:none}
@@ -229,9 +230,41 @@
   .spec .mono{display:block;margin-bottom:.55rem}
   .spec p{color:var(--ice);opacity:.8;font-size:.95rem}
 
-  /* sizing */
-  #sizing{border-top:1px solid var(--line)}
-  .size-table-wrap{overflow-x:auto;margin-top:2.2rem;border:1px solid var(--line)}
+  /* size guide modal */
+  .modal[hidden]{display:none}
+  .modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:1rem}
+  .modal-backdrop{
+    position:absolute;inset:0;background:rgba(3,3,3,.8);
+    opacity:0;transition:opacity .25s ease;
+  }
+  .modal.open .modal-backdrop{opacity:1}
+  .modal-card{
+    position:relative;width:min(760px,100%);max-height:88vh;overflow-y:auto;
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    opacity:0;transform:translateY(14px) scale(.985);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .modal.open .modal-card{opacity:1;transform:none}
+  .modal-head{
+    position:sticky;top:0;z-index:2;background:var(--panel);
+    display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+    padding:1.4rem 1.5rem 1.1rem;border-bottom:1px solid var(--line);
+  }
+  .modal-head h2{font-size:1.3rem;font-weight:700;letter-spacing:-.02em;margin-top:.4rem}
+  .modal-x{
+    flex:none;display:grid;place-items:center;width:2.1rem;height:2.1rem;
+    background:none;border:1px solid var(--line);border-radius:3px;color:var(--ice);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .modal-x:hover{border-color:var(--ice);background:rgba(242,239,233,.06)}
+  .modal-x svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+  .modal-body{padding:1.3rem 1.5rem 1.7rem}
+  .modal-body .sec-sub{margin-bottom:.2rem}
+  @media(max-width:700px){
+    .modal{padding:0}
+    .modal-card{width:100%;height:100%;max-height:100%;border:none;border-radius:0}
+  }
+  .size-table-wrap{overflow-x:auto;margin-top:1.4rem;border:1px solid var(--line)}
   table.sizes{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums}
   table.sizes th,table.sizes td{padding:.85rem 1rem;text-align:left;border-bottom:1px solid var(--line)}
   table.sizes thead th{
@@ -243,12 +276,13 @@
   table.sizes tbody tr:last-child th,table.sizes tbody tr:last-child td{border-bottom:none}
   table.sizes tbody tr:hover th,table.sizes tbody tr:hover td{background:rgba(242,239,233,.03)}
   .size-note{margin-top:1.1rem;color:var(--dim);font-size:.9rem;max-width:64ch}
-  .size-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1.4rem;margin-top:2.4rem}
+  .size-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.3rem;margin-top:1.8rem}
   .size-how div{border-left:1px solid var(--line);padding-left:1rem}
   .size-how .mono{display:block;margin-bottom:.4rem}
   .size-how p{color:var(--dim);font-size:.9rem}
   .size-guide-link{
-    display:inline-block;margin-top:.8rem;
+    display:inline-block;margin-top:.8rem;background:none;border:none;
+    border-bottom:1px solid rgba(201,194,180,.35);cursor:pointer;padding:0 0 2px;
     font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
     color:var(--ice-blue);text-decoration:none;
     border-bottom:1px solid rgba(201,194,180,.35);padding-bottom:2px;
@@ -354,7 +388,7 @@
     <a class="hdr-logo" href="#top">PHENOMENAL</a>
     <nav class="hdr-nav" id="hdr-nav">
       <a href="#spec">The Tee</a>
-      <a href="#sizing">Sizing</a>
+      <button type="button" data-size-guide>Sizing</button>
       <a href="#order">Order</a>
       <a href="#faq">FAQ</a>
       <a href="https://wa.me/923374841818">Support</a>
@@ -437,38 +471,6 @@
   </div>
 </section>
 
-<section id="sizing">
-  <div class="wrap">
-    <span class="mono">Sizing</span>
-    <h2 class="sec-h">Oversized, drop-shoulder, on purpose.</h2>
-    <p class="sec-sub">Standard oversized drop-shoulder measurements. The cut runs roomy by design — if you want it relaxed rather than baggy, take one size down from your usual.</p>
-    <div class="size-table-wrap">
-      <table class="sizes">
-        <thead>
-          <tr>
-            <th scope="col">Size</th><th scope="col">Chest</th><th scope="col">Length</th>
-            <th scope="col">Shoulder</th><th scope="col">Sleeve</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">S</th><td>42"</td><td>27"</td><td>20"</td><td>8.5"</td></tr>
-          <tr><th scope="row">M</th><td>44"</td><td>28"</td><td>21"</td><td>9"</td></tr>
-          <tr><th scope="row">L</th><td>46"</td><td>29"</td><td>22"</td><td>9.5"</td></tr>
-          <tr><th scope="row">XL</th><td>48"</td><td>30"</td><td>23"</td><td>10"</td></tr>
-          <tr><th scope="row">XXL</th><td>50"</td><td>31"</td><td>24"</td><td>10.5"</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="size-note">Garment measurements in inches, taken flat — not body measurements. Allow about half an inch either way; that is normal cut-and-sew tolerance.</p>
-    <div class="size-how">
-      <div><span class="mono">Chest</span><p>Armpit to armpit across the front, doubled.</p></div>
-      <div><span class="mono">Length</span><p>Highest point of the shoulder straight down to the hem.</p></div>
-      <div><span class="mono">Shoulder</span><p>Seam to seam across the back. On a drop shoulder these seams sit below your actual shoulder.</p></div>
-      <div><span class="mono">Sleeve</span><p>Shoulder seam down to the sleeve opening.</p></div>
-    </div>
-  </div>
-</section>
-
 <section id="order">
   <div class="wrap">
     <span class="mono">Order / 30 seconds</span>
@@ -488,7 +490,7 @@
             <button type="button" class="chip" aria-pressed="false">XL</button>
             <button type="button" class="chip" aria-pressed="false">XXL</button>
           </div>
-          <a class="size-guide-link" href="#sizing">Size guide</a>
+          <button type="button" class="size-guide-link" data-size-guide>Size guide</button>
         </fieldset>
         <fieldset>
           <legend>Quantity</legend>
@@ -557,6 +559,48 @@
 <div class="sticky-bar">
   <span class="p">Rs 7,999</span>
   <a class="btn-wa" href="#order" style="width:auto;margin:0">Checkout</a>
+</div>
+
+<div class="modal" id="size-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="size-modal-title">
+    <div class="modal-head">
+      <div>
+        <span class="mono">Sizing</span>
+        <h2 id="size-modal-title">Size guide</h2>
+      </div>
+      <button type="button" class="modal-x" data-close aria-label="Close size guide">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="sec-sub">Standard oversized drop-shoulder measurements. The cut runs roomy by design — if you want it relaxed rather than baggy, take one size down from your usual.</p>
+      <div class="size-table-wrap">
+        <table class="sizes">
+          <thead>
+            <tr>
+              <th scope="col">Size</th><th scope="col">Chest</th><th scope="col">Length</th>
+              <th scope="col">Shoulder</th><th scope="col">Sleeve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">S</th><td>42"</td><td>27"</td><td>20"</td><td>8.5"</td></tr>
+            <tr><th scope="row">M</th><td>44"</td><td>28"</td><td>21"</td><td>9"</td></tr>
+            <tr><th scope="row">L</th><td>46"</td><td>29"</td><td>22"</td><td>9.5"</td></tr>
+            <tr><th scope="row">XL</th><td>48"</td><td>30"</td><td>23"</td><td>10"</td></tr>
+            <tr><th scope="row">XXL</th><td>50"</td><td>31"</td><td>24"</td><td>10.5"</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="size-note">Garment measurements in inches, taken flat — not body measurements. Allow about half an inch either way; that is normal cut-and-sew tolerance.</p>
+      <div class="size-how">
+        <div><span class="mono">Chest</span><p>Armpit to armpit across the front, doubled.</p></div>
+        <div><span class="mono">Length</span><p>Highest point of the shoulder straight down to the hem.</p></div>
+        <div><span class="mono">Shoulder</span><p>Seam to seam across the back. On a drop shoulder these seams sit below your actual shoulder.</p></div>
+        <div><span class="mono">Sleeve</span><p>Shoulder seam down to the sleeve opening.</p></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="vendor/three.min.js"></script>
@@ -656,7 +700,7 @@
   // small index of what this store actually has, so search lands on a real answer
   var INDEX = [
     {t:"Shot of Whiskey tee — Rs 7,999", tag:"Product", href:"#order", k:"tee shirt tshirt product price rs 7999 buy shot whiskey cost"},
-    {t:"Size chart — chest, length, shoulder, sleeve", tag:"Sizing", href:"#sizing", k:"size sizes chart guide small medium large xl xxl fit oversized measurement measurements chest length shoulder sleeve inches drop"},
+    {t:"Size chart — chest, length, shoulder, sleeve", tag:"Sizing", href:"#size-modal", modal:true, k:"size sizes chart guide small medium large xl xxl fit oversized measurement measurements chest length shoulder sleeve inches drop"},
     {t:"35% cotton, 65% polyester blend", tag:"Fabric", href:"#spec", k:"fabric cotton polyester poly blend material quality 35 65 gsm weight"},
     {t:"Vintage whiskey-label print, soft ink", tag:"Print", href:"#spec", k:"print ink artwork label design crack fade"},
     {t:"Bone cream colour", tag:"Colour", href:"#spec", k:"colour color cream white bone"},
@@ -677,11 +721,52 @@
       return;
     }
     hits.innerHTML = found.map(function(i){
-      return '<li><a href="' + i.href + '"><span>' + i.t + '</span><span class="tag">' + i.tag + '</span></a></li>';
+      return '<li><a href="' + i.href + '"' + (i.modal ? ' data-size-guide' : '') + '><span>' + i.t + '</span><span class="tag">' + i.tag + '</span></a></li>';
     }).join("");
   }
   searchInput.addEventListener("input", search);
   hits.addEventListener("click", function(e){ if(e.target.closest("a")) closeSearch(); });
+
+  /* ---------- size guide modal ---------- */
+  var sizeModal = $("#size-modal"), lastFocus = null;
+
+  function openSizeGuide(trigger){
+    lastFocus = trigger || document.activeElement;
+    closeSearch(); closeMenu();
+    sizeModal.hidden = false;
+    document.body.style.overflow = "hidden";
+    // next frame so the transition runs from the hidden state
+    requestAnimationFrame(function(){ sizeModal.classList.add("open"); });
+    sizeModal.querySelector(".modal-x").focus();
+  }
+  function closeSizeGuide(){
+    if(sizeModal.hidden) return;
+    sizeModal.classList.remove("open");
+    document.body.style.overflow = "";
+    var done = function(){ sizeModal.hidden = true; };
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) done();
+    else setTimeout(done, 250);
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+    lastFocus = null;
+  }
+
+  // delegated so search results rendered later also open the guide
+  document.addEventListener("click", function(e){
+    var opener = e.target.closest("[data-size-guide]");
+    if(opener){ e.preventDefault(); openSizeGuide(opener); return; }
+    if(!sizeModal.hidden && e.target.closest("[data-close]")) closeSizeGuide();
+  });
+  document.addEventListener("keydown", function(e){
+    if(sizeModal.hidden) return;
+    if(e.key === "Escape"){ e.stopPropagation(); closeSizeGuide(); return; }
+    if(e.key !== "Tab") return;
+    // keep focus inside the dialog while it is open
+    var f = sizeModal.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+    if(!f.length) return;
+    var first = f[0], last = f[f.length-1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
 
   /* ---------- background video (progressive: poster first) ---------- */
   var vid = document.getElementById("bgvid");
