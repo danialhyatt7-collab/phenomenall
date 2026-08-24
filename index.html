@@ -75,14 +75,18 @@
   /* ---------- immersive scroll world ---------- */
   #world{position:relative;height:400vh}
   .world-fix{position:sticky;top:0;height:100vh;overflow:hidden}
+  .world-fix{background:var(--void)}
   #bgvid,#bgposter{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    min-width:100%;min-height:100%;object-fit:cover;
-    width:auto;height:auto;
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:contain;object-position:center;
   }
+  /* the video's edges are pure black, so contain blends into the void on any aspect ratio */
   #frost{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
   .vignette{position:absolute;inset:0;z-index:3;pointer-events:none;
-    background:radial-gradient(ellipse at center, transparent 45%, rgba(7,6,6,.75) 100%);
+    background:
+      linear-gradient(90deg, var(--void) 0%, transparent 18%, transparent 82%, var(--void) 100%),
+      linear-gradient(180deg, rgba(7,6,6,.85) 0%, transparent 14%, transparent 86%, rgba(7,6,6,.85) 100%),
+      radial-gradient(ellipse at center, transparent 40%, rgba(7,6,6,.7) 100%);
   }
   .chapter{
     position:absolute;inset:0;z-index:4;
@@ -104,8 +108,8 @@
     text-shadow:0 2px 50px rgba(7,6,6,.9);
   }
   .chapter p{max-width:44ch;margin:1.2rem auto 0;color:var(--ice);opacity:.85;font-size:clamp(.98rem,2vw,1.15rem);text-shadow:0 1px 30px rgba(7,6,6,.9)}
-  .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:1rem;letter-spacing:.12em;color:var(--ice-blue)}
-  .chapter .price-line s{color:var(--dim);margin-left:.8rem}
+  .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:clamp(.78rem,1.6vw,1rem);letter-spacing:.12em;color:var(--ice-blue);display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;white-space:nowrap}
+  .chapter .price-line s{color:var(--dim)}
 
   /* ---------- below the world ---------- */
   section{position:relative;background:var(--void);padding:6rem 1.5rem;z-index:5}
