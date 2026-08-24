@@ -1,6 +1,6 @@
 # PHENOMENAL — Shot of Whiskey Tee
 
-A one-product store for an oversized heavyweight tee, built as an immersive scroll experience.
+A one-product store for an oversized drop-shoulder tee, built as an immersive scroll experience.
 
 - **Hero loop** — the tee floating in monochrome smoke, generated with Nano Banana Pro + Kling 3.0, upscaled to 2K and rebuilt as a seamless forward-and-reverse loop. Two cuts are shipped and chosen by screen orientation: `ice-wide.mp4` (2578×1440) for landscape, `ice.mp4` (1440×1928) for portrait.
 - **Scroll chapters** — a pinned 400vh stage crossfades three chapters (01 The Statement → 02 The Tee → 03 The Drop) with a live chapter index.
