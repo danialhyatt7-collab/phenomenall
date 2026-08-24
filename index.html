@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PHENOMENAL</title>
-<meta name="description" content="PHENOMENAL — one tee, frozen in time. Oversized heavyweight tee with a vintage whiskey-label print. Order on WhatsApp.">
+<meta name="description" content="PHENOMENAL — one tee, done properly. Oversized heavyweight tee with a vintage whiskey-label print.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root{
-    --void:#050607;
-    --panel:#0B0E10;
-    --ice:#EDF2F5;
-    --ice-blue:#9FC4D8;
-    --dim:#5E6A72;
-    --line:rgba(159,196,216,.16);
-    --wa:#25D366;
+    --void:#070606;
+    --panel:#100E0C;
+    --ice:#F2EFE9;
+    --ice-blue:#C9C2B4;
+    --dim:#77716A;
+    --line:rgba(201,194,180,.16);
+    --wa:#F2EFE9;
     --sans:'Archivo',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
     --mono:'IBM Plex Mono','SF Mono',Consolas,monospace;
   }
@@ -82,7 +82,7 @@
   }
   #frost{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
   .vignette{position:absolute;inset:0;z-index:3;pointer-events:none;
-    background:radial-gradient(ellipse at center, transparent 45%, rgba(5,6,7,.75) 100%);
+    background:radial-gradient(ellipse at center, transparent 45%, rgba(7,6,6,.75) 100%);
   }
   .chapter{
     position:absolute;inset:0;z-index:4;
@@ -95,15 +95,15 @@
   .chapter > div{position:relative;padding:3rem 2rem}
   .chapter > div::before{
     content:"";position:absolute;inset:-30% -40%;z-index:-1;
-    background:radial-gradient(closest-side, rgba(5,6,7,.86), rgba(5,6,7,.55) 55%, transparent);
+    background:radial-gradient(closest-side, rgba(7,6,6,.86), rgba(7,6,6,.55) 55%, transparent);
   }
   .chapter .mono{display:block;margin-bottom:1.1rem}
   .chapter h2, .chapter h1{
     font-weight:700;letter-spacing:-.02em;line-height:1.04;text-wrap:balance;
     font-size:clamp(2.2rem,7vw,5rem);
-    text-shadow:0 2px 50px rgba(5,6,7,.9);
+    text-shadow:0 2px 50px rgba(7,6,6,.9);
   }
-  .chapter p{max-width:44ch;margin:1.2rem auto 0;color:var(--ice);opacity:.85;font-size:clamp(.98rem,2vw,1.15rem);text-shadow:0 1px 30px rgba(5,6,7,.9)}
+  .chapter p{max-width:44ch;margin:1.2rem auto 0;color:var(--ice);opacity:.85;font-size:clamp(.98rem,2vw,1.15rem);text-shadow:0 1px 30px rgba(7,6,6,.9)}
   .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:1rem;letter-spacing:.12em;color:var(--ice-blue)}
   .chapter .price-line s{color:var(--dim);margin-left:.8rem}
 
@@ -151,18 +151,18 @@
   .total-row .t-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
   .total-row .t-val{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
   .preview{
-    margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--wa);
+    margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ice-blue);
     border-radius:3px;padding:1rem 1.1rem;font-size:.92rem;color:var(--ice);opacity:.85;
   }
-  .preview .mono{display:block;margin-bottom:.4rem;color:var(--wa)}
+  .preview .mono{display:block;margin-bottom:.4rem;color:var(--ice-blue)}
   .btn-wa{
     display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
     font-weight:600;font-size:1rem;
-    background:var(--wa);color:#04170B;text-decoration:none;border:none;border-radius:3px;
+    background:var(--ice);color:var(--void);text-decoration:none;border:none;border-radius:3px;
     padding:1.05rem 1.7rem;width:100%;margin-top:1.4rem;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .btn-wa:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(37,211,102,.25)}
+  .btn-wa:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(242,239,233,.18)}
   .wa-ic{width:1.1em;height:1.1em;flex:none}
   .order-note{margin-top:.8rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:center}
 
@@ -184,7 +184,7 @@
   .sticky-bar{
     position:fixed;left:0;right:0;bottom:0;z-index:60;
     display:none;align-items:center;justify-content:space-between;gap:1rem;
-    background:rgba(5,6,7,.9);border-top:1px solid var(--line);
+    background:rgba(7,6,6,.9);border-top:1px solid var(--line);
     padding:.7rem 1rem;backdrop-filter:blur(10px);
   }
   .sticky-bar .p{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
@@ -198,7 +198,7 @@
   <a class="brand" href="#top">PHENOMENAL</a>
   <a class="chrome-cta" href="#order">Order</a>
   <div class="chapters" aria-hidden="true">
-    <span data-ch="0">01 / FROZEN</span>
+    <span data-ch="0">01 / THE STATEMENT</span>
     <span data-ch="1">02 / THE TEE</span>
     <span data-ch="2">03 / THE DROP</span>
   </div>
@@ -207,16 +207,16 @@
 
 <div id="world" aria-label="Introduction">
   <div class="world-fix" id="top">
-    <img id="bgposter" src="assets/ice-hero.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, frozen inside a block of ice in a black void">
+    <img id="bgposter" src="assets/ice-hero.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
     <video id="bgvid" src="assets/ice.mp4" poster="assets/ice-hero.jpg" muted loop playsinline autoplay preload="auto" style="display:none"></video>
     <canvas id="frost" aria-hidden="true"></canvas>
     <div class="vignette"></div>
 
     <div class="chapter on" data-chapter="0">
       <div>
-        <span class="mono">01 / Frozen in time</span>
+        <span class="mono">01 / The statement</span>
         <h1>PHENOMENAL</h1>
-        <p>One tee. Kept cold until you're ready.</p>
+        <p>One tee. Strong and rare, never mild and everywhere.</p>
       </div>
     </div>
     <div class="chapter" data-chapter="1">
@@ -231,7 +231,7 @@
         <span class="mono">03 / The drop</span>
         <h2>Rs 2,199. This drop only.</h2>
         <p class="price-line">SMALL BATCH · COD NATIONWIDE <s>Rs 3,499</s></p>
-        <p>Order in 30 seconds on WhatsApp. Keep scrolling.</p>
+        <p>Checkout in 30 seconds. Keep scrolling.</p>
       </div>
     </div>
   </div>
@@ -254,8 +254,8 @@
 <section id="order">
   <div class="wrap">
     <span class="mono">Order / 30 seconds</span>
-    <h2 class="sec-h">Pick a size. Tap. Done on WhatsApp.</h2>
-    <p class="sec-sub">No accounts, no card forms. Your order opens as a ready-made WhatsApp message — send it and pay cash on delivery.</p>
+    <h2 class="sec-h">Pick a size. Tap. Done.</h2>
+    <p class="sec-sub">No accounts, no card forms. Checkout sends us your order directly — confirm your address and pay cash on delivery.</p>
     <div class="order-grid">
       <figure class="order-photo">
         <img src="assets/product.jpg" alt="Product photo of the cream oversized tee" width="1100" height="1366" loading="lazy">
@@ -280,11 +280,11 @@
           </div>
         </fieldset>
         <div class="field">
-          <label for="f-name">Name <em>(optional)</em></label>
+          <label for="f-name">Name</label>
           <input id="f-name" type="text" autocomplete="name" placeholder="So we know who's ordering">
         </div>
         <div class="field">
-          <label for="f-city">City <em>(optional)</em></label>
+          <label for="f-city">City</label>
           <input id="f-city" type="text" autocomplete="address-level2" placeholder="For delivery estimate">
         </div>
         <div class="total-row">
@@ -292,14 +292,14 @@
           <span class="t-val" id="total">Rs 2,199</span>
         </div>
         <div class="preview">
-          <span class="mono">Your WhatsApp message</span>
+          <span class="mono">Order summary</span>
           <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 2,199).</span>
         </div>
         <button type="submit" class="btn-wa">
           <svg class="wa-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.4-2.9c-.3-.4.3-.4.7-1.3 0-.2 0-.3-.1-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.1 2.8c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3Z"/></svg>
-          Send order on WhatsApp
+          Checkout
         </button>
-        <p class="order-note">Opens WhatsApp pre-written · 0337 4841818</p>
+        <p class="order-note">Secure checkout · Cash on delivery</p>
       </form>
     </div>
   </div>
@@ -310,7 +310,7 @@
     <span class="mono">Protocol</span>
     <h2 class="sec-h">Questions, answered straight.</h2>
     <details class="faq"><summary>How do I pay?</summary><div>Cash on delivery, nationwide. You pay the rider when the tee is in your hands. Nothing upfront.</div></details>
-    <details class="faq"><summary>How does WhatsApp ordering work?</summary><div>Pick your size and quantity above, tap the green button, and WhatsApp opens with your order already written. Send it, we confirm your address, and it ships within 24 hours.</div></details>
+    <details class="faq"><summary>How does checkout work?</summary><div>Pick your size and quantity above and tap Checkout — your order reaches us instantly with everything filled in. We confirm your address and it ships within 24 hours.</div></details>
     <details class="faq"><summary>What if the size is wrong?</summary><div>Message us within 7 days and we'll swap it free. Keep the tags on and unwashed.</div></details>
     <details class="faq"><summary>Will the print crack or fade?</summary><div>The lived-in texture is the design — it's printed that way and stays that way. High-density soft ink holds through regular machine washes (wash inside-out, skip the dryer).</div></details>
     <details class="faq"><summary>How long is delivery?</summary><div>24-hour dispatch. Major cities in 2–3 days, everywhere else in 3–5.</div></details>
@@ -319,13 +319,13 @@
 
 <footer>
   <a class="f-brand" href="#top">PHENOMENAL</a>
-  <p>One tee, done right. Order &amp; support on WhatsApp: <a href="https://wa.me/923374841818">0337 4841818</a></p>
+  <p>One tee, done right. Support: <a href="https://wa.me/923374841818">0337 4841818</a></p>
   <p>© 2026 Phenomenal. All rights reserved.</p>
 </footer>
 
 <div class="sticky-bar">
   <span class="p">Rs 2,199</span>
-  <a class="btn-wa" href="#order" style="width:auto;margin:0">Order on WhatsApp</a>
+  <a class="btn-wa" href="#order" style="width:auto;margin:0">Checkout</a>
 </div>
 
 <script src="vendor/three.min.js"></script>
@@ -420,13 +420,13 @@
   try{
     renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:false, alpha:true, powerPreference:"low-power"});
   }catch(err){ return; }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 30);
   camera.position.z = 6;
 
-  var N = 260, pos = new Float32Array(N*3), spd = new Float32Array(N);
+  var N = 160, pos = new Float32Array(N*3), spd = new Float32Array(N);
   for(var i=0;i<N;i++){
     pos[i*3]   = (Math.random()-0.5)*14;
     pos[i*3+1] = (Math.random()-0.5)*9;
@@ -436,7 +436,7 @@
   var geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   var pts = new THREE.Points(geo, new THREE.PointsMaterial({
-    color:0x9FC4D8, size:0.035, transparent:true, opacity:0.55,
+    color:0xC9C2B4, size:0.04, transparent:true, opacity:0.4,
     blending:THREE.AdditiveBlending, depthWrite:false
   }));
   scene.add(pts);
@@ -461,10 +461,11 @@
   if("IntersectionObserver" in window){
     new IntersectionObserver(function(en){ visible = en[0].isIntersecting; }).observe(canvas);
   }
-  var t0 = performance.now();
+  var t0 = performance.now(), last = 0, FRAME_MS = 1000/30; // 30fps cap for older devices
   function frame(now){
     requestAnimationFrame(frame);
-    if(!visible) return;
+    if(!visible || now - last < FRAME_MS) return;
+    last = now;
     var t=(now-t0)/1000;
     cur.x += (target.x-cur.x)*0.04;
     cur.y += (target.y-cur.y)*0.04;
