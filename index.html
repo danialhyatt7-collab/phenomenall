@@ -211,8 +211,8 @@
 
 <div id="world" aria-label="Introduction">
   <div class="world-fix" id="top">
-    <img id="bgposter" src="assets/ice-hero.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
-    <video id="bgvid" src="assets/ice.mp4" poster="assets/ice-hero.jpg" muted loop playsinline autoplay preload="auto" style="display:none"></video>
+    <img id="bgposter" data-portrait="assets/ice-hero.jpg" data-landscape="assets/ice-hero-wide.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
+    <video id="bgvid" data-portrait="assets/ice.mp4" data-landscape="assets/ice-wide.mp4" muted loop playsinline autoplay preload="auto" style="display:none"></video>
     <canvas id="frost" aria-hidden="true"></canvas>
     <div class="vignette"></div>
 
@@ -386,6 +386,13 @@
   var vid = document.getElementById("bgvid");
   var poster = document.getElementById("bgposter");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // serve the asset pair matching the screen: wide 16:9 for landscape, portrait 3:4 otherwise
+  var wide = window.innerWidth > window.innerHeight;
+  poster.src = wide ? poster.dataset.landscape : poster.dataset.portrait;
+  if(vid){
+    vid.src = wide ? vid.dataset.landscape : vid.dataset.portrait;
+    vid.poster = poster.src;
+  }
   if(vid && !reduced){
     vid.addEventListener("canplay", function(){
       vid.style.display = "";
