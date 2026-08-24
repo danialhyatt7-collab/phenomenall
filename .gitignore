@@ -1,3 +1,5 @@
 node_modules/
 data/orders.json
 data/orders.json.tmp
+
+data/auth.json
