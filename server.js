@@ -4,9 +4,10 @@
  * Serves the storefront and provides Shopify-style commerce features:
  *   GET  /api/products        product catalog
  *   GET  /api/orders          all recorded orders (admin)
- *   POST /api/orders          record a new order (called at WhatsApp checkout)
+ *   POST /api/orders          record a new order (called at checkout)
  *   PATCH /api/orders/:id     update order status (pending → confirmed → shipped → delivered)
  *   GET  /api/stats           revenue / order-count summary
+ *   GET  /api/customers       customers derived from the order log
  *   GET  /admin               orders dashboard
  *
  * Orders are persisted to data/orders.json (created on first order).
@@ -163,12 +164,61 @@ const server = http.createServer(async (req, res) => {
     if (p === "/api/stats" && req.method === "GET") {
       const orders = readOrders();
       const active = orders.filter((o) => o.status !== "cancelled");
+      const revenue = active.reduce((s, o) => s + o.total, 0);
+      const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
       return json(res, 200, {
         orders: orders.length,
         pending: orders.filter((o) => o.status === "pending").length,
         units: active.reduce((s, o) => s + o.qty, 0),
-        revenue: active.reduce((s, o) => s + o.total, 0),
+        revenue,
+        aov: active.length ? Math.round(revenue / active.length) : 0,
+        last7: orders.filter((o) => new Date(o.created_at).getTime() >= since).length,
+        by_status: ORDER_STATUSES.reduce((acc, st) => {
+          acc[st] = orders.filter((o) => o.status === st).length;
+          return acc;
+        }, {}),
       });
+    }
+
+    // Customers are derived from the order log — one row per person, keyed on
+    // whichever contact detail they gave (email preferred, then phone, then name).
+    if (p === "/api/customers" && req.method === "GET") {
+      const byKey = new Map();
+      for (const o of readOrders()) {
+        const key = (o.email || o.phone || o.name || "guest").toLowerCase().trim();
+        let c = byKey.get(key);
+        if (!c) {
+          c = {
+            id: key,
+            name: o.name || null,
+            phone: o.phone || null,
+            email: o.email || null,
+            city: o.city || null,
+            address: o.address || null,
+            marketing_opt_in: false,
+            orders: 0,
+            units: 0,
+            spent: 0,
+            first_order: o.created_at,
+            last_order: o.created_at,
+          };
+          byKey.set(key, c);
+        }
+        c.orders += 1;
+        c.name = c.name || o.name;
+        c.phone = c.phone || o.phone;
+        c.email = c.email || o.email;
+        c.address = c.address || o.address;
+        if (o.marketing_opt_in) c.marketing_opt_in = true;
+        if (o.status !== "cancelled") {
+          c.units += o.qty;
+          c.spent += o.total;
+        }
+        if (o.created_at > c.last_order) c.last_order = o.created_at;
+        if (o.created_at < c.first_order) c.first_order = o.created_at;
+      }
+      const list = Array.from(byKey.values()).sort((a, b) => (a.last_order < b.last_order ? 1 : -1));
+      return json(res, 200, list);
     }
 
     if (req.method === "GET") return serveStatic(res, p);
