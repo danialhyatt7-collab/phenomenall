@@ -166,6 +166,18 @@
     object-fit:contain;object-position:center;
   }
   /* the video's edges are pure black, so contain blends into the void on any aspect ratio */
+  /* On portrait screens a contained 3:4 video letterboxes badly, leaving a dead band under
+     the header. Pin it to the top instead and seat the chapter copy over its lower smoke. */
+  @media (max-aspect-ratio: 4/3){
+    /* portrait source is 828x1108, so full-width height = 100vw * 1.338 */
+    .world-fix{--vidh:min(100vh, calc(100vw * 1.338))}
+    #bgvid,#bgposter{top:0;bottom:auto;height:var(--vidh);object-position:center top}
+    .vignette{
+      background:
+        linear-gradient(180deg, rgba(7,6,6,.72) 0, transparent 14vh,
+          transparent calc(var(--vidh) - 26vh), var(--void) var(--vidh));
+    }
+  }
   #frost{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
   .vignette{position:absolute;inset:0;z-index:3;pointer-events:none;
     background:
@@ -175,10 +187,11 @@
   }
   .chapter{
     position:absolute;inset:0;z-index:4;
-    display:grid;place-items:center;text-align:center;
+    /* seated low so the copy never covers the shirt's own printed artwork */
+    display:grid;place-items:end center;text-align:center;
     opacity:0;transform:translateY(24px);
     transition:opacity .5s ease, transform .5s ease;
-    pointer-events:none;padding:0 1.5rem;
+    pointer-events:none;padding:0 1.5rem 6vh;
   }
   .chapter.on{opacity:1;transform:none}
   .chapter > div{position:relative;padding:3rem 2rem}
@@ -186,9 +199,11 @@
     content:"";position:absolute;inset:-30% -40%;z-index:-1;
     background:radial-gradient(closest-side, rgba(7,6,6,.86), rgba(7,6,6,.55) 55%, transparent);
   }
+  @media (max-aspect-ratio: 4/3){
+    /* the copy lives in the band below the video, so the shirt is never covered */
+    .chapter{place-items:center center;padding:min(var(--vidh), 62vh) 1.25rem 9vh}
+  }
   @media(max-width:700px){
-    /* on phones the portrait tee fills the center — seat the copy in the dark lower band */
-    .chapter{place-items:end center;padding-bottom:14vh}
     .chapter > div{padding:1.5rem 1rem}
     .chapter > div::before{inset:-20% -30%}
     .chapter h1, .chapter h2{font-size:clamp(1.9rem,9vw,2.6rem)}
