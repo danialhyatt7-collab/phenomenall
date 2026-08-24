@@ -1,0 +1,10 @@
+{
+  "name": "phenomenall-store",
+  "version": "1.0.0",
+  "description": "One-product high-converting t-shirt store with WhatsApp checkout, three.js hero, and a zero-dependency order-recording backend.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}

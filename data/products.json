@@ -1,0 +1,16 @@
+[
+  {
+    "id": "shot-of-whiskey-tee",
+    "title": "Shot of Whiskey Tee",
+    "description": "Oversized heavyweight tee with a vintage whiskey-label print: \"I'd rather be someone's shot of whiskey than everyone's cup of tea.\"",
+    "price": 2199,
+    "compare_at_price": 3499,
+    "currency": "PKR",
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "color": "Bone cream",
+    "fabric": "240 GSM combed heavyweight cotton",
+    "image": "assets/product.jpg",
+    "checkout": "whatsapp",
+    "whatsapp": "923374841818"
+  }
+]

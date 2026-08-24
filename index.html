@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shot of Whiskey Tee</title>
+<meta name="description" content="Oversized heavyweight tee — I'd rather be someone's shot of whiskey than everyone's cup of tea. Order on WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Oswald:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#0D0A07;
+    --panel:#171108;
+    --panel-2:#1F1810;
+    --cream:#F0E6D2;
+    --cream-dim:#C9BBA0;
+    --muted:#9A8A70;
+    --amber:#D9973F;
+    --amber-deep:#8C5A22;
+    --wa:#25D366;
+    --line:rgba(217,151,63,.22);
+    --display:'Rye',Georgia,serif;
+    --body:'Crimson Pro',Georgia,serif;
+    --util:'Oswald','Arial Narrow',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  body{
+    background:var(--ink);
+    color:var(--cream);
+    font-family:var(--body);
+    font-size:1.125rem;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:var(--ink)}
+  a{color:var(--amber)}
+  img{max-width:100%;display:block}
+  button{font:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+  .label{
+    font-family:var(--util);
+    font-weight:500;
+    text-transform:uppercase;
+    letter-spacing:.22em;
+    font-size:.75rem;
+    color:var(--amber);
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed;inset:0 0 auto 0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:.9rem 1.5rem;
+    background:linear-gradient(to bottom, rgba(13,10,7,.92), rgba(13,10,7,0));
+  }
+  .brand{font-family:var(--display);font-size:1.05rem;color:var(--cream);text-decoration:none;letter-spacing:.04em}
+  .brand em{font-style:normal;color:var(--amber)}
+  nav .nav-cta{
+    font-family:var(--util);font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.16em;
+    color:var(--ink);background:var(--amber);text-decoration:none;
+    padding:.55rem 1.1rem;border-radius:2px;
+  }
+
+  /* ---------- hero ---------- */
+  header{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden}
+  #stage{position:absolute;inset:0;width:100%;height:100%}
+  .hero-copy{
+    position:relative;z-index:2;text-align:center;
+    padding:6.5rem 1.25rem 7rem;
+    pointer-events:none;
+  }
+  .hero-copy > *{pointer-events:auto}
+  .hero-eyebrow{margin-bottom:1.2rem}
+  h1{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(2.4rem, 8.5vw, 6.2rem);
+    line-height:1.02;
+    text-wrap:balance;
+    color:var(--cream);
+    text-shadow:0 2px 40px rgba(13,10,7,.85), 0 0 90px rgba(217,151,63,.18);
+  }
+  h1 .amber{color:var(--amber)}
+  .hero-sub{
+    max-width:34ch;margin:1.4rem auto 0;
+    font-size:clamp(1.05rem,2.2vw,1.3rem);
+    color:var(--cream-dim);font-style:italic;
+  }
+  .hero-price{
+    display:flex;align-items:baseline;gap:.9rem;justify-content:center;
+    margin-top:1.6rem;font-family:var(--util);
+  }
+  .hero-price .now{font-size:2rem;font-weight:600;color:var(--cream);font-variant-numeric:tabular-nums}
+  .hero-price .was{font-size:1.1rem;color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
+  .hero-price .off{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);background:var(--amber);padding:.3rem .6rem;border-radius:2px}
+  .hero-actions{margin-top:1.8rem;display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+  .btn-wa{
+    display:inline-flex;align-items:center;gap:.6rem;
+    font-family:var(--util);font-weight:600;font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;
+    background:var(--wa);color:#062b12;text-decoration:none;border:none;border-radius:3px;
+    padding:1rem 1.7rem;
+    box-shadow:0 0 0 1px rgba(37,211,102,.4), 0 12px 40px rgba(37,211,102,.25);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .btn-wa:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(37,211,102,.6), 0 18px 50px rgba(37,211,102,.35)}
+  .btn-ghost{
+    display:inline-flex;align-items:center;
+    font-family:var(--util);font-weight:500;font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--cream);text-decoration:none;
+    padding:1rem 1.5rem;border:1px solid var(--line);border-radius:3px;background:rgba(23,17,8,.55);
+    transition:border-color .18s ease;
+  }
+  .btn-ghost:hover{border-color:var(--amber)}
+  .wa-ic{width:1.15em;height:1.15em;flex:none}
+  .scroll-hint{
+    position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);z-index:2;
+    font-family:var(--util);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+  /* ---------- ticker ---------- */
+  .ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;background:var(--panel)}
+  .ticker-track{display:flex;gap:3rem;white-space:nowrap;padding:.8rem 0;animation:slide 26s linear infinite;width:max-content}
+  .ticker span{font-family:var(--util);font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;color:var(--cream-dim)}
+  .ticker b{color:var(--amber);font-weight:500}
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  /* ---------- sections ---------- */
+  section{padding:5.5rem 1.5rem}
+  .wrap{max-width:1080px;margin:0 auto}
+  h2{
+    font-family:var(--display);font-weight:400;
+    font-size:clamp(1.7rem,4.5vw,2.7rem);
+    line-height:1.1;text-wrap:balance;margin:.6rem 0 1rem;
+  }
+  .section-head{max-width:60ch;margin-bottom:2.5rem}
+  .section-head p{color:var(--cream-dim)}
+
+  /* details */
+  .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+  .detail{background:var(--panel);padding:1.8rem 1.5rem}
+  .detail h3{font-family:var(--util);font-weight:600;font-size:.85rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:.6rem}
+  .detail p{color:var(--cream-dim);font-size:1.02rem}
+
+  /* order */
+  #order{background:linear-gradient(180deg,var(--ink),#120D07 40%,var(--ink))}
+  .order-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:3rem;align-items:start}
+  @media(max-width:820px){.order-grid{grid-template-columns:1fr}}
+  .order-photo{
+    position:relative;border:1px solid var(--line);background:var(--panel);
+    padding:1.2rem;
+  }
+  .order-photo img{width:100%;height:auto}
+  .order-photo::after{
+    content:"№ 001 — SMALL BATCH";
+    position:absolute;top:1.9rem;left:-0.6rem;
+    font-family:var(--util);font-size:.65rem;letter-spacing:.26em;color:var(--ink);
+    background:var(--amber);padding:.35rem .7rem;
+  }
+  fieldset{border:none;margin-top:1.6rem}
+  legend{font-family:var(--util);font-weight:500;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem}
+  .chips{display:flex;gap:.6rem;flex-wrap:wrap}
+  .chip{
+    font-family:var(--util);font-size:.9rem;letter-spacing:.08em;
+    background:var(--panel);color:var(--cream);border:1px solid var(--line);border-radius:2px;
+    padding:.6rem 1.05rem;transition:all .15s ease;
+  }
+  .chip[aria-pressed="true"]{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+  .qty{display:flex;align-items:center;gap:0;border:1px solid var(--line);width:max-content;border-radius:2px;overflow:hidden}
+  .qty button{background:var(--panel);color:var(--cream);border:none;width:2.8rem;height:2.8rem;font-size:1.2rem}
+  .qty button:hover{color:var(--amber)}
+  .qty output{font-family:var(--util);width:3rem;text-align:center;font-variant-numeric:tabular-nums;font-size:1.05rem}
+  .field{margin-top:1.4rem}
+  .field label{display:block;font-family:var(--util);font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:.55rem}
+  .field input{
+    width:100%;background:var(--panel);border:1px solid var(--line);border-radius:2px;
+    color:var(--cream);font-family:var(--body);font-size:1.05rem;padding:.8rem .95rem;
+  }
+  .field input::placeholder{color:var(--muted)}
+  .field input:focus{outline:none;border-color:var(--amber)}
+  .total-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-top:1px dashed var(--line);margin-top:1.8rem;padding-top:1.2rem;
+    font-family:var(--util);
+  }
+  .total-row .t-label{font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .total-row .t-val{font-size:1.7rem;font-weight:600;font-variant-numeric:tabular-nums}
+  .preview{
+    margin-top:1.4rem;background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--wa);
+    border-radius:2px;padding:1rem 1.1rem;font-size:.98rem;color:var(--cream-dim);
+  }
+  .preview .label{color:var(--wa);display:block;margin-bottom:.4rem}
+  .order-cta{margin-top:1.5rem;width:100%;justify-content:center;font-size:1.05rem;padding:1.15rem}
+  .order-note{margin-top:.8rem;font-size:.92rem;color:var(--muted);text-align:center}
+
+  /* reviews */
+  .reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem}
+  .review{background:var(--panel);border:1px solid var(--line);padding:1.6rem;border-radius:2px}
+  .stars{color:var(--amber);letter-spacing:.15em;font-size:.95rem}
+  .review p{margin:.8rem 0 1rem;color:var(--cream-dim);font-style:italic}
+  .review cite{font-family:var(--util);font-style:normal;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+  /* faq */
+  details.faq{border-bottom:1px solid var(--line)}
+  details.faq summary{
+    cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;
+    padding:1.2rem 0;font-family:var(--util);font-size:1rem;letter-spacing:.06em;
+  }
+  details.faq summary::-webkit-details-marker{display:none}
+  details.faq summary::after{content:"+";color:var(--amber);font-size:1.3rem}
+  details.faq[open] summary::after{content:"–"}
+  details.faq div{padding:0 0 1.3rem;color:var(--cream-dim);max-width:65ch}
+
+  footer{border-top:1px solid var(--line);padding:2.5rem 1.5rem 6rem;text-align:center;color:var(--muted);font-size:.95rem}
+  footer .brand{display:inline-block;margin-bottom:.6rem;font-size:1.2rem}
+
+  /* sticky mobile bar */
+  .sticky-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    display:none;align-items:center;justify-content:space-between;gap:1rem;
+    background:rgba(13,10,7,.94);border-top:1px solid var(--line);
+    padding:.7rem 1rem;backdrop-filter:blur(8px);
+  }
+  .sticky-bar .p{font-family:var(--util);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+  .sticky-bar .btn-wa{padding:.7rem 1.2rem;font-size:.82rem}
+  @media(max-width:700px){.sticky-bar{display:flex}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="#top">Phenomen<em>All</em></a>
+  <a class="nav-cta" href="#order">Order Now</a>
+</nav>
+
+<header id="top">
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div class="hero-copy">
+    <p class="label hero-eyebrow">Small-batch drop · Oversized fit</p>
+    <h1>Someone's <span class="amber">Shot&nbsp;of&nbsp;Whiskey</span>,<br>never everyone's cup of tea.</h1>
+    <p class="hero-sub">A heavyweight oversized tee with a vintage whiskey-label print, for people who'd rather be strong &amp; rare than mild &amp; everywhere.</p>
+    <div class="hero-price">
+      <span class="was">Rs 3,499</span>
+      <span class="now">Rs 2,199</span>
+      <span class="off">37% off — this drop only</span>
+    </div>
+    <div class="hero-actions">
+      <a class="btn-wa" href="#order">
+        <svg class="wa-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.4-2.9c-.3-.4.3-.4.7-1.3 0-.2 0-.3-.1-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.1 2.8c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3Z"/></svg>
+        Order on WhatsApp
+      </a>
+      <a class="btn-ghost" href="#story">The Story</a>
+    </div>
+  </div>
+  <p class="scroll-hint">Scroll</p>
+</header>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span><b>★</b> 240 GSM Heavyweight Cotton</span><span><b>★</b> Oversized Drop-Shoulder Fit</span><span><b>★</b> Cracked Vintage Print</span><span><b>★</b> Cash on Delivery</span><span><b>★</b> Ships in 24 Hours</span><span><b>★</b> Order in 30 Seconds on WhatsApp</span>
+    <span><b>★</b> 240 GSM Heavyweight Cotton</span><span><b>★</b> Oversized Drop-Shoulder Fit</span><span><b>★</b> Cracked Vintage Print</span><span><b>★</b> Cash on Delivery</span><span><b>★</b> Ships in 24 Hours</span><span><b>★</b> Order in 30 Seconds on WhatsApp</span>
+  </div>
+</div>
+
+<section id="story">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">Why this tee</p>
+      <h2>Poured heavy, worn easy.</h2>
+      <p>One product. One statement. We cut this tee oversized on 240 GSM combed cotton — the kind that hangs with weight instead of clinging — and pressed the label art with a soft-hand cracked finish so it looks like it's been yours for years.</p>
+    </div>
+    <div class="detail-grid">
+      <div class="detail"><h3>Fabric</h3><p>240 GSM combed heavyweight cotton, bio-washed so it's broken-in from day one. No shine, no cling.</p></div>
+      <div class="detail"><h3>Fit</h3><p>True oversized: dropped shoulders, boxy body, roomy sleeve. Size down one if you want it relaxed instead of baggy.</p></div>
+      <div class="detail"><h3>Print</h3><p>Vintage whiskey-label artwork in high-density soft ink — crack-resistant through wash after wash.</p></div>
+      <div class="detail"><h3>Colour</h3><p>Bone cream. Neutral enough for anything, warm enough to not look like every white tee you own.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">Order in 30 seconds</p>
+      <h2>Pick a size. Tap. Done on WhatsApp.</h2>
+      <p>No accounts, no card forms. Your order opens as a ready-made WhatsApp message — send it and pay cash on delivery.</p>
+    </div>
+    <div class="order-grid">
+      <figure class="order-photo">
+        <img src="assets/product.jpg" alt="Cream oversized t-shirt with vintage whiskey-label print reading: I'd rather be someone's shot of whiskey than everyone's cup of tea" width="1100" height="1366" loading="lazy">
+      </figure>
+      <form id="order-form">
+        <fieldset>
+          <legend>Size</legend>
+          <div class="chips" id="sizes" role="group" aria-label="Choose size">
+            <button type="button" class="chip" aria-pressed="false">S</button>
+            <button type="button" class="chip" aria-pressed="true">M</button>
+            <button type="button" class="chip" aria-pressed="false">L</button>
+            <button type="button" class="chip" aria-pressed="false">XL</button>
+            <button type="button" class="chip" aria-pressed="false">XXL</button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Quantity</legend>
+          <div class="qty">
+            <button type="button" id="q-minus" aria-label="Decrease quantity">−</button>
+            <output id="q-out" aria-live="polite">1</output>
+            <button type="button" id="q-plus" aria-label="Increase quantity">+</button>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="f-name">Your name <span style="color:var(--muted)">(optional)</span></label>
+          <input id="f-name" type="text" autocomplete="name" placeholder="So we know who's ordering">
+        </div>
+        <div class="field">
+          <label for="f-city">City <span style="color:var(--muted)">(optional)</span></label>
+          <input id="f-city" type="text" autocomplete="address-level2" placeholder="For delivery estimate">
+        </div>
+        <div class="total-row">
+          <span class="t-label">Total · Cash on Delivery</span>
+          <span class="t-val" id="total">Rs 2,199</span>
+        </div>
+        <div class="preview">
+          <span class="label">Your WhatsApp message</span>
+          <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 2,199).</span>
+        </div>
+        <button type="submit" class="btn-wa order-cta">
+          <svg class="wa-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.4-2.9c-.3-.4.3-.4.7-1.3 0-.2 0-.3-.1-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.1 2.8c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3Z"/></svg>
+          Send Order on WhatsApp
+        </button>
+        <p class="order-note">Opens WhatsApp with your order pre-written · 0337 4841818</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">From the first batch</p>
+      <h2>People keep ordering a second one.</h2>
+    </div>
+    <div class="reviews">
+      <article class="review"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><p>"The weight of this fabric is unreal for the price. Print looks properly vintage, not printed-yesterday vintage."</p><cite>Hamza · Lahore</cite></article>
+      <article class="review"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><p>"Ordered on WhatsApp at midnight, it was at my door in two days. Easiest checkout I've ever used."</p><cite>Areeba · Karachi</cite></article>
+      <article class="review"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><p>"True oversized fit. I'm usually L, took the M like they suggested and it hangs perfectly."</p><cite>Daniyal · Islamabad</cite></article>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">Good to know</p>
+      <h2>Questions, answered straight.</h2>
+    </div>
+    <details class="faq"><summary>How do I pay?</summary><div>Cash on delivery, nationwide. You pay the rider when the tee is in your hands. Nothing upfront.</div></details>
+    <details class="faq"><summary>How does WhatsApp ordering work?</summary><div>Pick your size and quantity above, tap the green button, and WhatsApp opens with your order already written. Send it, we confirm your address, and it ships within 24 hours.</div></details>
+    <details class="faq"><summary>What if the size is wrong?</summary><div>Message us within 7 days and we'll swap it free. Keep the tags on and unwashed.</div></details>
+    <details class="faq"><summary>Will the print crack or fade?</summary><div>The "cracked" texture is the design — it's printed that way and stays that way. High-density soft ink holds through regular machine washes (wash inside-out, skip the dryer).</div></details>
+    <details class="faq"><summary>How long is delivery?</summary><div>24-hour dispatch. Major cities in 2–3 days, everywhere else in 3–5.</div></details>
+  </div>
+</section>
+
+<footer>
+  <a class="brand" href="#top">Phenomen<em>All</em></a>
+  <p>One tee, done right. · Order &amp; support on WhatsApp: <a href="https://wa.me/923374841818">0337 4841818</a></p>
+  <p>© 2026 PhenomenAll. All rights reserved.</p>
+</footer>
+
+<div class="sticky-bar">
+  <span class="p">Rs 2,199</span>
+  <a class="btn-wa" href="#order">Order on WhatsApp</a>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var PRICE = 2199, WA = "923374841818", PRODUCT = "Shot of Whiskey tee";
+  var size = "M", qty = 1;
+
+  var fmt = function(n){ return "Rs " + n.toLocaleString("en-PK"); };
+  var $ = function(s){ return document.querySelector(s); };
+
+  function message(){
+    var name = $("#f-name").value.trim();
+    var city = $("#f-city").value.trim();
+    var m = "Hi! I'd like to order the " + PRODUCT + " — Size " + size + " × " + qty + " (" + fmt(PRICE*qty) + ").";
+    if(name) m += " Name: " + name + ".";
+    if(city) m += " City: " + city + ".";
+    return m;
+  }
+  function render(){
+    $("#total").textContent = fmt(PRICE*qty);
+    $("#q-out").textContent = qty;
+    $("#msg-preview").textContent = message();
+  }
+  document.querySelectorAll("#sizes .chip").forEach(function(chip){
+    chip.addEventListener("click", function(){
+      document.querySelectorAll("#sizes .chip").forEach(function(c){ c.setAttribute("aria-pressed","false"); });
+      chip.setAttribute("aria-pressed","true");
+      size = chip.textContent.trim();
+      render();
+    });
+  });
+  $("#q-minus").addEventListener("click", function(){ if(qty>1){ qty--; render(); } });
+  $("#q-plus").addEventListener("click", function(){ if(qty<10){ qty++; render(); } });
+  $("#f-name").addEventListener("input", render);
+  $("#f-city").addEventListener("input", render);
+
+  $("#order-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var payload = {
+      product: PRODUCT, size: size, qty: qty,
+      unit_price: PRICE, total: PRICE*qty,
+      name: $("#f-name").value.trim() || null,
+      city: $("#f-city").value.trim() || null
+    };
+    // Record the order in the backend when this store is served by server.js.
+    // On static hosting this fails silently — WhatsApp remains the order channel.
+    try{
+      fetch("/api/orders", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      }).catch(function(){});
+    }catch(err){}
+    window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(message()), "_blank", "noopener");
+  });
+  render();
+
+  /* ---------- three.js hero: cloth-waving tee in ember dust ---------- */
+  var canvas = document.getElementById("stage");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!window.THREE || !window.WebGLRenderingContext){ return; }
+  var renderer;
+  try{
+    renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true});
+  }catch(err){ return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0d0a07, 0.14);
+  var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
+  camera.position.set(0, 0, 6.2);
+
+  // Cloth plane with the product texture, waved in the vertex shader
+  var texLoader = new THREE.TextureLoader();
+  var uniforms = {
+    uTime:{value:0},
+    uTex:{value:null},
+    uMouse:{value:new THREE.Vector2(0,0)},
+    uReveal:{value:0}
+  };
+  texLoader.load("assets/product.jpg", function(tex){
+    tex.colorSpace = THREE.SRGBColorSpace;
+    uniforms.uTex.value = tex;
+  });
+  var clothMat = new THREE.ShaderMaterial({
+    uniforms: uniforms,
+    transparent: true,
+    vertexShader: [
+      "uniform float uTime; uniform vec2 uMouse;",
+      "varying vec2 vUv; varying float vWave;",
+      "void main(){",
+      "  vUv = uv;",
+      "  vec3 p = position;",
+      "  float w1 = sin(p.x*2.4 + uTime*1.1)*0.09;",
+      "  float w2 = sin(p.y*3.1 - uTime*0.8)*0.07;",
+      "  float w3 = sin((p.x+p.y)*1.6 + uTime*0.6)*0.05;",
+      "  float edge = smoothstep(0.0,0.9,length(uv-0.5)*1.6);",
+      "  p.z += (w1+w2+w3)*(0.35+edge);",
+      "  p.x += uMouse.x*0.12*edge; p.y += uMouse.y*0.08*edge;",
+      "  vWave = p.z;",
+      "  gl_Position = projectionMatrix * modelViewMatrix * vec4(p,1.0);",
+      "}"
+    ].join("\n"),
+    fragmentShader: [
+      "uniform sampler2D uTex; uniform float uReveal;",
+      "varying vec2 vUv; varying float vWave;",
+      "void main(){",
+      "  vec4 c = texture2D(uTex, vUv);",
+      "  // knock back the flat studio backdrop toward transparency",
+      "  float isBg = smoothstep(0.02,0.005, abs(c.r-c.g)+abs(c.g-c.b)) * smoothstep(0.78,0.62,c.r);",
+      "  float alpha = (1.0 - isBg*0.92) * uReveal;",
+      "  vec3 lit = c.rgb * (0.92 + vWave*0.55);",
+      "  lit = mix(lit, lit*vec3(1.05,0.98,0.88), 0.35);",
+      "  gl_FragColor = vec4(lit, alpha);",
+      "}"
+    ].join("\n")
+  });
+  var cloth = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.23, 72, 72), clothMat);
+  cloth.position.set(0, 0.1, 0);
+  scene.add(cloth);
+
+  // Ember dust
+  var N = 320, pos = new Float32Array(N*3), spd = new Float32Array(N);
+  for(var i=0;i<N;i++){
+    pos[i*3]   = (Math.random()-0.5)*10;
+    pos[i*3+1] = (Math.random()-0.5)*7;
+    pos[i*3+2] = (Math.random()-0.5)*4 - 0.5;
+    spd[i] = 0.15 + Math.random()*0.5;
+  }
+  var pgeo = new THREE.BufferGeometry();
+  pgeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  var embers = new THREE.Points(pgeo, new THREE.PointsMaterial({
+    color:0xd9973f, size:0.035, transparent:true, opacity:0.75,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  }));
+  scene.add(embers);
+
+  var mouse = {x:0,y:0}, target = {x:0,y:0};
+  window.addEventListener("pointermove", function(e){
+    target.x = (e.clientX/window.innerWidth - 0.5)*2;
+    target.y = -(e.clientY/window.innerHeight - 0.5)*2;
+  }, {passive:true});
+
+  function resize(){
+    var w = canvas.clientWidth || window.innerWidth;
+    var h = canvas.clientHeight || window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    // pull the camera back on narrow screens so the tee stays framed
+    camera.position.z = w < 700 ? 8.2 : 6.2;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  var clock = new THREE.Clock();
+  function frame(){
+    var t = clock.getElapsedTime();
+    uniforms.uTime.value = reduced ? 0 : t;
+    uniforms.uReveal.value = Math.min(1, uniforms.uReveal.value + 0.02);
+    mouse.x += (target.x-mouse.x)*0.05;
+    mouse.y += (target.y-mouse.y)*0.05;
+    uniforms.uMouse.value.set(mouse.x, mouse.y);
+    cloth.rotation.y = mouse.x*0.16;
+    cloth.rotation.x = -mouse.y*0.1;
+    if(!reduced){
+      cloth.position.y = 0.1 + Math.sin(t*0.7)*0.06;
+      var arr = pgeo.attributes.position.array;
+      for(var i=0;i<N;i++){
+        arr[i*3+1] += spd[i]*0.004;
+        if(arr[i*3+1] > 3.6) arr[i*3+1] = -3.6;
+      }
+      pgeo.attributes.position.needsUpdate = true;
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
