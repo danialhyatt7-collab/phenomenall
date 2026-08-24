@@ -101,6 +101,13 @@
     content:"";position:absolute;inset:-30% -40%;z-index:-1;
     background:radial-gradient(closest-side, rgba(7,6,6,.86), rgba(7,6,6,.55) 55%, transparent);
   }
+  @media(max-width:700px){
+    /* on phones the portrait tee fills the center — seat the copy in the dark lower band */
+    .chapter{place-items:end center;padding-bottom:14vh}
+    .chapter > div{padding:1.5rem 1rem}
+    .chapter > div::before{inset:-20% -30%}
+    .chapter h1, .chapter h2{font-size:clamp(1.9rem,9vw,2.6rem)}
+  }
   .chapter .mono{display:block;margin-bottom:1.1rem}
   .chapter h2, .chapter h1{
     font-weight:700;letter-spacing:-.02em;line-height:1.04;text-wrap:balance;
