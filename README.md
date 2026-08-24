@@ -1,4 +1,4 @@
-# PhenomenAll — Shot of Whiskey Tee
+# Phenomenal — Shot of Whiskey Tee
 
 A one-product, high-converting store for an oversized heavyweight tee, with:
 

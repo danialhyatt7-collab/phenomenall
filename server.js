@@ -1,5 +1,5 @@
 /**
- * PhenomenAll store backend — zero-dependency Node server.
+ * Phenomenal store backend — zero-dependency Node server.
  *
  * Serves the storefront and provides Shopify-style commerce features:
  *   GET  /api/products        product catalog
@@ -174,6 +174,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log("PhenomenAll store running → http://localhost:" + PORT);
+  console.log("Phenomenal store running → http://localhost:" + PORT);
   console.log("Admin dashboard        → http://localhost:" + PORT + "/admin");
 });
