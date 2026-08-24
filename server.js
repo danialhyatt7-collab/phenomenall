@@ -126,6 +126,9 @@ const server = http.createServer(async (req, res) => {
         total: 2199 * qty,
         name: body.name ? String(body.name).slice(0, 120) : null,
         city: body.city ? String(body.city).slice(0, 120) : null,
+        address: body.address ? String(body.address).slice(0, 240) : null,
+        email: body.email ? String(body.email).slice(0, 120) : null,
+        marketing_opt_in: body.marketing_opt_in === true,
         channel: "whatsapp",
         status: "pending",
       };
