@@ -88,7 +88,7 @@
           '<td>'+esc(o.size)+'</td>'+
           '<td>'+o.qty+'</td>'+
           '<td>'+fmt(o.total)+'</td>'+
-          '<td>'+esc([o.name,o.city].filter(Boolean).join(" · ") || "—")+'</td>'+
+          '<td>'+esc([o.name,o.phone,o.email].filter(Boolean).join(" · ") || "—")+'</td>'+
           '<td><span class="pill '+esc(o.status)+'">'+esc(o.status)+'</span> '+
               '<select data-id="'+esc(o.id)+'" aria-label="Update status">'+opts+'</select></td>'+
         '</tr>';

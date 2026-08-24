@@ -36,6 +36,8 @@ const MIME = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
   ".woff2": "font/woff2",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
 };
 
 const ORDER_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
@@ -125,7 +127,7 @@ const server = http.createServer(async (req, res) => {
         unit_price: 2199,
         total: 2199 * qty,
         name: body.name ? String(body.name).slice(0, 120) : null,
-        city: body.city ? String(body.city).slice(0, 120) : null,
+        phone: body.phone ? String(body.phone).slice(0, 40) : null,
         address: body.address ? String(body.address).slice(0, 240) : null,
         email: body.email ? String(body.email).slice(0, 120) : null,
         marketing_opt_in: body.marketing_opt_in === true,

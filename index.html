@@ -303,8 +303,8 @@
           <input id="f-name" type="text" autocomplete="name" placeholder="So we know who's ordering">
         </div>
         <div class="field">
-          <label for="f-city">City</label>
-          <input id="f-city" type="text" autocomplete="address-level2" placeholder="For delivery estimate">
+          <label for="f-phone">Contact number</label>
+          <input id="f-phone" type="tel" autocomplete="tel" placeholder="For delivery coordination">
         </div>
         <div class="field">
           <label for="f-address">Delivery address</label>
@@ -370,13 +370,13 @@
 
   function message(){
     var name = $("#f-name").value.trim();
-    var city = $("#f-city").value.trim();
+    var phone = $("#f-phone").value.trim();
     var address = $("#f-address").value.trim();
     var email = $("#f-email").value.trim();
     var m = "Hi! I'd like to order the " + PRODUCT + " — Size " + size + " × " + qty + " (" + fmt(PRICE*qty) + ").";
     if(name) m += " Name: " + name + ".";
     if(address) m += " Address: " + address + ".";
-    if(city) m += " City: " + city + ".";
+    if(phone) m += " Contact: " + phone + ".";
     if(email) m += " Email: " + email + ".";
     if($("#f-optin").checked) m += " (Keep me posted on new drops.)";
     return m;
@@ -396,7 +396,7 @@
   });
   $("#q-minus").addEventListener("click", function(){ if(qty>1){ qty--; render(); } });
   $("#q-plus").addEventListener("click", function(){ if(qty<10){ qty++; render(); } });
-  ["f-name","f-city","f-address","f-email"].forEach(function(id){
+  ["f-name","f-phone","f-address","f-email"].forEach(function(id){
     document.getElementById(id).addEventListener("input", render);
   });
   $("#f-optin").addEventListener("change", render);
@@ -406,7 +406,7 @@
       product: PRODUCT, size: size, qty: qty,
       unit_price: PRICE, total: PRICE*qty,
       name: $("#f-name").value.trim() || null,
-      city: $("#f-city").value.trim() || null,
+      phone: $("#f-phone").value.trim() || null,
       address: $("#f-address").value.trim() || null,
       email: $("#f-email").value.trim() || null,
       marketing_opt_in: $("#f-optin").checked
