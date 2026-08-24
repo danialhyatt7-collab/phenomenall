@@ -1,387 +1,489 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PHENOMENAL — Shot of Whisky Tee</title>
-  <meta name="description" content="I'd rather be someone's shot of whiskey than everyone's cup of tea. The SHOT OF WHISKY oversized tee — bold, vintage, unapologetic. Only from PHENOMENAL." />
-  <meta name="theme-color" content="#0e0b09" />
-  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
-  <meta property="og:image" content="assets/img/product-main.jpg" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHENOMENAL</title>
+<meta name="description" content="PHENOMENAL — one tee, done properly. Oversized heavyweight tee with a vintage whiskey-label print.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --void:#070606;
+    --panel:#100E0C;
+    --ice:#F2EFE9;
+    --ice-blue:#C9C2B4;
+    --dim:#77716A;
+    --line:rgba(201,194,180,.16);
+    --wa:#F2EFE9;
+    --sans:'Archivo',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'IBM Plex Mono','SF Mono',Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  body{
+    background:var(--void);
+    color:var(--ice);
+    font-family:var(--sans);
+    font-size:1rem;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--ice-blue);color:var(--void)}
+  a{color:var(--ice)}
+  img{max-width:100%;display:block}
+  button{font:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--ice-blue);outline-offset:3px}
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="PHENOMENAL — Shot of Whisky Tee" />
-  <meta property="og:description" content="Bold, vintage, unapologetic. The SHOT OF WHISKY oversized tee." />
-  <meta property="og:type" content="product" />
+  .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ice-blue)}
+  .dim{color:var(--dim)}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;0,900;1,500;1,600&family=Pinyon+Script&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  /* ---------- fixed chrome ---------- */
+  .chrome{position:fixed;inset:0;z-index:40;pointer-events:none}
+  .chrome > *{pointer-events:auto}
+  .brand{
+    position:absolute;top:1.4rem;left:1.6rem;
+    font-weight:700;font-size:.95rem;letter-spacing:.32em;text-decoration:none;color:var(--ice);
+  }
+  .chrome-cta{
+    position:absolute;top:1.15rem;right:1.6rem;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--void);background:var(--ice);text-decoration:none;
+    padding:.6rem 1.1rem;border-radius:2px;
+  }
+  .chapters{
+    position:absolute;left:1.6rem;bottom:1.6rem;
+    display:flex;flex-direction:column;gap:.55rem;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;color:var(--dim);
+  }
+  .chapters span{transition:color .3s ease}
+  .chapters span.on{color:var(--ice)}
+  .scroll-cue{
+    position:absolute;right:1.6rem;bottom:1.6rem;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;color:var(--dim);
+    writing-mode:vertical-rl;
+  }
+  @media(max-width:700px){
+    .chapters{display:none}
+    .scroll-cue{display:none}
+  }
+
+  /* ---------- immersive scroll world ---------- */
+  #world{position:relative;height:400vh}
+  .world-fix{position:sticky;top:0;height:100vh;overflow:hidden}
+  #bgvid,#bgposter{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    min-width:100%;min-height:100%;object-fit:cover;
+    width:auto;height:auto;
+  }
+  #frost{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+  .vignette{position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:radial-gradient(ellipse at center, transparent 45%, rgba(7,6,6,.75) 100%);
+  }
+  .chapter{
+    position:absolute;inset:0;z-index:4;
+    display:grid;place-items:center;text-align:center;
+    opacity:0;transform:translateY(24px);
+    transition:opacity .5s ease, transform .5s ease;
+    pointer-events:none;padding:0 1.5rem;
+  }
+  .chapter.on{opacity:1;transform:none}
+  .chapter > div{position:relative;padding:3rem 2rem}
+  .chapter > div::before{
+    content:"";position:absolute;inset:-30% -40%;z-index:-1;
+    background:radial-gradient(closest-side, rgba(7,6,6,.86), rgba(7,6,6,.55) 55%, transparent);
+  }
+  .chapter .mono{display:block;margin-bottom:1.1rem}
+  .chapter h2, .chapter h1{
+    font-weight:700;letter-spacing:-.02em;line-height:1.04;text-wrap:balance;
+    font-size:clamp(2.2rem,7vw,5rem);
+    text-shadow:0 2px 50px rgba(7,6,6,.9);
+  }
+  .chapter p{max-width:44ch;margin:1.2rem auto 0;color:var(--ice);opacity:.85;font-size:clamp(.98rem,2vw,1.15rem);text-shadow:0 1px 30px rgba(7,6,6,.9)}
+  .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:1rem;letter-spacing:.12em;color:var(--ice-blue)}
+  .chapter .price-line s{color:var(--dim);margin-left:.8rem}
+
+  /* ---------- below the world ---------- */
+  section{position:relative;background:var(--void);padding:6rem 1.5rem;z-index:5}
+  .wrap{max-width:1060px;margin:0 auto}
+  .sec-h{font-weight:700;letter-spacing:-.02em;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.12;text-wrap:balance;margin:.8rem 0 1rem}
+  .sec-sub{color:var(--dim);max-width:56ch}
+
+  .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:2.4rem}
+  .spec{background:var(--panel);padding:1.7rem 1.5rem}
+  .spec .mono{display:block;margin-bottom:.55rem}
+  .spec p{color:var(--ice);opacity:.8;font-size:.95rem}
+
+  /* order */
+  #order{border-top:1px solid var(--line)}
+  .order-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:3.5rem;align-items:start;margin-top:2.5rem}
+  @media(max-width:860px){.order-grid{grid-template-columns:1fr}}
+  .order-photo{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#000}
+  .order-photo img{width:100%;height:auto}
+  fieldset{border:none;margin-top:1.6rem}
+  legend{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ice-blue);margin-bottom:.7rem}
+  .chips{display:flex;gap:.55rem;flex-wrap:wrap}
+  .chip{
+    font-size:.92rem;font-weight:500;
+    background:transparent;color:var(--ice);border:1px solid var(--line);border-radius:3px;
+    padding:.6rem 1.05rem;transition:all .13s ease;
+  }
+  .chip:hover{border-color:var(--ice-blue)}
+  .chip[aria-pressed="true"]{background:var(--ice);color:var(--void);border-color:var(--ice)}
+  .qty{display:flex;align-items:center;border:1px solid var(--line);width:max-content;border-radius:3px;overflow:hidden}
+  .qty button{background:none;border:none;width:2.7rem;height:2.7rem;font-size:1.15rem;color:var(--ice)}
+  .qty button:hover{background:var(--panel)}
+  .qty output{width:2.8rem;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+  .field{margin-top:1.4rem}
+  .field label{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ice-blue);margin-bottom:.5rem}
+  .field label em{font-style:normal;color:var(--dim)}
+  .field input{
+    width:100%;background:var(--panel);border:1px solid var(--line);border-radius:3px;
+    color:var(--ice);font:inherit;padding:.8rem 1rem;
+  }
+  .field input::placeholder{color:var(--dim)}
+  .field input:focus{outline:none;border-color:var(--ice-blue)}
+  .total-row{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:1.8rem;padding-top:1.3rem}
+  .total-row .t-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .total-row .t-val{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .preview{
+    margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ice-blue);
+    border-radius:3px;padding:1rem 1.1rem;font-size:.92rem;color:var(--ice);opacity:.85;
+  }
+  .preview .mono{display:block;margin-bottom:.4rem;color:var(--ice-blue)}
+  .btn-wa{
+    display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+    font-weight:600;font-size:1rem;
+    background:var(--ice);color:var(--void);text-decoration:none;border:none;border-radius:3px;
+    padding:1.05rem 1.7rem;width:100%;margin-top:1.4rem;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-wa:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(242,239,233,.18)}
+  .wa-ic{width:1.1em;height:1.1em;flex:none}
+  .order-note{margin-top:.8rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:center}
+
+  /* faq */
+  details.faq{border-bottom:1px solid var(--line)}
+  details.faq summary{
+    cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;
+    padding:1.15rem 0;font-weight:500;font-size:1rem;
+  }
+  details.faq summary::-webkit-details-marker{display:none}
+  details.faq summary::after{content:"+";color:var(--ice-blue);font-size:1.25rem;font-weight:400}
+  details.faq[open] summary::after{content:"–"}
+  details.faq div{padding:0 0 1.3rem;color:var(--dim);max-width:62ch;font-size:.95rem}
+
+  footer{background:var(--void);border-top:1px solid var(--line);padding:2.6rem 1.5rem 6.5rem;text-align:center;color:var(--dim);font-size:.88rem;position:relative;z-index:5}
+  footer .f-brand{font-weight:700;letter-spacing:.32em;color:var(--ice);display:inline-block;margin-bottom:.6rem;text-decoration:none}
+  footer a{color:var(--dim)}
+
+  .sticky-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    display:none;align-items:center;justify-content:space-between;gap:1rem;
+    background:rgba(7,6,6,.9);border-top:1px solid var(--line);
+    padding:.7rem 1rem;backdrop-filter:blur(10px);
+  }
+  .sticky-bar .p{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+  .sticky-bar .btn-wa{width:auto;margin:0;padding:.7rem 1.2rem;font-size:.88rem}
+  @media(max-width:700px){.sticky-bar{display:flex}}
+</style>
 </head>
 <body>
-  <!-- Announcement bar -->
-  <div class="announce" id="announce">
-    <div class="announce__track">
-      <span>FREE SHIPPING OVER $75</span><span aria-hidden="true">✦</span>
-      <span>30-DAY NO-NONSENSE RETURNS</span><span aria-hidden="true">✦</span>
-      <span>LIMITED VINTAGE DROP</span><span aria-hidden="true">✦</span>
-      <span>PRINTED &amp; SHIPPED IN THE USA</span><span aria-hidden="true">✦</span>
-      <span>FREE SHIPPING OVER $75</span><span aria-hidden="true">✦</span>
-      <span>30-DAY NO-NONSENSE RETURNS</span><span aria-hidden="true">✦</span>
-      <span>LIMITED VINTAGE DROP</span><span aria-hidden="true">✦</span>
-      <span>PRINTED &amp; SHIPPED IN THE USA</span><span aria-hidden="true">✦</span>
+
+<div class="chrome">
+  <a class="brand" href="#top">PHENOMENAL</a>
+  <a class="chrome-cta" href="#order">Order</a>
+  <div class="chapters" aria-hidden="true">
+    <span data-ch="0">01 / THE STATEMENT</span>
+    <span data-ch="1">02 / THE TEE</span>
+    <span data-ch="2">03 / THE DROP</span>
+  </div>
+  <p class="scroll-cue">SCROLL</p>
+</div>
+
+<div id="world" aria-label="Introduction">
+  <div class="world-fix" id="top">
+    <img id="bgposter" src="assets/ice-hero.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
+    <video id="bgvid" src="assets/ice.mp4" poster="assets/ice-hero.jpg" muted loop playsinline autoplay preload="auto" style="display:none"></video>
+    <canvas id="frost" aria-hidden="true"></canvas>
+    <div class="vignette"></div>
+
+    <div class="chapter on" data-chapter="0">
+      <div>
+        <span class="mono">01 / The statement</span>
+        <h1>PHENOMENAL</h1>
+        <p>One tee. Strong and rare, never mild and everywhere.</p>
+      </div>
+    </div>
+    <div class="chapter" data-chapter="1">
+      <div>
+        <span class="mono">02 / The tee</span>
+        <h2>Someone's shot of whiskey.<br>Never everyone's cup of tea.</h2>
+        <p>240 GSM heavyweight cotton, oversized drop-shoulder cut, vintage whiskey-label print in bone cream.</p>
+      </div>
+    </div>
+    <div class="chapter" data-chapter="2">
+      <div>
+        <span class="mono">03 / The drop</span>
+        <h2>Rs 2,199. This drop only.</h2>
+        <p class="price-line">SMALL BATCH · COD NATIONWIDE <s>Rs 3,499</s></p>
+        <p>Checkout in 30 seconds. Keep scrolling.</p>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Header -->
-  <header class="nav" id="nav">
-    <div class="nav__inner">
-      <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <a href="#top" class="brand">
-        <span class="brand__mark">P</span>
-        <span class="brand__name">PHENOMENAL</span>
-      </a>
-      <nav class="nav__links" id="navLinks">
-        <a href="#product">Shop</a>
-        <a href="#story">Story</a>
-        <a href="#details">Details</a>
-        <a href="#reviews">Reviews</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <div class="nav__actions">
-        <button class="iconbtn" id="searchBtn" aria-label="Search">
-          <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-        <button class="iconbtn cart-toggle" id="cartBtn" aria-label="Open cart">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-          <span class="cart-count" id="cartCount">0</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero" id="hero">
-      <div class="hero__bg" id="heroBg"></div>
-      <div class="hero__overlay"></div>
-      <div class="hero__content reveal">
-        <p class="eyebrow">PHENOMENAL · VINTAGE DROP Nº 001</p>
-        <h1 class="hero__title">
-          Be Someone&rsquo;s<br /><em>Shot&nbsp;of&nbsp;Whisky</em>
-        </h1>
-        <p class="hero__sub">
-          Not everyone&rsquo;s cup of tea — and proud of it. A heavyweight oversized tee
-          built for the bold, printed with a hand-drawn vintage whiskey label.
-        </p>
-        <div class="hero__cta">
-          <a href="#product" class="btn btn--gold">Shop the Tee — $39</a>
-          <a href="#story" class="btn btn--ghost">The Story</a>
-        </div>
-        <div class="hero__proof">
-          <div class="stars" aria-label="4.9 out of 5 stars">★★★★★</div>
-          <span>4.9 · Loved by 3,200+ rebels</span>
-        </div>
-      </div>
-      <a href="#product" class="hero__scroll" aria-label="Scroll down">
-        <span></span>
-      </a>
-    </section>
-
-    <!-- PRODUCT -->
-    <section class="product" id="product">
-      <div class="product__media reveal">
-        <div class="gallery">
-          <div class="gallery__main">
-            <img id="mainImg" src="assets/img/product-main.jpg" alt="SHOT OF WHISKY oversized white tee, front view"
-                 onerror="this.onerror=null;this.classList.add('is-svg');this.src='assets/img/shirt-mockup.svg'" />
-            <span class="badge-drop">LIMITED</span>
-          </div>
-          <div class="gallery__thumbs" id="thumbs"></div>
-        </div>
-      </div>
-
-      <div class="product__info reveal">
-        <p class="eyebrow">PHENOMENAL ORIGINALS</p>
-        <h2 class="product__title">Shot of Whisky Oversized Tee</h2>
-        <div class="product__rating">
-          <span class="stars">★★★★★</span>
-          <a href="#reviews">3,214 reviews</a>
-        </div>
-        <div class="product__price">
-          <span class="price">$39.00</span>
-          <span class="price--old">$58.00</span>
-          <span class="save">SAVE 33%</span>
-        </div>
-        <p class="product__desc">
-          &ldquo;I&rsquo;d rather be someone&rsquo;s shot of whiskey than everyone&rsquo;s cup of tea.&rdquo;
-          A statement worth wearing. Premium 240gsm combed cotton, drop-shoulder oversized fit,
-          and a crisp screen-printed vintage label that only gets better with every wash.
-        </p>
-
-        <!-- Color -->
-        <div class="option">
-          <div class="option__label">Color: <strong id="colorName">Vintage White</strong></div>
-          <div class="swatches" id="swatches">
-            <button class="swatch is-active" style="--c:#f6f3ec" data-color="Vintage White" aria-label="Vintage White"></button>
-            <button class="swatch" style="--c:#1c1a17" data-color="Whiskey Black" aria-label="Whiskey Black"></button>
-            <button class="swatch" style="--c:#d8c4a0" data-color="Bourbon Sand" aria-label="Bourbon Sand"></button>
-          </div>
-        </div>
-
-        <!-- Size -->
-        <div class="option">
-          <div class="option__label">
-            Size: <strong id="sizeName">M</strong>
-            <button class="size-guide" id="sizeGuideBtn">Size guide</button>
-          </div>
-          <div class="sizes" id="sizes">
-            <button class="size" data-size="XS">XS</button>
-            <button class="size" data-size="S">S</button>
-            <button class="size is-active" data-size="M">M</button>
-            <button class="size" data-size="L">L</button>
-            <button class="size" data-size="XL">XL</button>
-            <button class="size" data-size="2XL">2XL</button>
-          </div>
-        </div>
-
-        <!-- Quantity + Add -->
-        <div class="buyrow">
-          <div class="qty" aria-label="Quantity">
-            <button id="qtyMinus" aria-label="Decrease">−</button>
-            <input id="qty" value="1" inputmode="numeric" aria-label="Quantity" />
-            <button id="qtyPlus" aria-label="Increase">+</button>
-          </div>
-          <button class="btn btn--gold btn--block" id="addToCart">Add to Cart · <span id="btnPrice">$39.00</span></button>
-        </div>
-
-        <div class="reassure">
-          <div><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 12l4 4 14-14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Free shipping over $75</div>
-          <div><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 12l4 4 14-14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 30-day easy returns</div>
-          <div><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 12l4 4 14-14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Ships in 24 hours</div>
-        </div>
-
-        <div class="pay">
-          <span>Secure checkout</span>
-          <div class="pay__icons" aria-hidden="true">VISA · MASTERCARD · AMEX · APPLE&nbsp;PAY · PAYPAL</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MARQUEE -->
-    <div class="strip">
-      <div class="strip__track">
-        <span>SHOT OF WHISKY</span><span class="dot">●</span>
-        <span>NOT YOUR CUP OF TEA</span><span class="dot">●</span>
-        <span>PHENOMENAL ORIGINALS</span><span class="dot">●</span>
-        <span>SHOT OF WHISKY</span><span class="dot">●</span>
-        <span>NOT YOUR CUP OF TEA</span><span class="dot">●</span>
-        <span>PHENOMENAL ORIGINALS</span><span class="dot">●</span>
-      </div>
-    </div>
-
-    <!-- STORY -->
-    <section class="story" id="story">
-      <div class="story__img reveal">
-        <img id="lifestyleImg" src="assets/img/lifestyle.jpg" alt="Model wearing the Shot of Whisky tee"
-             onerror="this.onerror=null;this.style.display='none';this.parentElement.classList.add('no-img')" />
-        <div class="story__fallback">
-          <img src="assets/img/whiskey-label.svg" alt="Shot of Whisky label artwork" />
-        </div>
-      </div>
-      <div class="story__copy reveal">
-        <p class="eyebrow">THE STORY</p>
-        <h2>For the ones who were never meant to blend in.</h2>
-        <p>
-          Tea is polite. Tea is safe. Tea is for everyone. But you?
-          You&rsquo;re the shot that wakes the room up. PHENOMENAL was born for people
-          who&rsquo;d rather be unforgettable to a few than forgettable to many.
-        </p>
-        <p>
-          Every tee is screen-printed by hand in small batches on heavyweight combed
-          cotton, then garment-washed for that broken-in vintage feel from day one.
-          No fast fashion. No filler. Just a phenomenal shirt with something to say.
-        </p>
-        <div class="story__stats">
-          <div><strong>240<span>gsm</span></strong><em>Heavyweight cotton</em></div>
-          <div><strong>100<span>%</span></strong><em>Combed &amp; ringspun</em></div>
-          <div><strong>3.2<span>k</span></strong><em>5-star fans</em></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DETAILS / FEATURES -->
-    <section class="features" id="details">
-      <div class="features__head reveal">
-        <p class="eyebrow">CRAFTED TO LAST</p>
-        <h2>Details that drink well.</h2>
-      </div>
-      <div class="features__grid">
-        <article class="feature reveal">
-          <div class="feature__ic">🧵</div>
-          <h3>Heavyweight 240gsm</h3>
-          <p>Substantial, structured cotton that drapes beautifully and never goes see-through.</p>
-        </article>
-        <article class="feature reveal">
-          <div class="feature__ic">🖤</div>
-          <h3>Hand screen-printed</h3>
-          <p>Crisp, water-based ink that sinks into the fabric — soft to the touch, built to endure.</p>
-        </article>
-        <article class="feature reveal">
-          <div class="feature__ic">🌀</div>
-          <h3>Oversized drop-shoulder</h3>
-          <p>That perfect relaxed streetwear silhouette. Size down for classic, true-to-size for oversized.</p>
-        </article>
-        <article class="feature reveal">
-          <div class="feature__ic">🇺🇸</div>
-          <h3>Printed in the USA</h3>
-          <p>Made to order in small batches and shipped within 24 hours. Zero landfill overstock.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- REVIEWS -->
-    <section class="reviews" id="reviews">
-      <div class="reviews__head reveal">
-        <p class="eyebrow">THE VERDICT</p>
-        <h2>4.9 / 5 from 3,200+ rebels</h2>
-        <div class="stars stars--lg">★★★★★</div>
-      </div>
-      <div class="reviews__grid">
-        <figure class="review reveal">
-          <div class="stars">★★★★★</div>
-          <blockquote>&ldquo;Single best tee I own. The print quality is insane and the fit is exactly that perfect oversized slouch.&rdquo;</blockquote>
-          <figcaption>— Jordan M. <span>Verified buyer</span></figcaption>
-        </figure>
-        <figure class="review reveal">
-          <div class="stars">★★★★★</div>
-          <blockquote>&ldquo;Got three compliments the first day. Heavy, soft, and the whiskey label looks even better in person.&rdquo;</blockquote>
-          <figcaption>— Alexis R. <span>Verified buyer</span></figcaption>
-        </figure>
-        <figure class="review reveal">
-          <div class="stars">★★★★★</div>
-          <blockquote>&ldquo;Finally a graphic tee that doesn&rsquo;t crack after one wash. PHENOMENAL is my new go-to.&rdquo;</blockquote>
-          <figcaption>— Sam W. <span>Verified buyer</span></figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="faq" id="faq">
-      <div class="faq__head reveal">
-        <p class="eyebrow">GOOD TO KNOW</p>
-        <h2>Questions, answered</h2>
-      </div>
-      <div class="faq__list reveal">
-        <details>
-          <summary>How does the oversized fit run?<span class="faq__plus"></span></summary>
-          <p>It&rsquo;s a true oversized, drop-shoulder cut. For a relaxed oversized look, order your normal size. Prefer a classic fit? Size down one.</p>
-        </details>
-        <details>
-          <summary>How should I wash it?<span class="faq__plus"></span></summary>
-          <p>Machine wash cold inside-out, tumble dry low. The water-based print stays crisp wash after wash — no cracking, no peeling.</p>
-        </details>
-        <details>
-          <summary>When will it ship?<span class="faq__plus"></span></summary>
-          <p>Every tee is made to order and ships within 24 hours. US delivery is typically 3–5 business days. Free over $75.</p>
-        </details>
-        <details>
-          <summary>What&rsquo;s your return policy?<span class="faq__plus"></span></summary>
-          <p>30-day no-nonsense returns. If it&rsquo;s not phenomenal, send it back for a full refund or exchange.</p>
-        </details>
-      </div>
-    </section>
-
-    <!-- NEWSLETTER -->
-    <section class="news">
-      <div class="news__inner reveal">
-        <h2>Join the rebellion.</h2>
-        <p>Get 10% off your first order plus early access to every limited drop.</p>
-        <form class="news__form" id="newsForm">
-          <input type="email" required placeholder="you@example.com" aria-label="Email address" />
-          <button class="btn btn--gold" type="submit">Get 10% Off</button>
-        </form>
-        <p class="news__note" id="newsNote">No spam. Just phenomenal things.</p>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer__inner">
-      <div class="footer__brand">
-        <span class="brand__mark">P</span>
-        <span class="brand__name">PHENOMENAL</span>
-        <p>Bold apparel for people who were never meant to blend in.</p>
-      </div>
-      <div class="footer__col">
-        <h4>Shop</h4>
-        <a href="#product">Shot of Whisky Tee</a>
-        <a href="#product">New Arrivals</a>
-        <a href="#product">Best Sellers</a>
-      </div>
-      <div class="footer__col">
-        <h4>Help</h4>
-        <a href="#faq">FAQ</a>
-        <a href="#faq">Shipping</a>
-        <a href="#faq">Returns</a>
-      </div>
-      <div class="footer__col">
-        <h4>Company</h4>
-        <a href="#story">Our Story</a>
-        <a href="#reviews">Reviews</a>
-        <a href="mailto:hello@phenomenal.shop">Contact</a>
-      </div>
-    </div>
-    <div class="footer__bar">
-      <span>© <span id="year"></span> PHENOMENAL. All rights reserved.</span>
-      <span class="footer__legal"><a href="#">Privacy</a> · <a href="#">Terms</a></span>
-    </div>
-  </footer>
-
-  <!-- CART DRAWER -->
-  <div class="drawer-backdrop" id="backdrop"></div>
-  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Shopping cart">
-    <div class="drawer__head">
-      <h3>Your Cart</h3>
-      <button class="iconbtn" id="cartClose" aria-label="Close cart">✕</button>
-    </div>
-    <div class="drawer__items" id="cartItems">
-      <p class="drawer__empty">Your cart is empty — go be phenomenal.</p>
-    </div>
-    <div class="drawer__foot">
-      <div class="drawer__total"><span>Subtotal</span><strong id="cartTotal">$0.00</strong></div>
-      <p class="drawer__ship">Shipping &amp; taxes calculated at checkout.</p>
-      <button class="btn btn--gold btn--block" id="checkout">Checkout</button>
-    </div>
-  </aside>
-
-  <!-- SIZE GUIDE MODAL -->
-  <div class="modal" id="sizeModal" aria-hidden="true">
-    <div class="modal__box">
-      <button class="iconbtn modal__close" id="sizeClose" aria-label="Close">✕</button>
-      <h3>Size Guide</h3>
-      <p class="modal__sub">Measurements in inches. Oversized fit — order your usual size.</p>
-      <table class="sizetable">
-        <thead><tr><th>Size</th><th>Chest</th><th>Length</th></tr></thead>
-        <tbody>
-          <tr><td>XS</td><td>40</td><td>27</td></tr>
-          <tr><td>S</td><td>42</td><td>28</td></tr>
-          <tr><td>M</td><td>44</td><td>29</td></tr>
-          <tr><td>L</td><td>46</td><td>30</td></tr>
-          <tr><td>XL</td><td>48</td><td>31</td></tr>
-          <tr><td>2XL</td><td>50</td><td>32</td></tr>
-        </tbody>
-      </table>
+<section id="spec">
+  <div class="wrap">
+    <span class="mono">Specification</span>
+    <h2 class="sec-h">Built heavy. Worn easy.</h2>
+    <p class="sec-sub">We make one product and obsess over it — bio-washed so it's broken-in from day one, printed with high-density soft ink that holds through wash after wash.</p>
+    <div class="spec-grid">
+      <div class="spec"><span class="mono">Fabric</span><p>240 GSM combed heavyweight cotton. No shine, no cling, no see-through.</p></div>
+      <div class="spec"><span class="mono">Fit</span><p>True oversized: dropped shoulders, boxy body. Size down one for a relaxed fit.</p></div>
+      <div class="spec"><span class="mono">Print</span><p>Vintage whiskey-label artwork in crack-resistant soft ink with a lived-in texture.</p></div>
+      <div class="spec"><span class="mono">Colour</span><p>Bone cream — warmer than white, neutral enough for everything you own.</p></div>
     </div>
   </div>
+</section>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+<section id="order">
+  <div class="wrap">
+    <span class="mono">Order / 30 seconds</span>
+    <h2 class="sec-h">Pick a size. Tap. Done.</h2>
+    <p class="sec-sub">No accounts, no card forms. Checkout sends us your order directly — confirm your address and pay cash on delivery.</p>
+    <div class="order-grid">
+      <figure class="order-photo">
+        <img src="assets/product.jpg" alt="Product photo of the cream oversized tee" width="1100" height="1366" loading="lazy">
+      </figure>
+      <form id="order-form">
+        <fieldset>
+          <legend>Size</legend>
+          <div class="chips" id="sizes" role="group" aria-label="Choose size">
+            <button type="button" class="chip" aria-pressed="false">S</button>
+            <button type="button" class="chip" aria-pressed="true">M</button>
+            <button type="button" class="chip" aria-pressed="false">L</button>
+            <button type="button" class="chip" aria-pressed="false">XL</button>
+            <button type="button" class="chip" aria-pressed="false">XXL</button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Quantity</legend>
+          <div class="qty">
+            <button type="button" id="q-minus" aria-label="Decrease quantity">−</button>
+            <output id="q-out" aria-live="polite">1</output>
+            <button type="button" id="q-plus" aria-label="Increase quantity">+</button>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="f-name">Name</label>
+          <input id="f-name" type="text" autocomplete="name" placeholder="So we know who's ordering">
+        </div>
+        <div class="field">
+          <label for="f-city">City</label>
+          <input id="f-city" type="text" autocomplete="address-level2" placeholder="For delivery estimate">
+        </div>
+        <div class="total-row">
+          <span class="t-label">Total · Cash on delivery</span>
+          <span class="t-val" id="total">Rs 2,199</span>
+        </div>
+        <div class="preview">
+          <span class="mono">Order summary</span>
+          <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 2,199).</span>
+        </div>
+        <button type="submit" class="btn-wa">
+          <svg class="wa-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.4-2.9c-.3-.4.3-.4.7-1.3 0-.2 0-.3-.1-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.1 2.8c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3Z"/></svg>
+          Checkout
+        </button>
+        <p class="order-note">Secure checkout · Cash on delivery</p>
+      </form>
+    </div>
+  </div>
+</section>
 
-  <script src="assets/js/main.js"></script>
+<section id="faq">
+  <div class="wrap">
+    <span class="mono">Protocol</span>
+    <h2 class="sec-h">Questions, answered straight.</h2>
+    <details class="faq"><summary>How do I pay?</summary><div>Cash on delivery, nationwide. You pay the rider when the tee is in your hands. Nothing upfront.</div></details>
+    <details class="faq"><summary>How does checkout work?</summary><div>Pick your size and quantity above and tap Checkout — your order reaches us instantly with everything filled in. We confirm your address and it ships within 24 hours.</div></details>
+    <details class="faq"><summary>What if the size is wrong?</summary><div>Message us within 7 days and we'll swap it free. Keep the tags on and unwashed.</div></details>
+    <details class="faq"><summary>Will the print crack or fade?</summary><div>The lived-in texture is the design — it's printed that way and stays that way. High-density soft ink holds through regular machine washes (wash inside-out, skip the dryer).</div></details>
+    <details class="faq"><summary>How long is delivery?</summary><div>24-hour dispatch. Major cities in 2–3 days, everywhere else in 3–5.</div></details>
+  </div>
+</section>
+
+<footer>
+  <a class="f-brand" href="#top">PHENOMENAL</a>
+  <p>One tee, done right. Support: <a href="https://wa.me/923374841818">0337 4841818</a></p>
+  <p>© 2026 Phenomenal. All rights reserved.</p>
+</footer>
+
+<div class="sticky-bar">
+  <span class="p">Rs 2,199</span>
+  <a class="btn-wa" href="#order" style="width:auto;margin:0">Checkout</a>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var PRICE = 2199, WA = "923374841818", PRODUCT = "Shot of Whiskey tee";
+  var size = "M", qty = 1;
+  var fmt = function(n){ return "Rs " + n.toLocaleString("en-PK"); };
+  var $ = function(s){ return document.querySelector(s); };
+
+  function message(){
+    var name = $("#f-name").value.trim();
+    var city = $("#f-city").value.trim();
+    var m = "Hi! I'd like to order the " + PRODUCT + " — Size " + size + " × " + qty + " (" + fmt(PRICE*qty) + ").";
+    if(name) m += " Name: " + name + ".";
+    if(city) m += " City: " + city + ".";
+    return m;
+  }
+  function render(){
+    $("#total").textContent = fmt(PRICE*qty);
+    $("#q-out").textContent = qty;
+    $("#msg-preview").textContent = message();
+  }
+  document.querySelectorAll("#sizes .chip").forEach(function(chip){
+    chip.addEventListener("click", function(){
+      document.querySelectorAll("#sizes .chip").forEach(function(c){ c.setAttribute("aria-pressed","false"); });
+      chip.setAttribute("aria-pressed","true");
+      size = chip.textContent.trim();
+      render();
+    });
+  });
+  $("#q-minus").addEventListener("click", function(){ if(qty>1){ qty--; render(); } });
+  $("#q-plus").addEventListener("click", function(){ if(qty<10){ qty++; render(); } });
+  $("#f-name").addEventListener("input", render);
+  $("#f-city").addEventListener("input", render);
+  $("#order-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var payload = {
+      product: PRODUCT, size: size, qty: qty,
+      unit_price: PRICE, total: PRICE*qty,
+      name: $("#f-name").value.trim() || null,
+      city: $("#f-city").value.trim() || null
+    };
+    // Records the order when served by server.js; fails silently on static hosting.
+    try{
+      fetch("/api/orders", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)}).catch(function(){});
+    }catch(err){}
+    window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(message()), "_blank", "noopener");
+  });
+  render();
+
+  /* ---------- background video (progressive: poster first) ---------- */
+  var vid = document.getElementById("bgvid");
+  var poster = document.getElementById("bgposter");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(vid && !reduced){
+    vid.addEventListener("canplay", function(){
+      vid.style.display = "";
+      poster.style.display = "none";
+      vid.play().catch(function(){ vid.style.display="none"; poster.style.display=""; });
+    });
+    vid.load();
+  }
+
+  /* ---------- scroll-driven chapters ---------- */
+  var world = document.getElementById("world");
+  var chapters = Array.prototype.slice.call(document.querySelectorAll(".chapter"));
+  var chLabels = Array.prototype.slice.call(document.querySelectorAll(".chapters span"));
+  var current = 0;
+  function onScroll(){
+    var rect = world.getBoundingClientRect();
+    var total = rect.height - window.innerHeight;
+    var p = Math.min(1, Math.max(0, -rect.top / (total || 1)));
+    var idx = p < 0.33 ? 0 : p < 0.72 ? 1 : 2;
+    if(idx !== current){
+      current = idx;
+      chapters.forEach(function(c,i){ c.classList.toggle("on", i===idx); });
+      chLabels.forEach(function(l,i){ l.classList.toggle("on", i===idx); });
+    }
+  }
+  chLabels[0] && chLabels[0].classList.add("on");
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+
+  /* ---------- three.js frost layer ----------
+     Drifting ice particles over the video with scroll + pointer parallax.
+     Kept light: 260 points, capped DPR, renders only while the world is on screen. */
+  var canvas = document.getElementById("frost");
+  if(!window.THREE || !window.WebGLRenderingContext || !canvas) return;
+  var renderer;
+  try{
+    renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:false, alpha:true, powerPreference:"low-power"});
+  }catch(err){ return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 30);
+  camera.position.z = 6;
+
+  var N = 160, pos = new Float32Array(N*3), spd = new Float32Array(N);
+  for(var i=0;i<N;i++){
+    pos[i*3]   = (Math.random()-0.5)*14;
+    pos[i*3+1] = (Math.random()-0.5)*9;
+    pos[i*3+2] = (Math.random()-0.5)*5;
+    spd[i] = 0.1 + Math.random()*0.35;
+  }
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  var pts = new THREE.Points(geo, new THREE.PointsMaterial({
+    color:0xC9C2B4, size:0.04, transparent:true, opacity:0.4,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  }));
+  scene.add(pts);
+
+  var target={x:0,y:0}, cur={x:0,y:0};
+  window.addEventListener("pointermove", function(e){
+    target.x = (e.clientX/window.innerWidth - 0.5)*2;
+    target.y = -(e.clientY/window.innerHeight - 0.5)*2;
+  }, {passive:true});
+
+  function resize(){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if(!w||!h) return;
+    renderer.setSize(w,h,false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  var visible = true;
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; }).observe(canvas);
+  }
+  var t0 = performance.now(), last = 0, FRAME_MS = 1000/30; // 30fps cap for older devices
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(!visible || now - last < FRAME_MS) return;
+    last = now;
+    var t=(now-t0)/1000;
+    cur.x += (target.x-cur.x)*0.04;
+    cur.y += (target.y-cur.y)*0.04;
+    pts.rotation.y = cur.x*0.08;
+    pts.rotation.x = -cur.y*0.05;
+    if(!reduced){
+      var arr = geo.attributes.position.array;
+      for(var i=0;i<N;i++){
+        arr[i*3+1] -= spd[i]*0.006;
+        arr[i*3]   += Math.sin(t*0.6 + i)*0.0012;
+        if(arr[i*3+1] < -4.6) arr[i*3+1] = 4.6;
+      }
+      geo.attributes.position.needsUpdate = true;
+    }
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>

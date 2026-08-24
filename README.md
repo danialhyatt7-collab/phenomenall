@@ -1,44 +1,31 @@
-# PHENOMENAL — *Shot of Whisky* Tee
+# Phenomenal — Shot of Whiskey Tee
 
-A polished, single-page e-commerce storefront for **PHENOMENAL**, featuring the
-flagship product: the **SHOT OF WHISKY** oversized tee —
-*"I'd rather be someone's shot of whiskey than everyone's cup of tea."*
+A one-product, high-converting store for an oversized heavyweight tee, with:
 
-![Shot of Whisky tee](assets/img/product-main.jpg)
+- **three.js hero** — the tee rendered as a cloth-waving textured plane floating in amber ember dust, with mouse parallax.
+- **WhatsApp checkout** — size/quantity picker with a live message preview; the order opens pre-written in WhatsApp to **0337 4841818**.
+- **Order-recording backend** — a zero-dependency Node server with Shopify-style features: product catalog API, order records, status pipeline (pending → confirmed → shipped → delivered), revenue stats, and an admin dashboard.
 
-## Features
-
-- **Premium dark / whiskey-amber design** with elegant Playfair Display + Pinyon Script typography.
-- **Cinematic hero** backed by a generated whiskey-glass photograph.
-- **Full product experience** — image gallery with thumbnails, color swatches, size
-  selector, quantity stepper, and a live size-guide modal.
-- **Working cart** — slide-out drawer, quantity editing, line totals, subtotal, and
-  `localStorage` persistence across page loads.
-- **Conversion sections** — story, feature highlights, social-proof reviews, FAQ
-  accordion, animated marquees, and newsletter capture.
-- **Scroll-reveal animations**, sticky blurred nav, and a fully **responsive**
-  mobile layout with off-canvas menu.
-- **Accessible & resilient** — reduced-motion support, keyboard (Esc) handling,
-  and SVG fallbacks for every product image.
-
-## Tech
-
-Pure, dependency-free **HTML + CSS + vanilla JavaScript** — no build step required.
-Google Fonts for typography. Product, lifestyle, and hero imagery were generated to
-match the source product and optimized for the web.
-
-## Run locally
+## Run
 
 ```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
+node server.js
+# Store:  http://localhost:3000
+# Admin:  http://localhost:3000/admin
 ```
 
-## Structure
+No npm install needed — the backend uses only Node built-ins. Orders persist to `data/orders.json` (gitignored, created on first order).
 
-```
-index.html                 # the full storefront
-assets/css/styles.css      # theme, layout, components, responsive rules
-assets/js/main.js          # gallery, options, cart, drawer, modal, reveals
-assets/img/                # product / lifestyle / hero images + SVG fallbacks
-```
+## API
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/products` | GET | Product catalog |
+| `/api/orders` | GET | All recorded orders |
+| `/api/orders` | POST | Record an order (called automatically at checkout) |
+| `/api/orders/:id` | PATCH | Update order status |
+| `/api/stats` | GET | Orders / units / revenue summary |
+
+## Static hosting
+
+`index.html` also works as a pure static page (GitHub Pages, Netlify, the deployed artifact): the order-recording call fails silently and WhatsApp remains the order channel.
