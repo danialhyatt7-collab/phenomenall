@@ -42,19 +42,104 @@
   .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ice-blue)}
   .dim{color:var(--dim)}
 
+  /* ---------- header ---------- */
+  .hdr{
+    position:fixed;top:0;left:0;right:0;z-index:70;
+    transition:background .35s ease, border-color .35s ease;
+    background:linear-gradient(to bottom, rgba(7,6,6,.75), rgba(7,6,6,0));
+    border-bottom:1px solid transparent;
+  }
+  .hdr.solid{background:var(--void);border-bottom-color:var(--line)}
+  .hdr-in{
+    max-width:1440px;margin:0 auto;height:58px;padding:0 1.25rem;
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.5rem;
+  }
+  .hdr-logo{
+    font-weight:700;font-size:.9rem;letter-spacing:.3em;text-decoration:none;color:var(--ice);
+    white-space:nowrap;
+  }
+  .hdr-nav{display:flex;gap:1.6rem;align-items:center}
+  .hdr-nav a{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ice);text-decoration:none;opacity:.82;position:relative;padding:.4rem 0;
+    transition:opacity .18s ease;
+  }
+  .hdr-nav a::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:var(--ice);transform:scaleX(0);transform-origin:left;
+    transition:transform .22s ease;
+  }
+  .hdr-nav a:hover{opacity:1}
+  .hdr-nav a:hover::after{transform:scaleX(1)}
+  .hdr-utils{display:flex;align-items:center;gap:.35rem;justify-self:end}
+  .hdr-btn{
+    display:grid;place-items:center;width:2.2rem;height:2.2rem;
+    background:none;border:none;color:var(--ice);opacity:.85;border-radius:3px;
+    text-decoration:none;position:relative;transition:opacity .18s ease, background .18s ease;
+  }
+  .hdr-btn:hover{opacity:1;background:rgba(242,239,233,.08)}
+  .hdr-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+  .hdr-region{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--ice);opacity:.7;
+    padding:0 .5rem 0 .35rem;white-space:nowrap;
+  }
+  .cart-badge{
+    position:absolute;top:.15rem;right:.1rem;
+    min-width:15px;height:15px;padding:0 3px;border-radius:99px;
+    background:var(--ice);color:var(--void);
+    font-family:var(--mono);font-size:.58rem;font-weight:500;line-height:15px;text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  .hdr-burger{display:none}
+
+  /* search panel */
+  .search-panel{
+    position:fixed;top:58px;left:0;right:0;z-index:69;
+    background:var(--void);border-bottom:1px solid var(--line);
+    transform:translateY(-105%);transition:transform .3s ease;
+  }
+  .search-panel.open{transform:none}
+  .search-in{max-width:1440px;margin:0 auto;padding:1.1rem 1.25rem 1.3rem}
+  .search-in input{
+    width:100%;background:none;border:none;border-bottom:1px solid var(--line);
+    color:var(--ice);font-family:var(--sans);font-size:1.15rem;padding:.5rem 0 .8rem;
+  }
+  .search-in input::placeholder{color:var(--dim)}
+  .search-in input:focus{outline:none;border-bottom-color:var(--ice)}
+  .search-hits{list-style:none;margin-top:.9rem;display:flex;flex-direction:column}
+  .search-hits li a{
+    display:flex;justify-content:space-between;gap:1rem;align-items:baseline;
+    padding:.6rem 0;color:var(--ice);text-decoration:none;font-size:.95rem;
+    border-bottom:1px solid rgba(201,194,180,.08);
+  }
+  .search-hits li a:hover{color:var(--ice-blue)}
+  .search-hits .tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--dim);flex:none}
+  .search-empty{color:var(--dim);font-size:.9rem;margin-top:.9rem}
+
+  @media(max-width:900px){
+    .hdr-in{grid-template-columns:auto 1fr auto;gap:.75rem;height:52px;padding:0 .9rem}
+    .hdr-nav{
+      position:fixed;top:52px;left:0;right:0;
+      flex-direction:column;align-items:stretch;gap:0;
+      background:var(--void);border-bottom:1px solid var(--line);
+      padding:.4rem 1.1rem 1.1rem;
+      transform:translateY(-120%);transition:transform .3s ease;
+    }
+    .hdr-nav.open{transform:none}
+    .hdr-nav a{padding:.95rem 0;border-bottom:1px solid rgba(201,194,180,.08);font-size:.8rem}
+    .hdr-nav a::after{display:none}
+    .hdr-burger{display:grid}
+    .hdr-logo{justify-self:center;font-size:.8rem;letter-spacing:.26em}
+    .hdr-region{display:none}
+    .hdr-acct{display:none}
+    .search-panel{top:52px}
+  }
+
   /* ---------- fixed chrome ---------- */
   .chrome{position:fixed;inset:0;z-index:40;pointer-events:none}
   .chrome > *{pointer-events:auto}
-  .brand{
-    position:absolute;top:1.4rem;left:1.6rem;
-    font-weight:700;font-size:.95rem;letter-spacing:.32em;text-decoration:none;color:var(--ice);
-  }
-  .chrome-cta{
-    position:absolute;top:1.15rem;right:1.6rem;
-    font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--void);background:var(--ice);text-decoration:none;
-    padding:.6rem 1.1rem;border-radius:2px;
-  }
   .chapters{
     position:absolute;left:1.6rem;bottom:1.6rem;
     display:flex;flex-direction:column;gap:.55rem;
@@ -119,7 +204,7 @@
   .chapter .price-line s{color:var(--dim)}
 
   /* ---------- below the world ---------- */
-  section{position:relative;background:var(--void);padding:6rem 1.5rem;z-index:5}
+  section{position:relative;background:var(--void);padding:6rem 1.5rem;z-index:5;scroll-margin-top:58px}
   .wrap{max-width:1060px;margin:0 auto}
   .sec-h{font-weight:700;letter-spacing:-.02em;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.12;text-wrap:balance;margin:.8rem 0 1rem}
   .sec-sub{color:var(--dim);max-width:56ch}
@@ -220,9 +305,42 @@
 </head>
 <body>
 
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <button class="hdr-btn hdr-burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="hdr-nav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <a class="hdr-logo" href="#top">PHENOMENAL</a>
+    <nav class="hdr-nav" id="hdr-nav">
+      <a href="#spec">The Tee</a>
+      <a href="#order">Order</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://wa.me/923374841818">Support</a>
+    </nav>
+    <div class="hdr-utils">
+      <button class="hdr-btn" id="search-btn" aria-label="Search" aria-expanded="false" aria-controls="search-panel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <span class="hdr-region" title="We ship across Pakistan">PK · PKR</span>
+      <a class="hdr-btn hdr-acct" href="https://wa.me/923374841818" aria-label="Order support">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-3.7 3.8-5.6 7.5-5.6s6.7 1.9 7.5 5.6"/></svg>
+      </a>
+      <a class="hdr-btn" href="#order" id="cart-btn" aria-label="Your order">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9.2 8V6.2a2.8 2.8 0 0 1 5.6 0V8"/></svg>
+        <span class="cart-badge" id="cart-badge">1</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="search-panel" id="search-panel">
+  <div class="search-in">
+    <input id="search-input" type="search" placeholder="Search the store — size, delivery, fabric…" aria-label="Search the store" autocomplete="off">
+    <ul class="search-hits" id="search-hits"></ul>
+  </div>
+</div>
+
 <div class="chrome">
-  <a class="brand" href="#top">PHENOMENAL</a>
-  <a class="chrome-cta" href="#order">Order</a>
   <div class="chapters" aria-hidden="true">
     <span data-ch="0">01 / THE STATEMENT</span>
     <span data-ch="1">02 / THE TEE</span>
@@ -392,6 +510,9 @@
     $("#total").textContent = fmt(PRICE*qty);
     $("#q-out").textContent = qty;
     $("#msg-preview").textContent = message();
+    var badge = $("#cart-badge");
+    badge.textContent = qty;
+    $("#cart-btn").setAttribute("aria-label", "Your order — " + qty + (qty === 1 ? " tee" : " tees"));
   }
   document.querySelectorAll("#sizes .chip").forEach(function(chip){
     chip.addEventListener("click", function(){
@@ -425,6 +546,67 @@
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(message()), "_blank", "noopener");
   });
   render();
+
+  /* ---------- header: scroll state, menu, search ---------- */
+  var hdr = $("#hdr"), burger = $("#burger"), hdrNav = $("#hdr-nav");
+  var searchBtn = $("#search-btn"), searchPanel = $("#search-panel"), searchInput = $("#search-input");
+
+  function setSolid(){ hdr.classList.toggle("solid", window.scrollY > 40); }
+  window.addEventListener("scroll", setSolid, {passive:true});
+  setSolid();
+
+  function closeMenu(){ hdrNav.classList.remove("open"); burger.setAttribute("aria-expanded","false"); }
+  function closeSearch(){
+    searchPanel.classList.remove("open");
+    searchBtn.setAttribute("aria-expanded","false");
+  }
+  burger.addEventListener("click", function(){
+    var open = !hdrNav.classList.contains("open");
+    hdrNav.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", String(open));
+    if(open) closeSearch();
+  });
+  hdrNav.addEventListener("click", function(e){ if(e.target.tagName === "A") closeMenu(); });
+
+  searchBtn.addEventListener("click", function(){
+    var open = !searchPanel.classList.contains("open");
+    searchPanel.classList.toggle("open", open);
+    searchBtn.setAttribute("aria-expanded", String(open));
+    if(open){ closeMenu(); searchInput.focus(); } else { searchInput.blur(); }
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){ closeSearch(); closeMenu(); }
+  });
+
+  // small index of what this store actually has, so search lands on a real answer
+  var INDEX = [
+    {t:"Shot of Whiskey tee — Rs 2,199", tag:"Product", href:"#order", k:"tee shirt tshirt product price rs 2199 buy shot whiskey"},
+    {t:"Sizes S to XXL — true oversized fit", tag:"Sizing", href:"#order", k:"size sizes small medium large xl xxl fit oversized measurement"},
+    {t:"240 GSM heavyweight combed cotton", tag:"Fabric", href:"#spec", k:"fabric cotton gsm 240 heavyweight material quality"},
+    {t:"Vintage whiskey-label print, soft ink", tag:"Print", href:"#spec", k:"print ink artwork label design crack fade"},
+    {t:"Bone cream colour", tag:"Colour", href:"#spec", k:"colour color cream white bone"},
+    {t:"Cash on delivery, nationwide", tag:"Payment", href:"#faq", k:"payment pay cash cod delivery money price"},
+    {t:"24-hour dispatch, 2–5 day delivery", tag:"Shipping", href:"#faq", k:"shipping delivery dispatch days time fast courier"},
+    {t:"Free size exchange within 7 days", tag:"Returns", href:"#faq", k:"exchange return refund swap wrong size"},
+    {t:"Washing and care", tag:"Care", href:"#faq", k:"wash washing care dryer shrink iron"}
+  ];
+  var hits = $("#search-hits");
+  function search(){
+    var q = searchInput.value.trim().toLowerCase();
+    if(!q){ hits.innerHTML = ""; return; }
+    var found = INDEX.filter(function(i){
+      return (i.t + " " + i.k).toLowerCase().indexOf(q) > -1;
+    }).slice(0, 6);
+    if(!found.length){
+      hits.innerHTML = '<li class="search-empty">Nothing matched. Message us on support and we\'ll answer.</li>';
+      return;
+    }
+    hits.innerHTML = found.map(function(i){
+      return '<li><a href="' + i.href + '"><span>' + i.t + '</span><span class="tag">' + i.tag + '</span></a></li>';
+    }).join("");
+  }
+  searchInput.addEventListener("input", search);
+  hits.addEventListener("click", function(e){ if(e.target.closest("a")) closeSearch(); });
 
   /* ---------- background video (progressive: poster first) ---------- */
   var vid = document.getElementById("bgvid");
