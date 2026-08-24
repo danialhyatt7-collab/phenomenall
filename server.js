@@ -447,6 +447,15 @@ async function setLoginInteractive() {
 if (process.argv.includes("--set-login")) {
   setLoginInteractive();
 } else {
+  // Managed hosts (Hostinger, Render, a VPS panel) often give no shell, so the
+  // login can also be set from environment variables in the host's dashboard.
+  if (process.env.ADMIN_USER && process.env.ADMIN_PASSWORD) {
+    if (!checkLogin(process.env.ADMIN_USER, process.env.ADMIN_PASSWORD)) {
+      saveLogin(process.env.ADMIN_USER, process.env.ADMIN_PASSWORD);
+      console.log('Admin login set from environment: "' + process.env.ADMIN_USER + '"');
+    }
+  }
+
   // No account yet? Create one with a strong random password and show it once,
   // so the admin is never reachable without credentials.
   if (!readAuth()) {
