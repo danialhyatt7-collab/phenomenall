@@ -1050,7 +1050,28 @@
      animation on the video itself. */
   (function sceneMotion(){
     var media = $("#media"), stage = $(".world-fix");
-    if(!media || reduced) return;
+    if(!media) return;
+
+    // Ultra-wide viewports are wider than the landscape source, so
+    // object-fit:contain leaves dead black bars beside it. Scale the
+    // wrapper just enough to close that gap — the footage itself never
+    // changes, this only zooms how much of its own smoke-to-black edge
+    // is visible. Capped so extreme ultra-wide screens still crop safely.
+    var VIDEO_ASPECT = 2578 / 1440; // ice-wide.mp4
+    var fitScale = 1;
+    function updateFitScale(){
+      if (window.matchMedia("(max-aspect-ratio: 4/3)").matches) { fitScale = 1; return; }
+      var winAspect = window.innerWidth / window.innerHeight;
+      fitScale = winAspect > VIDEO_ASPECT ? Math.min(winAspect / VIDEO_ASPECT, 1.4) : 1;
+    }
+    updateFitScale();
+    window.addEventListener("resize", updateFitScale, {passive:true});
+
+    if(reduced){
+      media.style.transform = "scale(" + fitScale.toFixed(3) + ")";
+      return;
+    }
+
     var tx = 0, ty = 0, cx = 0, cy = 0, onScreen = true;
 
     window.addEventListener("pointermove", function(e){
@@ -1067,7 +1088,7 @@
       cx += (tx - cx) * 0.06;
       cy += (ty - cy) * 0.06;
       media.style.transform =
-        "translate3d(" + (cx * -14).toFixed(2) + "px," + (cy * -8).toFixed(2) + "px,0)";
+        "translate3d(" + (cx * -14).toFixed(2) + "px," + (cy * -8).toFixed(2) + "px,0) scale(" + fitScale.toFixed(3) + ")";
     }
     requestAnimationFrame(frame);
   })();
