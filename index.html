@@ -323,6 +323,22 @@
   .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:clamp(.78rem,1.6vw,1rem);letter-spacing:.12em;color:var(--ice-blue);display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;white-space:nowrap}
   .chapter .price-line s{color:var(--dim)}
 
+  /* ---------- ticker ---------- */
+  .ticker{
+    position:relative;z-index:5;overflow:hidden;
+    background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:.85rem 0;
+  }
+  .ticker-track{display:flex;width:max-content;animation:tickerScroll 38s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker-row{display:flex;align-items:center;flex-shrink:0}
+  .ticker-row span{
+    font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ice-blue);white-space:nowrap;padding:0 1.4rem;
+  }
+  .ticker-row span::after{content:'·';margin-left:1.4rem;color:var(--dim)}
+  @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
   /* ---------- below the world ---------- */
   section{position:relative;background:var(--void);padding:6rem 1.5rem;z-index:5;scroll-margin-top:58px}
   .wrap{max-width:1060px;margin:0 auto}
@@ -595,6 +611,35 @@
         <a class="chapter-cta" href="#order">Order now</a>
         <p class="chapter-note">Takes 30 seconds · Cash on delivery</p>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <div class="ticker-row">
+      <span>Strong and rare</span>
+      <span>Never mild, never everywhere</span>
+      <span>Someone's shot of whiskey</span>
+      <span>Never everyone's cup of tea</span>
+      <span>Vintage whiskey-label print</span>
+      <span>Oversized drop-shoulder cut</span>
+      <span>Bone cream</span>
+      <span>Small batch</span>
+      <span>Cash on delivery</span>
+      <span>Free shipping nationwide</span>
+    </div>
+    <div class="ticker-row">
+      <span>Strong and rare</span>
+      <span>Never mild, never everywhere</span>
+      <span>Someone's shot of whiskey</span>
+      <span>Never everyone's cup of tea</span>
+      <span>Vintage whiskey-label print</span>
+      <span>Oversized drop-shoulder cut</span>
+      <span>Bone cream</span>
+      <span>Small batch</span>
+      <span>Cash on delivery</span>
+      <span>Free shipping nationwide</span>
     </div>
   </div>
 </div>
