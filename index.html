@@ -7,6 +7,23 @@
 <meta name="description" content="PHENOMENAL — one tee, done properly. Oversized drop-shoulder tee with a vintage whiskey-label print.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '927619214095802');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel -->
 <style>
   :root{
     --void:#070606;
@@ -871,6 +888,12 @@
     try{
       fetch("/api/orders", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)}).catch(function(){});
     }catch(err){}
+    if(window.fbq){
+      fbq('track', 'Purchase', {
+        value: payload.total, currency: 'PKR',
+        content_name: PRODUCT, content_type: 'product', num_items: qty
+      });
+    }
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(message()), "_blank", "noopener");
   });
   render();
