@@ -1054,15 +1054,15 @@
 
     // Ultra-wide viewports are wider than the landscape source, so
     // object-fit:contain leaves dead black bars beside it. Scale the
-    // wrapper just enough to close that gap — the footage itself never
-    // changes, this only zooms how much of its own smoke-to-black edge
-    // is visible. Capped so extreme ultra-wide screens still crop safely.
+    // wrapper to fully close that gap, matching object-fit:cover — the
+    // footage itself never changes, this only zooms into its own
+    // smoke-to-black edge so no bare void shows on either side.
     var VIDEO_ASPECT = 2578 / 1440; // ice-wide.mp4
     var fitScale = 1;
     function updateFitScale(){
       if (window.matchMedia("(max-aspect-ratio: 4/3)").matches) { fitScale = 1; return; }
       var winAspect = window.innerWidth / window.innerHeight;
-      fitScale = winAspect > VIDEO_ASPECT ? Math.min(winAspect / VIDEO_ASPECT, 1.4) : 1;
+      fitScale = winAspect > VIDEO_ASPECT ? winAspect / VIDEO_ASPECT : 1;
     }
     updateFitScale();
     window.addEventListener("resize", updateFitScale, {passive:true});
