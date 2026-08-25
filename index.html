@@ -76,6 +76,7 @@
   html.revealed #bgvid,
   html.revealed #bgposter{animation:mediaIn 1.6s cubic-bezier(.22,.7,.2,1) both}
   html.revealed .chapter[data-chapter="0"] > div > *{animation:riseIn .9s cubic-bezier(.22,.7,.2,1) both}
+  html.revealed .chapter[data-chapter="0"] > div > h1{animation:none;opacity:1}
   html.revealed .chapter[data-chapter="0"] > div > *:nth-child(1){animation-delay:.34s}
   html.revealed .chapter[data-chapter="0"] > div > *:nth-child(2){animation-delay:.47s}
   html.revealed .chapter[data-chapter="0"] > div > *:nth-child(3){animation-delay:.60s}
@@ -251,8 +252,8 @@
     pointer-events:none;padding:0 1.5rem 6vh;
   }
   .chapter.on{opacity:1;transform:none}
-  .chapter > div{position:relative;padding:3rem 2rem}
-  .chapter > div::before{
+  .chapter > div:not(.callouts){position:relative;padding:3rem 2rem}
+  .chapter > div:not(.callouts)::before{
     content:"";position:absolute;inset:-30% -40%;z-index:-1;
     background:radial-gradient(closest-side, rgba(7,6,6,.86), rgba(7,6,6,.55) 55%, transparent);
   }
@@ -261,10 +262,57 @@
     .chapter{place-items:center center;padding:min(var(--vidh), 62vh) 1.25rem 9vh}
   }
   @media(max-width:700px){
-    .chapter > div{padding:1.5rem 1rem}
-    .chapter > div::before{inset:-20% -30%}
+    .chapter > div:not(.callouts){padding:1.5rem 1rem}
+    .chapter > div:not(.callouts)::before{inset:-20% -30%}
     .chapter h1, .chapter h2{font-size:clamp(1.9rem,9vw,2.6rem)}
   }
+  /* headlines rise out from behind a mask, one line at a time */
+  .ln{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em}
+  .ln-i{display:block;transform:translateY(108%);transition:transform .85s cubic-bezier(.22,.7,.2,1)}
+  .chapter.lines-in .ln-i{transform:none}
+  .chapter .ln:nth-child(1) .ln-i{transition-delay:.05s}
+  .chapter .ln:nth-child(2) .ln-i{transition-delay:.14s}
+
+  /* chapter 03 closes with a real way to act */
+  .chapter-cta{
+    display:inline-flex;align-items:center;pointer-events:auto;
+    margin-top:1.7rem;padding:.95rem 2rem;border-radius:3px;
+    background:var(--ice);color:var(--void);text-decoration:none;
+    font-weight:600;font-size:.95rem;
+    transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .chapter-cta:hover{transform:translateY(-1px);box-shadow:0 12px 34px rgba(242,239,233,.16)}
+  .chapter p.chapter-note{
+    margin-top:.9rem;font-family:var(--mono);font-size:.64rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--dim);opacity:1;
+    max-width:none;white-space:nowrap;  /* mono tracking overflows the 44ch paragraph width */
+  }
+
+  /* chapter 02 annotates the garment, technical-drawing style */
+  .callouts{position:absolute;inset:0;pointer-events:none;z-index:1}
+  .co{position:absolute;display:flex;align-items:center;gap:.75rem}
+  .co-l{left:8%}
+  .co-r{right:8%}
+  .co-line{
+    height:1px;width:clamp(44px,7vw,104px);background:var(--ice-blue);opacity:.45;
+    transform:scaleX(0);transition:transform .75s cubic-bezier(.22,.7,.2,1);
+  }
+  .co-l .co-line{transform-origin:left center}
+  .co-r .co-line{transform-origin:right center}
+  .co-t{
+    font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ice);white-space:nowrap;opacity:0;transition:opacity .6s ease;
+  }
+  .chapter.lines-in .co-line{transform:scaleX(1)}
+  .chapter.lines-in .co-t{opacity:.72}
+  .chapter.lines-in .co:nth-child(1) .co-line,
+  .chapter.lines-in .co:nth-child(1) .co-t{transition-delay:.30s}
+  .chapter.lines-in .co:nth-child(2) .co-line,
+  .chapter.lines-in .co:nth-child(2) .co-t{transition-delay:.42s}
+  .chapter.lines-in .co:nth-child(3) .co-line,
+  .chapter.lines-in .co:nth-child(3) .co-t{transition-delay:.54s}
+  @media(max-width:980px){.callouts{display:none}}
+
   .chapter .mono{display:block;margin-bottom:1.1rem}
   .chapter h2, .chapter h1{
     font-weight:700;letter-spacing:-.02em;line-height:1.04;text-wrap:balance;
@@ -517,23 +565,35 @@
     <div class="chapter on" data-chapter="0">
       <div>
         <span class="mono">01 / The statement</span>
-        <h1>PHENOMENAL</h1>
+        <h1><span class="ln"><span class="ln-i">PHENOMENAL</span></span></h1>
         <p>One tee. Strong and rare, never mild and everywhere.</p>
       </div>
     </div>
     <div class="chapter" data-chapter="1">
+      <div class="callouts" aria-hidden="true">
+        <div class="co co-l" style="top:26%"><span class="co-t">35/65 cotton-poly</span><span class="co-line"></span></div>
+        <div class="co co-r" style="top:37%"><span class="co-line"></span><span class="co-t">Drop shoulder</span></div>
+        <div class="co co-l" style="top:48%"><span class="co-t">Soft-hand print</span><span class="co-line"></span></div>
+      </div>
       <div>
         <span class="mono">02 / The tee</span>
-        <h2>Someone's shot of whiskey.<br>Never everyone's cup of tea.</h2>
+        <h2>
+          <span class="ln"><span class="ln-i">Someone's shot of whiskey.</span></span>
+          <span class="ln"><span class="ln-i">Never everyone's cup of tea.</span></span>
+        </h2>
         <p>35/65 cotton-poly blend, oversized drop-shoulder cut, vintage whiskey-label print in bone cream.</p>
       </div>
     </div>
     <div class="chapter" data-chapter="2">
       <div>
         <span class="mono">03 / The drop</span>
-        <h2>Rs 7,999. This drop only.</h2>
+        <h2>
+          <span class="ln"><span class="ln-i">Rs 7,999.</span></span>
+          <span class="ln"><span class="ln-i">This drop only.</span></span>
+        </h2>
         <p class="price-line">SMALL BATCH · FREE SHIPPING NATIONWIDE</p>
-        <p>Checkout in 30 seconds. Keep scrolling.</p>
+        <a class="chapter-cta" href="#order">Order now</a>
+        <p class="chapter-note">Takes 30 seconds · Cash on delivery</p>
       </div>
     </div>
   </div>
@@ -908,6 +968,7 @@
       current = idx;
       chapters.forEach(function(c,i){ c.classList.toggle("on", i===idx); });
       chLabels.forEach(function(l,i){ l.classList.toggle("on", i===idx); });
+      chapters.forEach(function(c,i){ c.classList.toggle("lines-in", i===idx); });
     }
     // fill each chapter's underline with how far through that chapter you are
     chLabels.forEach(function(l,i){
@@ -918,8 +979,26 @@
     });
   }
   chLabels[0] && chLabels[0].classList.add("on");
+
+  // Headline lines and the chapter-02 callouts play when a chapter becomes
+  // active, and reset when it leaves so they replay on the way back up.
+  function playLines(){
+    chapters.forEach(function(c,i){ c.classList.toggle("lines-in", i === current); });
+  }
   window.addEventListener("scroll", onScroll, {passive:true});
   onScroll();
+
+  // chapter 0 waits for the curtain, so its lines do not run behind it
+  if(document.documentElement.classList.contains("intro")){
+    var waitIntro = setInterval(function(){
+      if(!document.documentElement.classList.contains("intro")){
+        clearInterval(waitIntro);
+        playLines();
+      }
+    }, 100);
+  } else {
+    playLines();
+  }
 
   /* ---------- the scene answers the cursor ----------
      Lerped into one transform on the wrapper, so it never fights the intro
