@@ -1045,11 +1045,11 @@
     playLines();
   }
 
-  /* ---------- the scene answers the cursor ----------
-     Lerped into one transform on the wrapper, so it never fights the intro
-     animation on the video itself. */
-  (function sceneMotion(){
-    var media = $("#media"), stage = $(".world-fix");
+  /* ---------- hero media fit ----------
+     The wrapper stays put — no cursor-driven drift — but still needs a
+     scale fix on ultra-wide screens. */
+  (function heroFit(){
+    var media = $("#media");
     if(!media) return;
 
     // Ultra-wide viewports are wider than the landscape source, so
@@ -1058,39 +1058,16 @@
     // footage itself never changes, this only zooms into its own
     // smoke-to-black edge so no bare void shows on either side.
     var VIDEO_ASPECT = 2578 / 1440; // ice-wide.mp4
-    var fitScale = 1;
     function updateFitScale(){
-      if (window.matchMedia("(max-aspect-ratio: 4/3)").matches) { fitScale = 1; return; }
-      var winAspect = window.innerWidth / window.innerHeight;
-      fitScale = winAspect > VIDEO_ASPECT ? winAspect / VIDEO_ASPECT : 1;
+      var fitScale = 1;
+      if (!window.matchMedia("(max-aspect-ratio: 4/3)").matches) {
+        var winAspect = window.innerWidth / window.innerHeight;
+        fitScale = winAspect > VIDEO_ASPECT ? winAspect / VIDEO_ASPECT : 1;
+      }
+      media.style.transform = "scale(" + fitScale.toFixed(3) + ")";
     }
     updateFitScale();
     window.addEventListener("resize", updateFitScale, {passive:true});
-
-    if(reduced){
-      media.style.transform = "scale(" + fitScale.toFixed(3) + ")";
-      return;
-    }
-
-    var tx = 0, ty = 0, cx = 0, cy = 0, onScreen = true;
-
-    window.addEventListener("pointermove", function(e){
-      tx = (e.clientX / window.innerWidth  - 0.5) * 2;
-      ty = (e.clientY / window.innerHeight - 0.5) * 2;
-    }, {passive:true});
-
-    if("IntersectionObserver" in window && stage){
-      new IntersectionObserver(function(en){ onScreen = en[0].isIntersecting; }).observe(stage);
-    }
-    function frame(){
-      requestAnimationFrame(frame);
-      if(!onScreen) return;
-      cx += (tx - cx) * 0.06;
-      cy += (ty - cy) * 0.06;
-      media.style.transform =
-        "translate3d(" + (cx * -14).toFixed(2) + "px," + (cy * -8).toFixed(2) + "px,0) scale(" + fitScale.toFixed(3) + ")";
-    }
-    requestAnimationFrame(frame);
   })();
 
   /* ---------- three.js frost layer ----------
