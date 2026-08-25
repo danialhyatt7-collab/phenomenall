@@ -898,13 +898,11 @@
   var chLabels = Array.prototype.slice.call(document.querySelectorAll(".chapters span"));
   var current = 0;
   var BOUNDS = [[0,.33],[.33,.72],[.72,1]];
-  var scrollP = 0;
 
   function onScroll(){
     var rect = world.getBoundingClientRect();
     var total = rect.height - window.innerHeight;
     var p = Math.min(1, Math.max(0, -rect.top / (total || 1)));
-    scrollP = p;
     var idx = p < 0.33 ? 0 : p < 0.72 ? 1 : 2;
     if(idx !== current){
       current = idx;
@@ -923,14 +921,13 @@
   window.addEventListener("scroll", onScroll, {passive:true});
   onScroll();
 
-  /* ---------- the scene answers scroll and cursor ----------
-     Scrolling through the pinned chapters pushes the shot in; the pointer drifts
-     it. Both are lerped into one transform on the wrapper, so it never fights the
-     intro animation on the video itself. */
+  /* ---------- the scene answers the cursor ----------
+     Lerped into one transform on the wrapper, so it never fights the intro
+     animation on the video itself. */
   (function sceneMotion(){
     var media = $("#media"), stage = $(".world-fix");
     if(!media || reduced) return;
-    var tx = 0, ty = 0, cx = 0, cy = 0, cp = 0, onScreen = true;
+    var tx = 0, ty = 0, cx = 0, cy = 0, onScreen = true;
 
     window.addEventListener("pointermove", function(e){
       tx = (e.clientX / window.innerWidth  - 0.5) * 2;
@@ -945,12 +942,8 @@
       if(!onScreen) return;
       cx += (tx - cx) * 0.06;
       cy += (ty - cy) * 0.06;
-      cp += (scrollP - cp) * 0.10;
-      var scale = 1 + cp * 0.11;                 // scroll pushes in
-      var mx = cx * -14;                         // cursor drifts
-      var my = cy * -8 + cp * -22;
       media.style.transform =
-        "translate3d(" + mx.toFixed(2) + "px," + my.toFixed(2) + "px,0) scale(" + scale.toFixed(4) + ")";
+        "translate3d(" + (cx * -14).toFixed(2) + "px," + (cy * -8).toFixed(2) + "px,0)";
     }
     requestAnimationFrame(frame);
   })();
