@@ -16,6 +16,7 @@
 "use strict";
 
 const http = require("http");
+const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -43,6 +44,146 @@ const MIME = {
 };
 
 const ORDER_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
+
+/* ---------------------------------------------------------------------------
+ * Meta Conversions API
+ *
+ * The browser fires InitiateCheckout when someone opens WhatsApp. That is an
+ * intent, not a sale — this shop is cash on delivery, so the money only exists
+ * once the order is confirmed. Purchase is therefore sent from here, server to
+ * server, the moment an order reaches META_PURCHASE_ON.
+ *
+ * Set up with two env vars in the host's dashboard:
+ *   META_CAPI_TOKEN       required — Events Manager → Settings → Generate access token
+ *   META_TEST_EVENT_CODE  optional — while testing, so events land in Test Events
+ *
+ * META_PURCHASE_ON picks the moment Meta learns to optimise for. "confirmed"
+ * (the default) reports within minutes, which keeps ad delivery learning fast.
+ * "delivered" is truer to money actually collected but can lag by days.
+ * ------------------------------------------------------------------------- */
+const META_PIXEL_ID = process.env.META_PIXEL_ID || "927619214095802";
+const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || "";
+const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE || "";
+const META_PURCHASE_ON = (process.env.META_PURCHASE_ON || "confirmed").toLowerCase();
+const META_API_VERSION = "v21.0";
+const META_TIMEOUT_MS = 6000;
+
+function sha256(value) {
+  return crypto.createHash("sha256").update(String(value)).digest("hex");
+}
+
+// Meta expects every identifier normalised before hashing, or it will not match.
+function normaliseEmail(raw) {
+  return String(raw || "").trim().toLowerCase();
+}
+
+// Local Pakistani numbers ("0300 1234567") have to reach Meta as E.164 digits
+// without the plus: 923001234567.
+function normalisePhone(raw) {
+  let d = String(raw || "").replace(/\D/g, "");
+  if (!d) return "";
+  if (d.startsWith("00")) d = d.slice(2);
+  if (d.startsWith("92")) return d;
+  if (d.startsWith("0")) return "92" + d.slice(1);
+  if (d.length === 10) return "92" + d;
+  return d;
+}
+
+function buildMetaPurchase(order) {
+  const user = {};
+  const email = normaliseEmail(order.email);
+  if (email) user.em = [sha256(email)];
+  const phone = normalisePhone(order.phone);
+  if (phone) user.ph = [sha256(phone)];
+  if (order.name) {
+    const parts = String(order.name).trim().toLowerCase().split(/\s+/);
+    if (parts[0]) user.fn = [sha256(parts[0])];
+    if (parts.length > 1) user.ln = [sha256(parts.slice(1).join(" "))];
+  }
+  user.country = [sha256("pk")];
+  // Unhashed by design — these are Meta's own identifiers and carry most of
+  // the match quality for an ad-driven order.
+  if (order.fbp) user.fbp = order.fbp;
+  if (order.fbc) user.fbc = order.fbc;
+  if (order.client_ip) user.client_ip_address = order.client_ip;
+  if (order.client_ua) user.client_user_agent = order.client_ua;
+
+  // Meta rejects events older than seven days, so an order confirmed late
+  // still reports, just stamped at the edge of the window.
+  const placed = Date.parse(order.created_at);
+  const now = Date.now();
+  const floor = now - 6 * 24 * 60 * 60 * 1000;
+  const when = Number.isFinite(placed) ? Math.min(Math.max(placed, floor), now) : now;
+
+  return {
+    event_name: "Purchase",
+    event_time: Math.floor(when / 1000),
+    event_id: order.id, // same id every retry, so Meta de-duplicates
+    action_source: "website",
+    event_source_url: order.event_source_url || "https://phenomenal.pk/",
+    user_data: user,
+    custom_data: {
+      currency: "PKR",
+      value: order.total,
+      content_name: order.product,
+      content_type: "product",
+      content_ids: ["shot-of-whiskey-tee"],
+      num_items: order.qty,
+      order_id: order.id,
+    },
+  };
+}
+
+function postToMeta(payload) {
+  return new Promise((resolve) => {
+    const body = JSON.stringify(payload);
+    const req = https.request(
+      {
+        hostname: "graph.facebook.com",
+        path: "/" + META_API_VERSION + "/" + META_PIXEL_ID + "/events",
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) },
+        timeout: META_TIMEOUT_MS,
+      },
+      (res) => {
+        let text = "";
+        res.on("data", (c) => (text += c));
+        res.on("end", () => resolve({ status: res.statusCode, body: text.slice(0, 500) }));
+      }
+    );
+    req.on("timeout", () => { req.destroy(new Error("timed out after " + META_TIMEOUT_MS + "ms")); });
+    req.on("error", (err) => resolve({ status: 0, error: err.message }));
+    req.end(body);
+  });
+}
+
+/**
+ * Sends Purchase once per order. Mutates order.capi with the outcome so the
+ * result is visible in the order log; the caller persists it.
+ */
+async function sendMetaPurchase(order) {
+  if (order.capi && order.capi.purchase_sent_at) return order.capi;
+  if (!META_CAPI_TOKEN) {
+    order.capi = { skipped: "META_CAPI_TOKEN is not set", attempted_at: new Date().toISOString() };
+    return order.capi;
+  }
+  const payload = { data: [buildMetaPurchase(order)], access_token: META_CAPI_TOKEN };
+  if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
+
+  const result = await postToMeta(payload);
+  if (result.status >= 200 && result.status < 300) {
+    order.capi = { purchase_sent_at: new Date().toISOString(), response: result.body };
+    console.log("Meta Purchase sent for " + order.id + " (Rs " + order.total + ")");
+  } else {
+    order.capi = {
+      attempted_at: new Date().toISOString(),
+      error: result.error || "HTTP " + result.status,
+      response: result.body || null,
+    };
+    console.error("Meta Purchase failed for " + order.id + ": " + JSON.stringify(order.capi));
+  }
+  return order.capi;
+}
 
 function readOrders() {
   try {
@@ -263,6 +404,13 @@ const server = http.createServer(async (req, res) => {
         marketing_opt_in: body.marketing_opt_in === true,
         channel: "whatsapp",
         status: "pending",
+        // Kept for the Conversions API Purchase sent when this order is
+        // confirmed — without them Meta cannot tie the sale to the ad click.
+        fbp: body.fbp ? String(body.fbp).slice(0, 120) : null,
+        fbc: body.fbc ? String(body.fbc).slice(0, 255) : null,
+        event_source_url: body.event_source_url ? String(body.event_source_url).slice(0, 500) : null,
+        client_ip: String(clientKey(req)).split(",")[0].trim(),
+        client_ua: req.headers["user-agent"] ? String(req.headers["user-agent"]).slice(0, 500) : null,
       };
       const orders = readOrders();
       orders.unshift(order);
@@ -285,8 +433,13 @@ const server = http.createServer(async (req, res) => {
       const orders = readOrders();
       const order = orders.find((o) => o.id === patchMatch[1]);
       if (!order) return json(res, 404, { error: "order not found" });
+      const wasStatus = order.status;
       order.status = body.status;
       order.updated_at = new Date().toISOString();
+      // Only on the transition into the trigger status, and only once ever.
+      if (order.status === META_PURCHASE_ON && wasStatus !== META_PURCHASE_ON) {
+        await sendMetaPurchase(order);
+      }
       writeOrders(orders);
       return json(res, 200, order);
     }

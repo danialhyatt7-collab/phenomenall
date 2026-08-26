@@ -886,8 +886,32 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     document.getElementById(id).addEventListener("input", render);
   });
   $("#f-optin").addEventListener("change", render);
+  /* Meta's browser cookies. _fbp is set by the pixel; _fbc only exists once
+     someone lands from an ad, so rebuild it from ?fbclid= when it is missing.
+     Both are handed to the server, which needs them to match the Conversions
+     API Purchase back to the ad click. */
+  function cookie(name){
+    var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+    return m ? m.pop() : null;
+  }
+  function fbcValue(){
+    var existing = cookie("_fbc");
+    if(existing) return existing;
+    var id = new URLSearchParams(location.search).get("fbclid");
+    return id ? "fb.1." + Date.now() + "." + id : null;
+  }
+
+  var submitting = false;
   $("#order-form").addEventListener("submit", function(e){
     e.preventDefault();
+    // A second tap while WhatsApp is opening would otherwise record the order
+    // twice and double-count the conversion.
+    if(submitting) return;
+    submitting = true;
+    var btn = $("#order-form button[type=submit]");
+    if(btn) btn.disabled = true;
+    setTimeout(function(){ submitting = false; if(btn) btn.disabled = false; }, 4000);
+
     var payload = {
       product: PRODUCT, size: size, qty: qty,
       unit_price: PRICE, total: PRICE*qty,
@@ -895,16 +919,22 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
       phone: $("#f-phone").value.trim() || null,
       address: $("#f-address").value.trim() || null,
       email: $("#f-email").value.trim() || null,
-      marketing_opt_in: $("#f-optin").checked
+      marketing_opt_in: $("#f-optin").checked,
+      fbp: cookie("_fbp"), fbc: fbcValue(),
+      event_source_url: location.href
     };
     // Records the order when served by server.js; fails silently on static hosting.
     try{
       fetch("/api/orders", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)}).catch(function(){});
     }catch(err){}
+    // Opening WhatsApp is an intent to buy, not a sale — this is cash on
+    // delivery, so nothing is paid yet. Purchase is sent server-side once the
+    // order is actually confirmed; see sendMetaPurchase in server.js.
     if(window.fbq){
-      fbq('track', 'Purchase', {
+      fbq('track', 'InitiateCheckout', {
         value: payload.total, currency: 'PKR',
-        content_name: PRODUCT, content_type: 'product', num_items: qty
+        content_name: PRODUCT, content_type: 'product',
+        content_ids: ['shot-of-whiskey-tee'], num_items: qty
       });
     }
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(message()), "_blank", "noopener");
