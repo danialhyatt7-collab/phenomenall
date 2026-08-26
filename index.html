@@ -901,6 +901,25 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     return id ? "fb.1." + Date.now() + "." + id : null;
   }
 
+  /* Opening WhatsApp switches apps on a phone, and a browser is free to kill a
+     plain in-flight fetch when it backgrounds — losing the order and the
+     customer's details with it. sendBeacon is the one request the browser
+     promises to deliver as the page goes away; keepalive is the fallback.
+     Fails silently on static hosting, where there is no /api/orders. */
+  function recordOrder(payload){
+    var body = JSON.stringify(payload);
+    try{
+      if(navigator.sendBeacon &&
+         navigator.sendBeacon("/api/orders", new Blob([body], {type:"application/json"}))) return;
+    }catch(err){}
+    try{
+      fetch("/api/orders", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: body, keepalive: true
+      }).catch(function(){});
+    }catch(err){}
+  }
+
   var submitting = false;
   $("#order-form").addEventListener("submit", function(e){
     e.preventDefault();
@@ -923,10 +942,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
       fbp: cookie("_fbp"), fbc: fbcValue(),
       event_source_url: location.href
     };
-    // Records the order when served by server.js; fails silently on static hosting.
-    try{
-      fetch("/api/orders", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)}).catch(function(){});
-    }catch(err){}
+    recordOrder(payload);
     // Opening WhatsApp is an intent to buy, not a sale — this is cash on
     // delivery, so nothing is paid yet. Purchase is sent server-side once the
     // order is actually confirmed; see sendMetaPurchase in server.js.
