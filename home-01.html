@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHENOMENAL — Home 01</title>
+<meta name="description" content="PHENOMENAL — an alternate warm-toned bento layout for the homepage, styled after a reference mockup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#ECE5DA;
+    --card:#FBF9F5;
+    --ink:#2B231C;
+    --sub:#7C7164;
+    --faint:#A79B8C;
+    --line:rgba(43,35,28,.12);
+    --umber-1:#8A5A3A;
+    --umber-2:#4A2E1E;
+    --umber-3:#2A1B12;
+    --sans:'Archivo',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+    --mono:'IBM Plex Mono','SF Mono',Consolas,monospace;
+    --r:22px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *,*::before,*::after{transition:none!important} }
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  button{font:inherit;cursor:pointer;background:none;border:none;color:inherit}
+  :focus-visible{outline:2px solid var(--umber-1);outline-offset:3px}
+
+  .eyebrow{
+    font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--sub);display:block;margin-bottom:.5rem;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.7rem 1.3rem;border-radius:99px;font-size:.82rem;font-weight:600;
+    border:1px solid currentColor;white-space:nowrap;
+  }
+  .pill.solid{background:var(--ink);color:var(--card);border-color:var(--ink)}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky;top:0;z-index:20;background:rgba(236,229,218,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .hdr-in{
+    max-width:1180px;margin:0 auto;padding:1.1rem 1.5rem;
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  }
+  .hdr-left{display:flex;align-items:center;gap:.9rem}
+  .hdr-btn{width:2.2rem;height:2.2rem;display:grid;place-items:center;border-radius:50%}
+  .hdr-btn:hover{background:rgba(43,35,28,.06)}
+  .hdr-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+  .logo{font-family:var(--serif);font-weight:700;font-size:1.15rem;letter-spacing:.02em}
+  nav.hdr-nav{display:flex;gap:1.9rem}
+  nav.hdr-nav a{
+    font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);
+  }
+  nav.hdr-nav a:hover{color:var(--ink)}
+  @media(max-width:760px){ nav.hdr-nav{display:none} }
+
+  /* ---------- bento layout ---------- */
+  .bento-wrap{max-width:1180px;margin:0 auto;padding:2.4rem 1.5rem 6rem}
+  .bento{
+    display:grid;gap:1rem;
+    grid-template-columns:repeat(12,1fr);
+    grid-auto-rows:minmax(80px,auto);
+  }
+  .card{
+    border-radius:var(--r);position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    padding:1.9rem;
+  }
+  .card p{color:var(--sub);font-size:.92rem;max-width:36ch;margin-top:.35rem}
+  .card h2,.card h1{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;line-height:1.05}
+  .card .pill{margin-top:1.2rem;align-self:flex-start}
+
+  /* hero */
+  .c-hero{
+    grid-column:1/13;grid-row:1/3;min-height:420px;
+    justify-content:flex-start;padding:2.6rem 2.4rem;
+    background:linear-gradient(155deg,var(--umber-1),var(--umber-3) 70%);
+  }
+  .c-hero::before{
+    content:'';position:absolute;inset:0;z-index:0;
+    background:url('assets/ice-hero-wide.jpg') center/cover;
+    filter:sepia(.55) saturate(1.3) brightness(.62) contrast(1.05);
+    mix-blend-mode:luminosity;opacity:.85;
+  }
+  .c-hero::after{
+    content:'';position:absolute;inset:0;z-index:0;
+    background:linear-gradient(180deg,rgba(42,27,18,.15),rgba(42,27,18,.75) 82%),
+               linear-gradient(100deg,rgba(74,46,30,.55),transparent 55%);
+  }
+  .c-hero > *{position:relative;z-index:1}
+  .c-hero .eyebrow{color:rgba(255,250,242,.72)}
+  .c-hero h1{color:#FBF3E8;font-size:clamp(2.4rem,6vw,4.2rem)}
+  .c-hero p{color:rgba(255,250,242,.78);font-size:1.02rem;max-width:44ch}
+  .c-hero .pill{border-color:rgba(255,250,242,.6);color:#FBF3E8}
+
+  .c-tee{
+    grid-column:8/13;grid-row:1/2;min-height:260px;color:#FBF3E8;
+    background:linear-gradient(155deg,var(--umber-1),var(--umber-2));
+  }
+  .c-tee .eyebrow{color:rgba(255,250,242,.65)}
+  .c-tee h2{font-size:1.9rem}
+  .c-tee .pill{border-color:rgba(255,250,242,.55)}
+
+  .c-sizing{
+    grid-column:1/6;grid-row:3/5;min-height:300px;background:var(--card);border:1px solid var(--line);
+  }
+  .c-sizing h2{font-size:1.9rem;color:var(--ink)}
+
+  .c-swirl{
+    grid-column:6/9;grid-row:3/6;min-height:420px;
+    background:
+      radial-gradient(120% 90% at 20% 15%, #C9A377, transparent 60%),
+      radial-gradient(120% 100% at 85% 30%, #7A4A2C, transparent 55%),
+      linear-gradient(200deg,#D9BE96,#5A3620 75%);
+    justify-content:flex-start;align-items:flex-start;
+  }
+  .c-swirl .eyebrow{color:rgba(255,250,242,.75)}
+  .c-swirl p.tag{color:#FBF3E8;font-size:.85rem;max-width:16ch}
+
+  .c-fabric{
+    grid-column:1/6;grid-row:5/7;min-height:260px;background:var(--card);border:1px solid var(--line);
+  }
+  .c-fabric h2{font-size:1.9rem;color:var(--ink)}
+
+  .c-drop{
+    grid-column:9/13;grid-row:2/6;min-height:460px;color:#FBF3E8;
+    background:linear-gradient(165deg,#5A3A24,var(--umber-3) 80%);
+  }
+  .c-drop h2{font-size:2.3rem}
+  .c-drop .eyebrow{color:rgba(255,250,242,.65)}
+  .c-drop .pill{border-color:rgba(255,250,242,.55)}
+  .dots{display:flex;gap:.4rem;margin-top:1.4rem}
+  .dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,250,242,.35)}
+  .dots span:first-child{background:#FBF3E8;width:16px;border-radius:99px}
+
+  @media(max-width:900px){
+    .c-hero,.c-tee,.c-sizing,.c-swirl,.c-fabric,.c-drop{grid-column:1/13}
+    .c-hero{grid-row:auto;min-height:380px}
+    .c-tee{grid-row:auto;min-height:220px}
+    .c-sizing{grid-row:auto;min-height:220px}
+    .c-swirl{grid-row:auto;min-height:280px}
+    .c-fabric{grid-row:auto;min-height:220px}
+    .c-drop{grid-row:auto;min-height:340px}
+  }
+
+  /* ---------- closing band ---------- */
+  .close-band{
+    max-width:1180px;margin:0 auto;padding:0 1.5rem 5rem;
+    display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;
+  }
+  .close-band .side-nav{display:flex;flex-direction:column;gap:.6rem}
+  .side-nav button{width:2.1rem;height:2.1rem;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center}
+  .side-nav svg{width:14px;height:14px;fill:none;stroke:var(--sub);stroke-width:1.6}
+  .close-band h2{font-family:var(--serif);font-size:clamp(1.9rem,4vw,2.6rem);font-weight:600}
+  .close-band p{color:var(--sub);max-width:52ch;margin-top:.6rem;font-size:.95rem}
+  @media(max-width:700px){ .close-band{flex-direction:column;align-items:flex-start;gap:1.4rem} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-in">
+    <div class="hdr-left">
+      <button class="hdr-btn" id="burger" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <a class="logo" href="index.html">PHENOMENAL</a>
+    </div>
+    <nav class="hdr-nav">
+      <a href="index.html#spec">The Tee</a>
+      <a href="index.html#order">Sizing</a>
+      <a href="index.html#order">Order</a>
+      <a href="index.html#faq">FAQ</a>
+    </nav>
+    <button class="hdr-btn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24"><path d="M12 3a5 5 0 0 0-5 5v3.2c0 .6-.2 1.2-.6 1.7L5 15h14l-1.4-2.1c-.4-.5-.6-1.1-.6-1.7V8a5 5 0 0 0-5-5Z"/><path d="M9.5 18a2.5 2.5 0 0 0 5 0"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="bento-wrap">
+  <div class="bento">
+
+    <div class="card c-hero" id="top">
+      <span class="eyebrow">01 / The statement</span>
+      <h1>PHENOMENAL</h1>
+      <p>One tee. Strong and rare, never mild and everywhere. An oversized drop-shoulder cut with a vintage whiskey-label print, in bone cream.</p>
+      <a class="pill" href="index.html#order">Order now</a>
+    </div>
+
+    <div class="card c-tee">
+      <span class="eyebrow">Detail</span>
+      <h2>The Tee</h2>
+      <p>35/65 cotton-poly, oversized drop shoulder, soft-hand print that stays put.</p>
+      <a class="pill" href="index.html#spec">Learn more</a>
+    </div>
+
+    <div class="card c-sizing">
+      <span class="eyebrow">Fit guide</span>
+      <h2>Sizing</h2>
+      <p>True oversized through the body — size down one if you want it closer to true-to-size.</p>
+      <a class="pill" href="index.html#order">Size guide</a>
+    </div>
+
+    <div class="card c-swirl">
+      <span class="eyebrow">Colour</span>
+      <p class="tag">Bone cream, warmer than white.</p>
+    </div>
+
+    <div class="card c-fabric">
+      <span class="eyebrow">Fabric</span>
+      <h2>Fabric</h2>
+      <p>Cotton-poly blend that holds its shape wash after wash and resists shrinking.</p>
+    </div>
+
+    <div class="card c-drop">
+      <span class="eyebrow">03 / The drop</span>
+      <h2>Rs 7,999. This drop only.</h2>
+      <p>Small batch · free shipping nationwide · cash on delivery.</p>
+      <a class="pill solid" href="index.html#order">Checkout</a>
+      <div class="dots"><span></span><span></span><span></span></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="close-band">
+  <div class="side-nav">
+    <button aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>
+    </button>
+    <button aria-label="Scroll down" onclick="window.scrollBy({top:600,behavior:'smooth'})">
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+  </div>
+  <div>
+    <span class="eyebrow">Closing</span>
+    <h2>Someone's shot of whiskey. Never everyone's cup of tea.</h2>
+    <p>One product, obsessed over. No accounts, no card forms — pick a size and pay cash on delivery.</p>
+  </div>
+  <a class="pill" href="index.html#order">Learn more</a>
+</div>
+
+</body>
+</html>
