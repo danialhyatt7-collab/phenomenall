@@ -6,7 +6,8 @@
 <title>PHENOMENAL</title>
 <meta name="description" content="PHENOMENAL — one tee, done properly. Oversized drop-shoulder tee with a vintage whiskey-label print.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700&family=Sora:wght@600;700&display=swap">
 <!-- Meta Pixel -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -33,7 +34,8 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     --dim:#77716A;
     --line:rgba(201,194,180,.16);
     --wa:#F2EFE9;
-    --sans:'Archivo',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --sans:'Inter',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --display:'Sora',var(--sans);
     --mono:'IBM Plex Mono','SF Mono',Consolas,monospace;
   }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -50,6 +52,8 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     line-height:1.6;
     overflow-x:hidden;
   }
+  /* Sora carries every display line; Inter handles running text, IBM Plex Mono the labels. */
+  h1,h2,h3{font-family:var(--display);letter-spacing:-.03em}
   ::selection{background:var(--ice-blue);color:var(--void)}
   a{color:var(--ice)}
   img{max-width:100%;display:block}
@@ -72,7 +76,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   html.intro body{overflow:hidden}
   .curtain-in{display:flex;flex-direction:column;align-items:center;gap:1.15rem}
   .curtain-word{
-    font-weight:700;font-size:clamp(.95rem,3vw,1.5rem);color:var(--ice);
+    font-family:var(--display);font-weight:700;font-size:clamp(.95rem,3vw,1.5rem);color:var(--ice);
     letter-spacing:.42em;text-indent:.42em;white-space:nowrap;
     opacity:0;animation:wordIn 1.05s cubic-bezier(.22,.7,.2,1) .1s forwards;
   }
@@ -122,7 +126,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.5rem;
   }
   .hdr-logo{
-    font-weight:700;font-size:.9rem;letter-spacing:.3em;text-decoration:none;color:var(--ice);
+    font-family:var(--display);font-weight:700;font-size:.9rem;letter-spacing:.3em;text-decoration:none;color:var(--ice);
     white-space:nowrap;
   }
   .hdr-nav{display:flex;gap:1.6rem;align-items:center}
@@ -332,7 +336,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
 
   .chapter .mono{display:block;margin-bottom:1.1rem}
   .chapter h2, .chapter h1{
-    font-weight:700;letter-spacing:-.02em;line-height:1.04;text-wrap:balance;
+    font-weight:700;letter-spacing:-.03em;line-height:1.04;text-wrap:balance;
     font-size:clamp(2.2rem,7vw,5rem);
     text-shadow:0 2px 50px rgba(7,6,6,.9);
   }
@@ -361,7 +365,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   /* ---------- below the world ---------- */
   section{position:relative;background:var(--void);padding:6rem 1.5rem;z-index:5;scroll-margin-top:58px}
   .wrap{max-width:1060px;margin:0 auto}
-  .sec-h{font-weight:700;letter-spacing:-.02em;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.12;text-wrap:balance;margin:.8rem 0 1rem}
+  .sec-h{font-weight:700;letter-spacing:-.03em;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.12;text-wrap:balance;margin:.8rem 0 1rem}
   .sec-sub{color:var(--dim);max-width:56ch}
 
   .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:2.4rem}
@@ -389,7 +393,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
     padding:1.4rem 1.5rem 1.1rem;border-bottom:1px solid var(--line);
   }
-  .modal-head h2{font-size:1.3rem;font-weight:700;letter-spacing:-.02em;margin-top:.4rem}
+  .modal-head h2{font-size:1.3rem;font-weight:700;letter-spacing:-.03em;margin-top:.4rem}
   .modal-x{
     flex:none;display:grid;place-items:center;width:2.1rem;height:2.1rem;
     background:none;border:1px solid var(--line);border-radius:3px;color:var(--ice);
@@ -474,7 +478,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   .optin input:focus-visible{outline:2px solid var(--ice-blue);outline-offset:2px}
   .total-row{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:1.8rem;padding-top:1.3rem}
   .total-row .t-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
-  .total-row .t-val{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .total-row .t-val{font-family:var(--display);font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
   .total-row .t-was{color:var(--dim);font-size:.62em;font-weight:400;margin-right:.55rem}
   .save-note{margin-top:.7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ice-blue)}
   .sticky-bar .p s{color:var(--dim);font-size:.78em;font-weight:400;margin-right:.4rem}
@@ -506,7 +510,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   details.faq div{padding:0 0 1.3rem;color:var(--dim);max-width:62ch;font-size:.95rem}
 
   footer{background:var(--void);border-top:1px solid var(--line);padding:2.6rem 1.5rem 6.5rem;text-align:center;color:var(--dim);font-size:.88rem;position:relative;z-index:5}
-  footer .f-brand{font-weight:700;letter-spacing:.32em;color:var(--ice);display:inline-block;margin-bottom:.6rem;text-decoration:none}
+  footer .f-brand{font-family:var(--display);font-weight:700;letter-spacing:.32em;color:var(--ice);display:inline-block;margin-bottom:.6rem;text-decoration:none}
   footer a{color:var(--dim)}
 
   .sticky-bar{
@@ -515,7 +519,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
     background:rgba(7,6,6,.9);border-top:1px solid var(--line);
     padding:.7rem 1rem;backdrop-filter:blur(10px);
   }
-  .sticky-bar .p{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+  .sticky-bar .p{font-family:var(--display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
   .sticky-bar .btn-wa{width:auto;margin:0;padding:.7rem 1.2rem;font-size:.88rem}
   @media(max-width:700px){.sticky-bar{display:flex}}
 </style>
