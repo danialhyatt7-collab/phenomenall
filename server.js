@@ -61,7 +61,7 @@ const ORDER_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancell
  * (the default) reports within minutes, which keeps ad delivery learning fast.
  * "delivered" is truer to money actually collected but can lag by days.
  * ------------------------------------------------------------------------- */
-const META_PIXEL_ID = process.env.META_PIXEL_ID || "927619214095802";
+const META_PIXEL_ID = process.env.META_PIXEL_ID || "927494272063012";
 const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || "";
 const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE || "";
 const META_PURCHASE_ON = (process.env.META_PURCHASE_ON || "confirmed").toLowerCase();
@@ -238,6 +238,15 @@ const LOCKOUT_MS = 15 * 60 * 1000;
 const sessions = new Map();
 const attempts = new Map();
 
+// Values pasted into a hosting panel often arrive wrapped in quotes or padded
+// with a stray space; both would silently become part of the credential.
+function cleanEnv(value) {
+  let v = String(value == null ? "" : value).trim();
+  if (v.length > 1 && ((v[0] === '"' && v.endsWith('"')) || (v[0] === "'" && v.endsWith("'")))) {
+    v = v.slice(1, -1).trim();
+  }
+  return v;
+}
 function scryptHash(password, saltHex) {
   return crypto.scryptSync(password, Buffer.from(saltHex, "hex"), 64).toString("hex");
 }
@@ -602,11 +611,19 @@ if (process.argv.includes("--set-login")) {
 } else {
   // Managed hosts (Hostinger, Render, a VPS panel) often give no shell, so the
   // login can also be set from environment variables in the host's dashboard.
-  if (process.env.ADMIN_USER && process.env.ADMIN_PASSWORD) {
-    if (!checkLogin(process.env.ADMIN_USER, process.env.ADMIN_PASSWORD)) {
-      saveLogin(process.env.ADMIN_USER, process.env.ADMIN_PASSWORD);
-      console.log('Admin login set from environment: "' + process.env.ADMIN_USER + '"');
+  // Those are pasted into a web form, so surrounding quotes and stray spaces
+  // are common and would otherwise become part of the credential itself.
+  const envUser = cleanEnv(process.env.ADMIN_USER);
+  const envPass = cleanEnv(process.env.ADMIN_PASSWORD);
+  if (envUser && envPass) {
+    if (checkLogin(envUser, envPass)) {
+      console.log('Admin login already matches ADMIN_USER: "' + envUser + '"');
+    } else {
+      saveLogin(envUser, envPass);
+      console.log('Admin login set from environment: "' + envUser + '"');
     }
+  } else if (process.env.ADMIN_USER || process.env.ADMIN_PASSWORD) {
+    console.log("ADMIN_USER and ADMIN_PASSWORD must BOTH be set — ignoring the one that is.");
   }
 
   // No account yet? Create one with a strong random password and show it once,
@@ -622,6 +639,11 @@ if (process.argv.includes("--set-login")) {
     console.log("=".repeat(54));
     console.log("  Change it any time:  node server.js --set-login\n");
   }
+
+  // Say plainly which account is live, so a shell-less host can be diagnosed
+  // from the runtime log alone. Never prints the password.
+  const live = readAuth();
+  if (live) console.log('Admin sign-in username: "' + live.username + '"');
 
   server.listen(PORT, () => {
     console.log("Phenomenal store running → http://localhost:" + PORT);
