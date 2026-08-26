@@ -339,6 +339,8 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   .chapter p{max-width:44ch;margin:1.2rem auto 0;color:var(--ice);opacity:.85;font-size:clamp(.98rem,2vw,1.15rem);text-shadow:0 1px 30px rgba(7,6,6,.9)}
   .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:clamp(.78rem,1.6vw,1rem);letter-spacing:.12em;color:var(--ice-blue);display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;white-space:nowrap}
   .chapter .price-line s{color:var(--dim)}
+  .chapter .price-line > *:not(:last-child)::after{content:'·';margin-left:.9rem;color:var(--dim)}
+  .chapter h2 .was{color:var(--dim);font-size:.5em;font-weight:400;letter-spacing:0;margin-right:.5rem;vertical-align:.32em}
 
   /* ---------- ticker ---------- */
   .ticker{
@@ -473,6 +475,9 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   .total-row{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:1.8rem;padding-top:1.3rem}
   .total-row .t-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
   .total-row .t-val{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .total-row .t-was{color:var(--dim);font-size:.62em;font-weight:400;margin-right:.55rem}
+  .save-note{margin-top:.7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ice-blue)}
+  .sticky-bar .p s{color:var(--dim);font-size:.78em;font-weight:400;margin-right:.4rem}
   .preview{
     margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ice-blue);
     border-radius:3px;padding:1rem 1.1rem;font-size:.92rem;color:var(--ice);opacity:.85;
@@ -622,10 +627,10 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
       <div>
         <span class="mono">03 / The drop</span>
         <h2>
-          <span class="ln"><span class="ln-i">Rs 7,999.</span></span>
+          <span class="ln"><span class="ln-i"><s class="was">Rs 7,999</s>Rs 4,999.</span></span>
           <span class="ln"><span class="ln-i">This drop only.</span></span>
         </h2>
-        <p class="price-line">SMALL BATCH · FREE SHIPPING NATIONWIDE</p>
+        <p class="price-line"><span>FIRST-DROP PRICE</span><span>SMALL BATCH</span><span>FREE SHIPPING NATIONWIDE</span></p>
         <a class="chapter-cta" href="#order">Order now</a>
         <p class="chapter-note">Takes 30 seconds · Cash on delivery</p>
       </div>
@@ -727,11 +732,12 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
         </label>
         <div class="total-row">
           <span class="t-label">Total · Free shipping</span>
-          <span class="t-val" id="total">Rs 7,999</span>
+          <span class="t-val"><s class="t-was" id="was-total">Rs 7,999</s><span id="total">Rs 4,999</span></span>
         </div>
+        <p class="save-note">First-drop price — you save <span id="save-amt">Rs 3,000</span>. Small batch, this drop only.</p>
         <div class="preview">
           <span class="mono">Order summary</span>
-          <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 7,999).</span>
+          <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 4,999).</span>
         </div>
         <button type="submit" class="btn-wa">
           <svg class="wa-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.4-2.9c-.3-.4.3-.4.7-1.3 0-.2 0-.3-.1-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.1 2.8c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3Z"/></svg>
@@ -762,7 +768,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
 </footer>
 
 <div class="sticky-bar">
-  <span class="p">Rs 7,999</span>
+  <span class="p"><s>Rs 7,999</s>Rs 4,999</span>
   <a class="btn-wa" href="#order" style="width:auto;margin:0">Checkout</a>
 </div>
 
@@ -812,7 +818,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
 <script>
 (function(){
   "use strict";
-  var PRICE = 7999, WA = "923374841818", PRODUCT = "Shot of Whiskey tee";
+  var PRICE = 4999, WAS_PRICE = 7999, WA = "923374841818", PRODUCT = "Shot of Whiskey tee";
   var size = "M", qty = 1;
   var fmt = function(n){ return "Rs " + n.toLocaleString("en-PK"); };
   var $ = function(s){ return document.querySelector(s); };
@@ -854,6 +860,8 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
   }
   function render(){
     $("#total").textContent = fmt(PRICE*qty);
+    $("#was-total").textContent = fmt(WAS_PRICE*qty);
+    $("#save-amt").textContent = fmt((WAS_PRICE - PRICE)*qty);
     $("#q-out").textContent = qty;
     $("#msg-preview").textContent = message();
     var badge = $("#cart-badge");
@@ -932,7 +940,7 @@ src="https://www.facebook.com/tr?id=927619214095802&ev=PageView&noscript=1"
 
   // small index of what this store actually has, so search lands on a real answer
   var INDEX = [
-    {t:"Shot of Whiskey tee — Rs 7,999", tag:"Product", href:"#order", k:"tee shirt tshirt product price rs 7999 buy shot whiskey cost"},
+    {t:"Shot of Whiskey tee — Rs 4,999 (was Rs 7,999)", tag:"Product", href:"#order", k:"tee shirt tshirt product price rs 4999 7999 buy shot whiskey cost sale discount first drop"},
     {t:"Size chart — chest, length, shoulder, sleeve", tag:"Sizing", href:"#size-modal", modal:true, k:"size sizes chart guide small medium large xl xxl fit oversized measurement measurements chest length shoulder sleeve inches drop"},
     {t:"35% cotton, 65% polyester blend", tag:"Fabric", href:"#spec", k:"fabric cotton polyester poly blend material quality 35 65 gsm weight"},
     {t:"Vintage whiskey-label print, soft ink", tag:"Print", href:"#spec", k:"print ink artwork label design crack fade"},
