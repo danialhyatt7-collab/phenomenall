@@ -61,10 +61,13 @@ const ORDER_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancell
  * (the default) reports within minutes, which keeps ad delivery learning fast.
  * "delivered" is truer to money actually collected but can lag by days.
  * ------------------------------------------------------------------------- */
-const META_PIXEL_ID = process.env.META_PIXEL_ID || "927494272063012";
-const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || "";
-const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE || "";
-const META_PURCHASE_ON = (process.env.META_PURCHASE_ON || "confirmed").toLowerCase();
+// cleanEnv strips the quotes and stray spaces a hosting panel's web form
+// tends to bake into a pasted value — a token with a trailing space fails
+// against Meta with an unhelpful error.
+const META_PIXEL_ID = cleanEnv(process.env.META_PIXEL_ID) || "927494272063012";
+const META_CAPI_TOKEN = cleanEnv(process.env.META_CAPI_TOKEN);
+const META_TEST_EVENT_CODE = cleanEnv(process.env.META_TEST_EVENT_CODE);
+const META_PURCHASE_ON = (cleanEnv(process.env.META_PURCHASE_ON) || "confirmed").toLowerCase();
 const META_API_VERSION = "v21.0";
 const META_TIMEOUT_MS = 6000;
 
@@ -644,6 +647,18 @@ if (process.argv.includes("--set-login")) {
   // from the runtime log alone. Never prints the password.
   const live = readAuth();
   if (live) console.log('Admin sign-in username: "' + live.username + '"');
+
+  // Say whether Purchase reporting is armed, without ever printing the token.
+  if (!META_CAPI_TOKEN) {
+    console.log("Meta Purchase: OFF — META_CAPI_TOKEN is not set, confirmed orders will not report.");
+  } else {
+    console.log(
+      "Meta Purchase: ON — pixel " + META_PIXEL_ID + ", sends on status \"" + META_PURCHASE_ON + '"' +
+      (META_TEST_EVENT_CODE
+        ? ", TEST MODE (" + META_TEST_EVENT_CODE + ") — events go to Test Events only, not live reporting"
+        : ", live reporting")
+    );
+  }
 
   server.listen(PORT, () => {
     console.log("Phenomenal store running → http://localhost:" + PORT);
