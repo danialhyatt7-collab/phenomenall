@@ -161,6 +161,10 @@
 
   /* ---------- sign in ---------- */
   .login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:20px;z-index:50}
+  /* display:grid above outranks the browser's own [hidden]{display:none}, so
+     without this the overlay stays on screen after a successful sign-in and
+     the dashboard is unreachable. */
+  .login[hidden]{display:none}
   .login-card{width:100%;max-width:352px;background:var(--surface);border:1px solid var(--border);
     border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);padding:26px 24px}
   .login-brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.22em;font-size:12px}
