@@ -210,7 +210,12 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   }
 
   /* ---------- fixed chrome ---------- */
-  .chrome{position:fixed;inset:0;z-index:40;pointer-events:none}
+  /* The chapter labels and their scroll cue are fixed, so once the scroll world
+     moved down the page they hung over the hero and everything else. They now
+     fade in only while that section is actually on screen. */
+  .chrome{position:fixed;inset:0;z-index:40;pointer-events:none;
+    opacity:0;visibility:hidden;transition:opacity .45s ease, visibility .45s}
+  .chrome.on{opacity:1;visibility:visible}
   .chrome > *{pointer-events:auto}
   .chapters{
     position:absolute;left:1.6rem;bottom:1.6rem;
@@ -231,6 +236,113 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   @media(max-width:700px){
     .chapters{display:none}
     .scroll-cue{display:none}
+  }
+
+
+  /* ---------------------------------------------------------------------------
+   * Hero: the pour
+   *
+   * The shirt sits unlit in the dark. A whiskey line floods up the screen and
+   * everything below it is lit, as though you are looking at the tee through
+   * the glass. Two copies of the same poster — one dimmed, one lit and clipped
+   * to the waterline — plus a bright meniscus riding the same curve. No
+   * library, no extra asset: the poster is already downloaded for the section
+   * further down the page.
+   * ------------------------------------------------------------------------- */
+  #hero{
+    position:relative;height:100vh;height:100svh;overflow:hidden;
+    background:var(--void);display:grid;align-items:end;z-index:5;
+  }
+  .hero-stage{position:absolute;inset:0;z-index:0}
+  .hero-shirt{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:contain;object-position:center;
+  }
+  /* unlit: present, but only just */
+  #hero-dim{filter:brightness(.34) contrast(1.06)}
+  /* lit, and warmed a breath towards whiskey without leaving the monochrome */
+  .hero-shirt.lit{filter:brightness(1.06) contrast(1.04) sepia(.14)}
+
+  .hero-pour{
+    position:absolute;inset:0;z-index:1;
+    clip-path:inset(100% 0 0 0);
+    animation:pour 2.2s cubic-bezier(.33,.75,.28,1) .15s both;
+  }
+  /* the meniscus: a bright line riding the same curve, gone once it tops out */
+  .hero-line{
+    position:absolute;left:-2%;right:-2%;top:100%;height:2px;z-index:2;
+    background:linear-gradient(90deg, transparent, rgba(242,239,233,.85) 22%, rgba(242,239,233,.95) 50%, rgba(242,239,233,.85) 78%, transparent);
+    box-shadow:0 0 22px 6px rgba(242,239,233,.18);
+    animation:pourLine 2.2s cubic-bezier(.33,.75,.28,1) .15s both;
+  }
+  @keyframes pour{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+  @keyframes pourLine{
+    0%{top:100%;opacity:0}
+    10%{opacity:1}
+    88%{opacity:1}
+    100%{top:0%;opacity:0}
+  }
+  /* the curtain holds the pour back so it is not spent behind a black screen */
+  html.intro .hero-pour,
+  html.intro .hero-line{animation-play-state:paused}
+
+  .hero-scrim{
+    position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(7,6,6,.78) 0, transparent 16vh,
+        transparent 32%, rgba(7,6,6,.55) 48%, rgba(7,6,6,.92) 62%, var(--void) 78%);
+  }
+
+  .hero-copy{
+    position:relative;z-index:4;text-align:center;
+    padding:0 1.5rem 7vh;justify-self:center;max-width:min(92vw,780px);
+  }
+  .hero-copy::before{
+    content:"";position:absolute;inset:-14% -30% -6%;z-index:-1;
+    background:radial-gradient(closest-side, rgba(7,6,6,.82), rgba(7,6,6,.5) 58%, transparent);
+  }
+  .hero-kicker{display:block;margin-bottom:1rem}
+  /* The .ln mask holds each line out of sight until something says otherwise;
+     for the chapters that is the scroll, for the hero it is the pour. */
+  #hero.lines-in .ln-i{transform:none}
+  .hero-h .ln:nth-child(1) .ln-i{transition-delay:.05s}
+  .hero-h .ln:nth-child(2) .ln-i{transition-delay:.18s}
+  .hero-h{font-size:clamp(2.1rem,5.4vw,3.4rem);line-height:1.06;margin:0}
+  /* the swapping words must not shunt the line about as they change */
+  .swap{display:inline-block;min-width:7.2ch;text-align:left}
+  .hero-cta{
+    display:inline-flex;align-items:center;
+    margin-top:1.8rem;padding:.95rem 2.2rem;border-radius:3px;
+    background:var(--ice);color:var(--void);text-decoration:none;
+    font-weight:600;font-size:.98rem;
+    transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .hero-cta:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .hero-note{
+    margin-top:.95rem;font-family:var(--mono);font-size:.64rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+  }
+  .hero-note s{opacity:.7;margin-right:.35rem}
+  .hero-cue{color:var(--dim)}
+
+  @media (max-aspect-ratio: 4/3){
+    /* same reasoning as the section below: contained, the poster fills about
+       two thirds of a phone. Cover it, and crop only edge smoke. */
+    .hero-shirt{object-fit:cover;object-position:center top}
+    .hero-h{font-size:clamp(1.75rem,7.6vw,2.5rem)}
+    .hero-copy{padding:0 1.25rem 5vh}
+    .hero-kicker{margin-bottom:.7rem}
+    .hero-cta{margin-top:1.2rem;padding:.85rem 1.8rem}
+  }
+  @media (max-aspect-ratio: 4/3) and (max-height:700px){
+    .hero-h{font-size:clamp(1.55rem,6.8vw,2.1rem)}
+    .hero-cta{margin-top:.9rem}
+  }
+  /* Reduced motion: no pour, no swap — the finished state, straight away. */
+  @media (prefers-reduced-motion: reduce){
+    .hero-pour{animation:none;clip-path:inset(0 0 0 0)}
+    .hero-line{display:none}
+    .hero-h .ln-i{transform:none}
   }
 
   /* ---------- immersive scroll world ---------- */
@@ -617,60 +729,29 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   </div>
 </div>
 
-<div class="chrome">
-  <div class="chapters" aria-hidden="true">
-    <span data-ch="0">01 / THE STATEMENT</span>
-    <span data-ch="1">02 / THE TEE</span>
-    <span data-ch="2">03 / THE DROP</span>
+<section id="hero">
+  <div class="hero-stage" id="top">
+    <!-- the shirt, unlit: what the liquid rises through -->
+    <img class="hero-shirt" id="hero-dim" data-portrait="assets/ice-hero.jpg" data-landscape="assets/ice-hero-wide.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
+    <!-- the same shirt, lit, revealed only below the waterline -->
+    <div class="hero-pour" aria-hidden="true">
+      <img class="hero-shirt lit" id="hero-lit" alt="">
+    </div>
+    <div class="hero-line" aria-hidden="true"></div>
+    <div class="hero-scrim" aria-hidden="true"></div>
   </div>
-  <p class="scroll-cue">SCROLL</p>
-</div>
 
-<div id="world" aria-label="Introduction">
-  <div class="world-fix" id="top">
-    <div class="media" id="media">
-      <img id="bgposter" data-portrait="assets/ice-hero.jpg" data-landscape="assets/ice-hero-wide.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
-      <video id="bgvid" data-portrait="assets/ice.mp4" data-landscape="assets/ice-wide.mp4" muted loop playsinline autoplay preload="auto"></video>
-    </div>
-    <canvas id="frost" aria-hidden="true"></canvas>
-    <div class="vignette"></div>
-
-    <div class="chapter on" data-chapter="0">
-      <div>
-        <span class="mono">01 / The statement</span>
-        <h1><span class="ln"><span class="ln-i">PHENOMENAL</span></span></h1>
-        <p>One tee. Strong and rare, never mild and everywhere.</p>
-      </div>
-    </div>
-    <div class="chapter" data-chapter="1">
-      <div class="callouts" aria-hidden="true">
-        <div class="co co-l" style="top:26%"><span class="co-t">35/65 cotton-poly</span><span class="co-line"></span></div>
-        <div class="co co-r" style="top:37%"><span class="co-line"></span><span class="co-t">Drop shoulder</span></div>
-        <div class="co co-l" style="top:48%"><span class="co-t">Soft-hand print</span><span class="co-line"></span></div>
-      </div>
-      <div>
-        <span class="mono">02 / The tee</span>
-        <h2>
-          <span class="ln"><span class="ln-i">Someone's shot of whiskey.</span></span>
-          <span class="ln"><span class="ln-i">Never everyone's cup of tea.</span></span>
-        </h2>
-        <p>35/65 cotton-poly blend, oversized drop-shoulder cut, vintage whiskey-label print in bone cream.</p>
-      </div>
-    </div>
-    <div class="chapter" data-chapter="2">
-      <div>
-        <span class="mono">03 / The drop</span>
-        <h2>
-          <span class="ln"><span class="ln-i"><s class="was">Rs 7,999</s>Rs 4,999.</span></span>
-          <span class="ln"><span class="ln-i">This drop only.</span></span>
-        </h2>
-        <p class="price-line"><span>FIRST-DROP PRICE</span><span>SMALL BATCH</span><span>FREE SHIPPING NATIONWIDE</span></p>
-        <a class="chapter-cta" href="#order">Order now</a>
-        <p class="chapter-note">Takes 30 seconds · Cash on delivery</p>
-      </div>
-    </div>
+  <div class="hero-copy">
+    <p class="mono hero-kicker">First drop · Small batch</p>
+    <h1 class="hero-h">
+      <span class="ln"><span class="ln-i">Someone's shot of whiskey.</span></span>
+      <span class="ln"><span class="ln-i">Never everyone's <span class="swap" id="swap">cup of tea.</span></span></span>
+    </h1>
+    <a class="hero-cta" href="#order">Order now</a>
+    <p class="hero-note"><s>Rs 7,999</s> Rs 4,999 · Cash on delivery · Free shipping</p>
   </div>
-</div>
+  <p class="scroll-cue hero-cue">SCROLL</p>
+</section>
 
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
@@ -782,6 +863,61 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     </div>
   </div>
 </section>
+
+<div class="chrome">
+  <div class="chapters" aria-hidden="true">
+    <span data-ch="0">01 / THE STATEMENT</span>
+    <span data-ch="1">02 / THE TEE</span>
+    <span data-ch="2">03 / THE DROP</span>
+  </div>
+  <p class="scroll-cue">SCROLL</p>
+</div>
+
+<div id="world" aria-label="Introduction">
+  <div class="world-fix">
+    <div class="media" id="media">
+      <img id="bgposter" data-portrait="assets/ice-hero.jpg" data-landscape="assets/ice-hero-wide.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
+      <video id="bgvid" data-portrait="assets/ice.mp4" data-landscape="assets/ice-wide.mp4" muted loop playsinline autoplay preload="auto"></video>
+    </div>
+    <canvas id="frost" aria-hidden="true"></canvas>
+    <div class="vignette"></div>
+
+    <div class="chapter on" data-chapter="0">
+      <div>
+        <span class="mono">01 / The statement</span>
+        <h1><span class="ln"><span class="ln-i">PHENOMENAL</span></span></h1>
+        <p>One tee. Strong and rare, never mild and everywhere.</p>
+      </div>
+    </div>
+    <div class="chapter" data-chapter="1">
+      <div class="callouts" aria-hidden="true">
+        <div class="co co-l" style="top:26%"><span class="co-t">35/65 cotton-poly</span><span class="co-line"></span></div>
+        <div class="co co-r" style="top:37%"><span class="co-line"></span><span class="co-t">Drop shoulder</span></div>
+        <div class="co co-l" style="top:48%"><span class="co-t">Soft-hand print</span><span class="co-line"></span></div>
+      </div>
+      <div>
+        <span class="mono">02 / The tee</span>
+        <h2>
+          <span class="ln"><span class="ln-i">Someone's shot of whiskey.</span></span>
+          <span class="ln"><span class="ln-i">Never everyone's cup of tea.</span></span>
+        </h2>
+        <p>35/65 cotton-poly blend, oversized drop-shoulder cut, vintage whiskey-label print in bone cream.</p>
+      </div>
+    </div>
+    <div class="chapter" data-chapter="2">
+      <div>
+        <span class="mono">03 / The drop</span>
+        <h2>
+          <span class="ln"><span class="ln-i"><s class="was">Rs 7,999</s>Rs 4,999.</span></span>
+          <span class="ln"><span class="ln-i">This drop only.</span></span>
+        </h2>
+        <p class="price-line"><span>FIRST-DROP PRICE</span><span>SMALL BATCH</span><span>FREE SHIPPING NATIONWIDE</span></p>
+        <a class="chapter-cta" href="#order">Order now</a>
+        <p class="chapter-note">Takes 30 seconds · Cash on delivery</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <section id="faq">
   <div class="wrap">
@@ -1084,6 +1220,59 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
 
+  /* ---------- hero: the pour, and the swapping last words ----------
+     The pour is pure CSS. This only feeds it the right poster for the screen
+     and runs the headline swap, which lands on the real line and stops. */
+  (function hero(){
+    var dim = document.getElementById("hero-dim");
+    var lit = document.getElementById("hero-lit");
+    if(dim){
+      var heroWide = window.innerWidth > window.innerHeight;
+      dim.src = heroWide ? dim.dataset.landscape : dim.dataset.portrait;
+      if(lit) lit.src = dim.src;   // same file, so it is fetched once
+    }
+
+    var swap = document.getElementById("swap");
+    if(!swap) return;
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // The alternatives are all things the shirt is not. The real line is last
+    // and stays: this is a flourish, never a reason to misread the product.
+    var words = ["safe bet.", "second choice.", "background noise.", "cup of tea."];
+    var FINAL = "cup of tea.";
+    var i = 0;
+
+    function step(){
+      swap.style.opacity = "0";
+      setTimeout(function(){
+        swap.textContent = words[i];
+        swap.style.opacity = "1";
+        i++;
+        if(words[i]) setTimeout(step, 420);
+        else swap.textContent = FINAL;   // belt and braces: it ends on the line
+      }, 110);
+    }
+    swap.style.transition = "opacity .11s linear";
+    // starts as the pour tops out, so the two beats do not collide
+    setTimeout(step, 1500);
+  })();
+
+  // The headline lines are masked until the pour has covered the screen.
+  (function heroLines(){
+    var hero = document.getElementById("hero");
+    if(!hero) return;
+    function raise(){ hero.classList.add("lines-in"); }
+    if(document.documentElement.classList.contains("intro")){
+      var w = setInterval(function(){
+        if(!document.documentElement.classList.contains("intro")){
+          clearInterval(w); setTimeout(raise, 900);
+        }
+      }, 80);
+    } else {
+      setTimeout(raise, 900);
+    }
+  })();
+
   /* ---------- background video (progressive: poster first) ---------- */
   var vid = document.getElementById("bgvid");
   var poster = document.getElementById("bgposter");
@@ -1156,8 +1345,17 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   function playLines(){
     chapters.forEach(function(c,i){ c.classList.toggle("lines-in", i === current); });
   }
+  // show the chapter chrome only while the scroll world is on screen
+  var chrome = document.querySelector(".chrome");
+  function chromeVis(){
+    if(!chrome || !world) return;
+    var r = world.getBoundingClientRect();
+    chrome.classList.toggle("on", r.top < window.innerHeight * .5 && r.bottom > window.innerHeight * .5);
+  }
   window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("scroll", chromeVis, {passive:true});
   onScroll();
+  chromeVis();
 
   // chapter 0 waits for the curtain, so its lines do not run behind it
   if(document.documentElement.classList.contains("intro")){
