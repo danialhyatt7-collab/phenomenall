@@ -262,10 +262,19 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   .hero-stage{position:absolute;inset:0;z-index:0;isolation:isolate}
   .hero-shirt{
     position:absolute;inset:0;width:100%;height:100%;
-    object-fit:contain;object-position:center 42%;
+    /* Cover, not contain: contained, the wide plate left a black bar down
+       each side. Cropping takes only the smoke at the edges. */
+    object-fit:cover;object-position:center 42%;
   }
   #hero-dim{filter:brightness(.4) contrast(1.05)}
   .hero-shirt.lit{filter:brightness(1.04) contrast(1.03) sepia(.12)}
+  /* The still holds the frame until the footage is genuinely running, then
+     hands over. Never display:none — iOS refuses to load an off-screen video,
+     which is exactly what that counts as. */
+  #hero-vid{opacity:0;transition:opacity .5s ease}
+  #hero-vid.playing{opacity:1}
+  #hero-lit{transition:opacity .5s ease}
+  #hero-lit.handed-over{opacity:0}
 
   .hero-pour{
     position:absolute;inset:0;
@@ -285,24 +294,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   html.intro .hero-pour,
   html.intro .hero-line{animation-play-state:paused}
 
-  /* Drawn as SVG text stretched to its own box, so the wordmark fits the
-     screen exactly at every width instead of being clipped mid-letter by a
-     font-size guess. */
-  .hero-word{
-    position:absolute;left:5%;right:5%;top:38%;transform:translateY(-50%);
-    margin:0;opacity:.82;
-    mix-blend-mode:lighten;pointer-events:none;
-    animation:wordRise 1.5s cubic-bezier(.22,.7,.2,1) 1.05s both;
-  }
-  .hero-word svg{display:block;width:100%;height:auto}
-  .hero-word text{
-    font-family:var(--display);font-weight:800;font-size:120px;fill:var(--ice);
-  }
-  @keyframes wordRise{
-    from{opacity:0;transform:translateY(-50%) scale(.97)}
-    to{opacity:.82;transform:translateY(-50%) scale(1)}
-  }
-  html.intro .hero-word{animation-play-state:paused}
 
   /* darkens the edges and lays a floor under the bar; above the blend, so it
      tempers the wordmark too rather than letting it glare */
@@ -354,7 +345,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
 
   @media (max-aspect-ratio: 4/3){
     .hero-shirt{object-fit:cover;object-position:center top}
-    .hero-word{top:19%;left:13%;right:13%;opacity:.72}
     @keyframes wordRise{
       from{opacity:0;letter-spacing:.06em;transform:translateY(-50%) scale(.985)}
       to{opacity:.78;letter-spacing:-.045em;transform:translateY(-50%) scale(1)}
@@ -372,14 +362,12 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   @media (max-aspect-ratio: 4/3) and (max-height:700px){
     .hero-tag{font-size:clamp(1.05rem,5vw,1.4rem)}
     .hero-cta{padding:.8rem 1.6rem}
-    .hero-word{top:17%}
   }
   @media (prefers-reduced-motion: reduce){
     .hero-pour{animation:none;clip-path:inset(0 0 0 0)}
     .hero-line{display:none}
     .hero-bar,.hero-meta{animation:none;opacity:1}
-    /* no explicit opacity: the base and portrait values already differ */
-    .hero-word{animation:none}
+
   }
 
   /* ---------- immersive scroll world ---------- */
@@ -770,17 +758,13 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   <div class="hero-stage" id="top">
     <img class="hero-shirt" id="hero-dim" data-portrait="assets/ice-hero.jpg" data-landscape="assets/ice-hero-wide.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
     <div class="hero-pour" aria-hidden="true">
+      <!-- the still stands in until the footage is actually running -->
       <img class="hero-shirt lit" id="hero-lit" alt="">
+      <video class="hero-shirt lit" id="hero-vid"
+             data-portrait="assets/ice.mp4" data-landscape="assets/ice-wide.mp4"
+             muted loop playsinline autoplay preload="auto"></video>
     </div>
     <div class="hero-line" aria-hidden="true"></div>
-    <!-- Lightened against the plate, so the wordmark burns through the smoke
-         and is hidden wherever the shirt is brighter than it. The type reads
-         as though it sits behind the garment. -->
-    <h1 class="hero-word">
-      <svg viewBox="0 0 1000 132" role="img" aria-label="Phenomenal">
-        <text x="0" y="106" textLength="1000" lengthAdjust="spacing">PHENOMENAL</text>
-      </svg>
-    </h1>
     <div class="hero-vig" aria-hidden="true"></div>
   </div>
 
@@ -1274,6 +1258,45 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
       if(lit) lit.src = dim.src;   // same file, so it is fetched once
     }
 
+    // The hero plays the footage itself now. Same rules as the section below:
+    // laid out from the first frame (iOS will not load a hidden video), play
+    // confirmed by the "playing" event, retried on the first touch for the
+    // builds that hold out for a gesture.
+    var hv = document.getElementById("hero-vid");
+    if(hv && !window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      hv.src = heroWide ? hv.dataset.landscape : hv.dataset.portrait;
+      if(dim) hv.poster = dim.src;
+      var handed = false;
+      function heroShown(){
+        if(handed) return;
+        handed = true;
+        hv.classList.add("playing");
+        if(lit) lit.classList.add("handed-over");
+      }
+      function heroPlay(){
+        var pr = hv.play();
+        if(pr && pr.catch) pr.then(heroShown).catch(function(){ /* keep the still */ });
+        else heroShown();
+      }
+      hv.addEventListener("playing", heroShown);
+      ["loadeddata","canplay"].forEach(function(ev){ hv.addEventListener(ev, heroPlay); });
+      ["touchstart","pointerdown"].forEach(function(ev){
+        window.addEventListener(ev, heroPlay, {once:true, passive:true});
+      });
+      hv.load();
+      heroPlay();
+
+      // Two clips on one page: pause whichever is off screen rather than
+      // decoding both the whole time.
+      if(window.IntersectionObserver){
+        new IntersectionObserver(function(es){
+          es.forEach(function(e){
+            if(e.isIntersecting) heroPlay(); else hv.pause();
+          });
+        }, {threshold:.01}).observe(hv);
+      }
+    }
+
     var swap = document.getElementById("swap");
     if(!swap) return;
     if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1352,6 +1375,14 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     });
     vid.load();
     tryPlay();
+
+    // The hero carries the same footage, so this one only runs while its own
+    // section is on screen rather than decoding all the way down the page.
+    if(window.IntersectionObserver){
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting) tryPlay(); else vid.pause(); });
+      }, {threshold:.01}).observe(vid);
+    }
   }
 
   /* ---------- scroll-driven chapters ---------- */
