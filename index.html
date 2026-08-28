@@ -89,7 +89,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   html.intro .hdr,
   html.intro .chapters,
   html.intro .scroll-cue,
-  html.intro .sticky-bar,
   html.intro #bgvid,
   html.intro #bgposter,
   html.intro .chapter[data-chapter="0"] > div > *{opacity:0}
@@ -104,10 +103,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   html.revealed .chapter[data-chapter="0"] > div > *:nth-child(3){animation-delay:.60s}
   html.revealed .chapters{animation:riseIn .8s ease .9s both}
   html.revealed .scroll-cue{animation:riseIn .8s ease 1.02s both}
-  /* The checkout bar is the last thing to arrive. Sitting there through the
-     curtain it reads as an ad bolted onto the page; sliding up once the hero
-     has landed, it reads as the page offering the next step. */
-  html.revealed .sticky-bar{animation:barIn .7s cubic-bezier(.22,.7,.2,1) 1.25s both}
 
   @keyframes wordIn{
     from{opacity:0;letter-spacing:.85em;transform:translateY(8px)}
@@ -115,7 +110,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   }
   @keyframes ruleIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
   @keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-  @keyframes barIn{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:none}}
   @keyframes hdrDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
   @keyframes mediaIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
 
@@ -487,7 +481,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   .total-row .t-val{font-family:var(--display);font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
   .total-row .t-was{color:var(--dim);font-size:.62em;font-weight:400;margin-right:.55rem}
   .save-note{margin-top:.7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ice-blue)}
-  .sticky-bar .p s{color:var(--dim);font-size:.78em;font-weight:400;margin-right:.4rem}
   .preview{
     margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ice-blue);
     border-radius:3px;padding:1rem 1.1rem;font-size:.92rem;color:var(--ice);opacity:.85;
@@ -515,21 +508,10 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   details.faq[open] summary::after{content:"–"}
   details.faq div{padding:0 0 1.3rem;color:var(--dim);max-width:62ch;font-size:.95rem}
 
-  footer{background:var(--void);border-top:1px solid var(--line);padding:2.6rem 1.5rem 6.5rem;text-align:center;color:var(--dim);font-size:.88rem;position:relative;z-index:5}
+  footer{background:var(--void);border-top:1px solid var(--line);padding:2.6rem 1.5rem 3rem;text-align:center;color:var(--dim);font-size:.88rem;position:relative;z-index:5}
   footer .f-brand{font-family:var(--display);font-weight:700;letter-spacing:.32em;color:var(--ice);display:inline-block;margin-bottom:.6rem;text-decoration:none}
   footer a{color:var(--dim)}
 
-  .sticky-bar{
-    position:fixed;left:0;right:0;bottom:0;z-index:60;
-    display:none;align-items:center;justify-content:space-between;gap:1rem;
-    background:rgba(7,6,6,.9);border-top:1px solid var(--line);
-    padding:.7rem 1rem;backdrop-filter:blur(10px);
-  }
-  .sticky-bar .p{font-family:var(--display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
-  .sticky-bar .btn-wa{width:auto;margin:0;padding:.7rem 1.2rem;font-size:.88rem}
-  @media(max-width:700px){.sticky-bar{display:flex}}
-  /* opacity alone would leave it invisible but still tappable over the curtain */
-  html.intro .sticky-bar{pointer-events:none}
 </style>
 <script>
   // Stamped before paint so nothing flashes in ahead of the intro. Skipped when the
@@ -778,11 +760,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   <p>One tee, done right. Support: <a href="https://wa.me/923374841818">0337 4841818</a></p>
   <p>© 2026 Phenomenal. All rights reserved.</p>
 </footer>
-
-<div class="sticky-bar">
-  <span class="p"><s>Rs 7,999</s>Rs 4,999</span>
-  <a class="btn-wa" href="#order" style="width:auto;margin:0">Checkout</a>
-</div>
 
 <div class="modal" id="size-modal" hidden>
   <div class="modal-backdrop" data-close></div>
