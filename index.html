@@ -89,12 +89,12 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   html.intro .hdr,
   html.intro .chapters,
   html.intro .scroll-cue,
-  html.intro #bgvid,
   html.intro #bgposter,
   html.intro .chapter[data-chapter="0"] > div > *{opacity:0}
 
   html.revealed .hdr{animation:hdrDrop .9s cubic-bezier(.22,.7,.2,1) .15s both}
-  html.revealed #bgvid,
+  /* the poster carries the intro reveal; the video fades in over it when it
+     actually starts playing, so the two do not fight over opacity */
   html.revealed #bgposter{animation:mediaIn 1.6s cubic-bezier(.22,.7,.2,1) both}
   html.revealed .chapter[data-chapter="0"] > div > *{animation:riseIn .9s cubic-bezier(.22,.7,.2,1) both}
   html.revealed .chapter[data-chapter="0"] > div > h1{animation:none;opacity:1}
@@ -250,24 +250,36 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   /* On portrait screens a contained 3:4 video letterboxes badly, leaving a dead band under
      the header. Pin it to the top instead and seat the chapter copy over its lower smoke. */
   @media (max-aspect-ratio: 4/3){
-    /* portrait source is 828x1108, so full-width height = 100vw * 1.338 */
-    /* capped at 58svh so the copy below it always has a band to sit in,
-       however tall the phone */
-    .world-fix{--vidh:min(58svh, calc(100vw * 1.338))}
-    #bgvid,#bgposter{top:0;bottom:auto;height:var(--vidh);object-position:center top;transform-origin:center top}
+    /* The portrait source is 828x1108. Contained, it only ever filled about
+       two thirds of a phone screen and left a dead band — so it covers the
+       pane instead. The shirt is centred with smoke at the edges, so the crop
+       takes only smoke. */
+    #bgvid,#bgposter{top:0;bottom:auto;height:100%;object-fit:cover;object-position:center top;transform-origin:center top}
     .media{transform-origin:center top}
-    .vignette{
-      background:
-        linear-gradient(180deg, rgba(7,6,6,.72) 0, transparent 14vh,
-          transparent calc(var(--vidh) - 26vh), var(--void) var(--vidh));
-    }
   }
+  /* The video is always laid out — iOS refuses to start a display:none one —
+     so the poster hands over by opacity instead. */
+  #bgvid{opacity:0;transition:opacity .6s ease}
+  #bgvid.ready{opacity:1}
+  #bgposter{transition:opacity .6s ease}
+  #bgposter.gone{opacity:0}
   #frost{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
   .vignette{position:absolute;inset:0;z-index:3;pointer-events:none;
     background:
       linear-gradient(90deg, var(--void) 0%, transparent 18%, transparent 82%, var(--void) 100%),
       linear-gradient(180deg, rgba(7,6,6,.85) 0%, transparent 14%, transparent 86%, rgba(7,6,6,.85) 100%),
       radial-gradient(ellipse at center, transparent 40%, rgba(7,6,6,.7) 100%);
+  }
+  /* Portrait: the copy sits over the footage, so the lower third needs a real
+     scrim to stay readable against moving smoke. Declared after the base rule
+     above — inside the earlier portrait block it lost the cascade and the
+     bottom stayed transparent. */
+  @media (max-aspect-ratio: 4/3){
+    .vignette{
+      background:
+        linear-gradient(180deg, rgba(7,6,6,.72) 0, transparent 16vh,
+          transparent 38%, rgba(7,6,6,.66) 54%, rgba(7,6,6,.95) 68%, var(--void) 84%);
+    }
   }
   .chapter{
     position:absolute;inset:0;z-index:4;
@@ -284,8 +296,11 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     background:radial-gradient(closest-side, rgba(7,6,6,.86), rgba(7,6,6,.55) 55%, transparent);
   }
   @media (max-aspect-ratio: 4/3){
-    /* the copy lives in the band below the video, so the shirt is never covered */
-    .chapter{place-items:start center;padding:var(--vidh) 1.25rem 3vh}
+    /* Pinned to the bottom of the pane: the copy lands in the lower smoke,
+       clear of the shirt, and cannot run off the screen the way a top-padded
+       box could. */
+    .chapter{place-items:end center;padding:0 1.25rem 4vh}
+    .chapter > div:not(.callouts){max-height:52svh;overflow:visible}
   }
   @media(max-width:700px){
     .chapter > div:not(.callouts){padding:1.5rem 1rem}
@@ -363,7 +378,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
      chapter 02 has the longest headline. Give it a smaller type ramp rather
      than let the last line fall off the screen. */
   @media (max-aspect-ratio: 4/3) and (max-height: 700px){
-    .world-fix{--vidh:min(50svh, calc(100vw * 1.338))}
     .chapter h1, .chapter h2{font-size:clamp(1.5rem,7.2vw,2rem)}
     .chapter p{font-size:.9rem}
     .chapter .mono{margin-bottom:.5rem}
@@ -616,7 +630,7 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   <div class="world-fix" id="top">
     <div class="media" id="media">
       <img id="bgposter" data-portrait="assets/ice-hero.jpg" data-landscape="assets/ice-hero-wide.jpg" alt="Cream oversized t-shirt with a vintage whiskey-label print, floating in soft monochrome smoke in a dark studio void">
-      <video id="bgvid" data-portrait="assets/ice.mp4" data-landscape="assets/ice-wide.mp4" muted loop playsinline autoplay preload="auto" style="display:none"></video>
+      <video id="bgvid" data-portrait="assets/ice.mp4" data-landscape="assets/ice-wide.mp4" muted loop playsinline autoplay preload="auto"></video>
     </div>
     <canvas id="frost" aria-hidden="true"></canvas>
     <div class="vignette"></div>
@@ -1082,12 +1096,31 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     vid.poster = poster.src;
   }
   if(vid && !reduced){
-    vid.addEventListener("canplay", function(){
-      vid.style.display = "";
-      poster.style.display = "none";
-      vid.play().catch(function(){ vid.style.display="none"; poster.style.display=""; });
+    // iOS Safari will not load or autoplay a display:none video: it counts as
+    // off-screen, so "canplay" never fires and the poster stays up for good.
+    // The video is laid out from the start and only its opacity is animated.
+    vid.style.display = "";
+    var shown = false;
+    function showVideo(){
+      if(shown) return;
+      shown = true;
+      vid.classList.add("ready");
+      poster.classList.add("gone");
+    }
+    function tryPlay(){
+      var p = vid.play();
+      if(p && p.catch) p.then(showVideo).catch(function(){ /* keep the poster */ });
+      else showVideo();
+    }
+    // "playing" is the only event that means frames are actually on screen.
+    vid.addEventListener("playing", showVideo);
+    ["loadeddata","canplay"].forEach(function(ev){ vid.addEventListener(ev, tryPlay); });
+    // Some iOS builds hold playback until a gesture; take the first one.
+    ["touchstart","pointerdown"].forEach(function(ev){
+      window.addEventListener(ev, tryPlay, {once:true, passive:true});
     });
     vid.load();
+    tryPlay();
   }
 
   /* ---------- scroll-driven chapters ---------- */
