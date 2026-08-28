@@ -10,7 +10,8 @@
  *   GET  /api/customers       customers derived from the order log
  *   GET  /admin               orders dashboard (owner login required)\n *\n * Set or change the owner login:  node server.js --set-login
  *
- * Orders are persisted to data/orders.json (created on first order).
+ * Orders are persisted to orders.json in the data directory, which should sit
+ * outside the deployed app directory — see PHENOMENAL_DATA_DIR below.
  * Run: node server.js   (PORT env var optional, defaults to 3000)
  */
 "use strict";
@@ -23,9 +24,28 @@ const crypto = require("crypto");
 const readline = require("readline");
 
 const ROOT = __dirname;
-const DATA_DIR = path.join(ROOT, "data");
+
+/* ---------------------------------------------------------------------------
+ * Where the writable data lives
+ *
+ * orders.json and auth.json are the only files here that cannot be recreated:
+ * they are every real sale and the owner's login, and both are gitignored, so
+ * they exist on the server and nowhere else. A host that replaces the app
+ * directory on deploy — which many do, by checking the repo out fresh — would
+ * erase them on the next push, silently.
+ *
+ * So the writable data lives wherever PHENOMENAL_DATA_DIR points, which should
+ * be a path OUTSIDE the deployed app directory (e.g. /home/<user>/phenomenal-data).
+ * Unset, it falls back to ./data, which is fine locally and is the risky spot
+ * in production — the boot log says so out loud.
+ *
+ * products.json is shipped in the repo and is read from the app directory as
+ * before; it is content, not state, and a deploy is supposed to replace it.
+ * ------------------------------------------------------------------------- */
+const APP_DATA_DIR = path.join(ROOT, "data");
+const DATA_DIR = cleanEnv(process.env.PHENOMENAL_DATA_DIR) || APP_DATA_DIR;
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
-const PRODUCTS_FILE = path.join(DATA_DIR, "products.json");
+const PRODUCTS_FILE = path.join(APP_DATA_DIR, "products.json");
 const PORT = process.env.PORT || 3000;
 
 const MIME = {
@@ -188,16 +208,73 @@ async function sendMetaPurchase(order) {
   return order.capi;
 }
 
+// A second copy of the order log, rewritten alongside the first. It costs a
+// few kilobytes and covers the case the atomic rename cannot: the live file
+// being lost or truncated by something outside this process.
+function backupOrders(orders) {
+  try {
+    const bak = ORDERS_FILE + ".bak";
+    fs.writeFileSync(bak + ".tmp", JSON.stringify(orders, null, 2));
+    fs.renameSync(bak + ".tmp", bak);
+  } catch (err) {
+    console.error("Order backup failed: " + err.message);
+  }
+}
+
+// Moving to an external data directory must not strand the orders and login
+// already sitting in ./data. Copied, never moved: if the new path turns out to
+// be wrong, the originals are still where they were.
+function migrateDataDir() {
+  if (DATA_DIR === APP_DATA_DIR) return;
+  for (const name of ["orders.json", "auth.json"]) {
+    const from = path.join(APP_DATA_DIR, name);
+    const to = path.join(DATA_DIR, name);
+    try {
+      if (!fs.existsSync(from) || fs.existsSync(to)) continue;
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.copyFileSync(from, to);
+      console.log("Copied " + name + " into the data directory: " + to);
+    } catch (err) {
+      console.error("Could not copy " + name + " to " + DATA_DIR + ": " + err.message);
+    }
+  }
+}
+
+// The whole point of the split is invisible unless the log says where the data
+// ended up and how much of it is there. A deploy that wipes the app directory
+// shows up here as an order count that dropped to zero.
+function reportDataDir() {
+  const orders = readOrders();
+  console.log("Data directory: " + DATA_DIR + " (" + orders.length + " orders on file)");
+  if (DATA_DIR === APP_DATA_DIR) {
+    console.log(
+      "  WARNING: that is inside the app directory. If this host replaces the app\n" +
+      "  directory on deploy, the next push erases every order and the admin login.\n" +
+      "  Set PHENOMENAL_DATA_DIR to a path outside it and restart."
+    );
+  }
+}
+
 function readOrders() {
   try {
     return JSON.parse(fs.readFileSync(ORDERS_FILE, "utf8"));
   } catch (err) {
-    return [];
+    if (err.code !== "ENOENT") {
+      console.error("Order log unreadable (" + err.message + ") — trying the backup");
+    }
+    try {
+      const orders = JSON.parse(fs.readFileSync(ORDERS_FILE + ".bak", "utf8"));
+      console.error("Recovered " + orders.length + " orders from the backup copy");
+      return orders;
+    } catch (err2) {
+      return [];
+    }
   }
 }
 
 function writeOrders(orders) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+  backupOrders(orders);
   const tmp = ORDERS_FILE + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(orders, null, 2));
   fs.renameSync(tmp, ORDERS_FILE);
@@ -612,6 +689,9 @@ async function setLoginInteractive() {
 if (process.argv.includes("--set-login")) {
   setLoginInteractive();
 } else {
+  migrateDataDir();
+  reportDataDir();
+
   // Managed hosts (Hostinger, Render, a VPS panel) often give no shell, so the
   // login can also be set from environment variables in the host's dashboard.
   // Those are pasted into a web form, so surrounding quotes and stray spaces

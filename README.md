@@ -20,7 +20,25 @@ node server.js
 # Admin:  http://localhost:3000/admin
 ```
 
-No npm install needed — the backend uses only Node built-ins. Orders persist to `data/orders.json` (gitignored, created on first order).
+No npm install needed — the backend uses only Node built-ins. Orders persist to `orders.json` inside the data directory (gitignored, created on first order).
+
+### Where the data lives
+
+`orders.json` and `auth.json` — every sale and the owner's login — exist only on the
+server, so a host that replaces the app directory on deploy would erase them on the
+next push. Set `PHENOMENAL_DATA_DIR` to a path **outside** the deployed directory:
+
+```
+PHENOMENAL_DATA_DIR=/home/<user>/phenomenal-data
+```
+
+Anything already in `./data` is copied across on the first boot after setting it, and
+the originals are left in place. Unset, it falls back to `./data` and the boot log
+prints a warning saying so. Each write also leaves an `orders.json.bak` alongside the
+live file, which is read automatically if the live one is ever missing or corrupt.
+
+The boot log always names the resolved directory and the order count on file — the
+quickest way to tell whether a deploy kept the disk.
 
 ## API
 
