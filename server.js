@@ -389,7 +389,14 @@ setInterval(() => {
   for (const [t, s] of sessions) if (s.expires < now) sessions.delete(t);
 }, 60 * 60 * 1000).unref();
 
-function serveStatic(res, urlPath) {
+/* Static files, with byte ranges.
+ *
+ * iOS Safari will not play a <video> from a server that answers a Range
+ * request with the whole file: it asks for bytes, expects 206, and gives up
+ * on a plain 200. Streaming the range also means a 5 MB hero is no longer
+ * read into memory in full on every single request.
+ */
+function serveStatic(req, res, urlPath) {
   let rel = urlPath === "/" ? "index.html" : urlPath.replace(/^\/+/, "");
   if (rel === "admin") rel = "admin.html";
   const file = path.normalize(path.join(ROOT, rel));
@@ -397,13 +404,44 @@ function serveStatic(res, urlPath) {
     json(res, 404, { error: "not found" });
     return;
   }
-  fs.readFile(file, (err, buf) => {
-    if (err) {
+  fs.stat(file, (err, st) => {
+    if (err || !st.isFile()) {
       json(res, 404, { error: "not found" });
       return;
     }
-    res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream" });
-    res.end(buf);
+    const type = MIME[path.extname(file)] || "application/octet-stream";
+    const head = { "Content-Type": type, "Accept-Ranges": "bytes" };
+    const range = req.headers.range;
+    const m = range && /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+
+    if (m && (m[1] || m[2])) {
+      let start, end;
+      if (m[1]) {
+        start = parseInt(m[1], 10);
+        end = m[2] ? parseInt(m[2], 10) : st.size - 1;
+      } else {
+        // "bytes=-500" means the last 500 bytes
+        start = Math.max(0, st.size - parseInt(m[2], 10));
+        end = st.size - 1;
+      }
+      if (!(start <= end && start < st.size)) {
+        res.writeHead(416, { "Content-Range": "bytes */" + st.size });
+        res.end();
+        return;
+      }
+      end = Math.min(end, st.size - 1);
+      head["Content-Range"] = "bytes " + start + "-" + end + "/" + st.size;
+      head["Content-Length"] = end - start + 1;
+      res.writeHead(206, head);
+      if (req.method === "HEAD") return res.end();
+      fs.createReadStream(file, { start: start, end: end }).pipe(res);
+      return;
+    }
+
+    head["Content-Length"] = st.size;
+    res.writeHead(200, head);
+    if (req.method === "HEAD") return res.end();
+    fs.createReadStream(file).pipe(res);
   });
 }
 
@@ -595,7 +633,7 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, list);
     }
 
-    if (req.method === "GET") return serveStatic(res, p);
+    if (req.method === "GET" || req.method === "HEAD") return serveStatic(req, res, p);
     json(res, 405, { error: "method not allowed" });
   } catch (err) {
     json(res, 500, { error: "internal error" });
