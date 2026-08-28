@@ -3,257 +3,288 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PHENOMENAL — Home 01</title>
-<meta name="description" content="PHENOMENAL — an alternate warm-toned bento layout for the homepage, styled after a reference mockup.">
+<title>Phenomenal — Strong and rare</title>
+<meta name="description" content="One oversized tee, printed with a vintage whiskey label. Rs 4,999 first-drop price. Cash on delivery, free shipping across Pakistan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap">
 <style>
+  /* ---------------------------------------------------------------------------
+   * Home 01 — the warm room
+   *
+   * The main site is the dark studio: black void, smoke, cold light. This page
+   * is deliberately its opposite, and it is not a variant of that palette — it
+   * is a plastered wall in late afternoon, the tee hanging in the daylight.
+   * Cream ground, espresso ink, one warm shadow, and a high-contrast serif
+   * doing the talking instead of a grotesk.
+   *
+   * Nothing here loads a library. Two fonts and one photograph.
+   * ------------------------------------------------------------------------- */
   :root{
-    --paper:#ECE5DA;
-    --card:#FBF9F5;
-    --ink:#2B231C;
-    --sub:#7C7164;
-    --faint:#A79B8C;
-    --line:rgba(43,35,28,.12);
-    --umber-1:#8A5A3A;
-    --umber-2:#4A2E1E;
-    --umber-3:#2A1B12;
-    --sans:'Archivo',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --cream:#F2EBE1;      /* the wall */
+    --cream-lit:#F8F3EB;  /* where the light falls on it */
+    --sand:#E7DCCC;       /* the warm shadow across it */
+    --line:#DED1BF;
+    --ink:#33271F;        /* espresso, not black */
+    --ink-soft:#6E5E51;
     --serif:'Playfair Display',Georgia,'Times New Roman',serif;
-    --mono:'IBM Plex Mono','SF Mono',Consolas,monospace;
-    --r:22px;
+    --serif-light:'Cormorant Garamond',Georgia,serif;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   }
-  *{margin:0;padding:0;box-sizing:border-box}
+  *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *,*::before,*::after{transition:none!important} }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{animation:none !important;transition:none !important}
+  }
   body{
-    background:var(--paper);color:var(--ink);
-    font-family:var(--sans);line-height:1.55;
+    margin:0;background:var(--cream);color:var(--ink);
+    font-family:var(--sans);font-weight:300;line-height:1.65;
     -webkit-font-smoothing:antialiased;
   }
-  a{color:inherit;text-decoration:none}
   img{max-width:100%;display:block}
-  button{font:inherit;cursor:pointer;background:none;border:none;color:inherit}
-  :focus-visible{outline:2px solid var(--umber-1);outline-offset:3px}
+  a{color:inherit}
 
-  .eyebrow{
-    font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--sub);display:block;margin-bottom:.5rem;
-  }
-  .pill{
-    display:inline-flex;align-items:center;gap:.5rem;
-    padding:.7rem 1.3rem;border-radius:99px;font-size:.82rem;font-weight:600;
-    border:1px solid currentColor;white-space:nowrap;
-  }
-  .pill.solid{background:var(--ink);color:var(--card);border-color:var(--ink)}
-
-  /* ---------- header ---------- */
-  header{
-    position:sticky;top:0;z-index:20;background:rgba(236,229,218,.86);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);
-  }
-  .hdr-in{
-    max-width:1180px;margin:0 auto;padding:1.1rem 1.5rem;
-    display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  }
-  .hdr-left{display:flex;align-items:center;gap:.9rem}
-  .hdr-btn{width:2.2rem;height:2.2rem;display:grid;place-items:center;border-radius:50%}
-  .hdr-btn:hover{background:rgba(43,35,28,.06)}
-  .hdr-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
-  .logo{font-family:var(--serif);font-weight:700;font-size:1.15rem;letter-spacing:.02em}
-  nav.hdr-nav{display:flex;gap:1.9rem}
-  nav.hdr-nav a{
-    font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);
-  }
-  nav.hdr-nav a:hover{color:var(--ink)}
-  @media(max-width:760px){ nav.hdr-nav{display:none} }
-
-  /* ---------- bento layout ---------- */
-  .bento-wrap{max-width:1180px;margin:0 auto;padding:2.4rem 1.5rem 6rem}
-  .bento{
-    display:grid;gap:1rem;
-    grid-template-columns:repeat(12,1fr);
-    grid-auto-rows:minmax(80px,auto);
-  }
-  .card{
-    border-radius:var(--r);position:relative;overflow:hidden;
-    display:flex;flex-direction:column;justify-content:flex-end;
-    padding:1.9rem;
-  }
-  .card p{color:var(--sub);font-size:.92rem;max-width:36ch;margin-top:.35rem}
-  .card h2,.card h1{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;line-height:1.05}
-  .card .pill{margin-top:1.2rem;align-self:flex-start}
-
-  /* hero */
-  .c-hero{
-    grid-column:1/13;grid-row:1/3;min-height:420px;
-    justify-content:flex-start;padding:2.6rem 2.4rem;
-    background:linear-gradient(155deg,var(--umber-1),var(--umber-3) 70%);
-  }
-  .c-hero::before{
-    content:'';position:absolute;inset:0;z-index:0;
-    background:url('assets/ice-hero-wide.jpg') center/cover;
-    filter:sepia(.55) saturate(1.3) brightness(.62) contrast(1.05);
-    mix-blend-mode:luminosity;opacity:.85;
-  }
-  .c-hero::after{
-    content:'';position:absolute;inset:0;z-index:0;
-    background:linear-gradient(180deg,rgba(42,27,18,.15),rgba(42,27,18,.75) 82%),
-               linear-gradient(100deg,rgba(74,46,30,.55),transparent 55%);
-  }
-  .c-hero > *{position:relative;z-index:1}
-  .c-hero .eyebrow{color:rgba(255,250,242,.72)}
-  .c-hero h1{color:#FBF3E8;font-size:clamp(2.4rem,6vw,4.2rem)}
-  .c-hero p{color:rgba(255,250,242,.78);font-size:1.02rem;max-width:44ch}
-  .c-hero .pill{border-color:rgba(255,250,242,.6);color:#FBF3E8}
-
-  .c-tee{
-    grid-column:8/13;grid-row:1/2;min-height:260px;color:#FBF3E8;
-    background:linear-gradient(155deg,var(--umber-1),var(--umber-2));
-  }
-  .c-tee .eyebrow{color:rgba(255,250,242,.65)}
-  .c-tee h2{font-size:1.9rem}
-  .c-tee .pill{border-color:rgba(255,250,242,.55)}
-
-  .c-sizing{
-    grid-column:1/6;grid-row:3/5;min-height:300px;background:var(--card);border:1px solid var(--line);
-  }
-  .c-sizing h2{font-size:1.9rem;color:var(--ink)}
-
-  .c-swirl{
-    grid-column:6/9;grid-row:3/6;min-height:420px;
+  /* the diagonal of window light that falls across the reference wall */
+  .room{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(120% 90% at 20% 15%, #C9A377, transparent 60%),
-      radial-gradient(120% 100% at 85% 30%, #7A4A2C, transparent 55%),
-      linear-gradient(200deg,#D9BE96,#5A3620 75%);
-    justify-content:flex-start;align-items:flex-start;
+      linear-gradient(118deg, rgba(255,255,255,.55) 0 14%, transparent 14.6% 27%,
+        rgba(255,255,255,.42) 27.6% 34%, transparent 34.6%),
+      radial-gradient(120% 90% at 78% 8%, var(--cream-lit), transparent 62%),
+      linear-gradient(180deg, transparent 60%, rgba(199,182,161,.22));
   }
-  .c-swirl .eyebrow{color:rgba(255,250,242,.75)}
-  .c-swirl p.tag{color:#FBF3E8;font-size:.85rem;max-width:16ch}
+  .wrap{position:relative;z-index:1}
 
-  .c-fabric{
-    grid-column:1/6;grid-row:5/7;min-height:260px;background:var(--card);border:1px solid var(--line);
-  }
-  .c-fabric h2{font-size:1.9rem;color:var(--ink)}
+  .shell{max-width:1120px;margin:0 auto;padding:0 clamp(1.25rem,5vw,3rem)}
 
-  .c-drop{
-    grid-column:9/13;grid-row:2/6;min-height:460px;color:#FBF3E8;
-    background:linear-gradient(165deg,#5A3A24,var(--umber-3) 80%);
+  /* ---------- masthead ---------- */
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1.5rem 0 .5rem;font-family:var(--sans);
+    font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);
   }
-  .c-drop h2{font-size:2.3rem}
-  .c-drop .eyebrow{color:rgba(255,250,242,.65)}
-  .c-drop .pill{border-color:rgba(255,250,242,.55)}
-  .dots{display:flex;gap:.4rem;margin-top:1.4rem}
-  .dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,250,242,.35)}
-  .dots span:first-child{background:#FBF3E8;width:16px;border-radius:99px}
+  header.top a{text-decoration:none}
+  header.top a:hover{color:var(--ink)}
 
-  @media(max-width:900px){
-    .c-hero,.c-tee,.c-sizing,.c-swirl,.c-fabric,.c-drop{grid-column:1/13}
-    .c-hero{grid-row:auto;min-height:380px}
-    .c-tee{grid-row:auto;min-height:220px}
-    .c-sizing{grid-row:auto;min-height:220px}
-    .c-swirl{grid-row:auto;min-height:280px}
-    .c-fabric{grid-row:auto;min-height:220px}
-    .c-drop{grid-row:auto;min-height:340px}
+  /* ---------- the wordmark ---------- */
+  .mast{text-align:center;padding:2.4rem 0 0}
+  .mast h1{
+    margin:0;font-family:var(--serif);font-weight:400;
+    font-size:clamp(2.6rem,11.5vw,8.5rem);line-height:.94;
+    letter-spacing:.055em;text-indent:.055em;   /* tracking adds a phantom gap at the right */
+    color:var(--ink);
+  }
+  .rule{
+    display:flex;align-items:center;justify-content:center;gap:1rem;
+    margin:1.6rem auto 0;max-width:min(78%,620px);color:var(--line);
+  }
+  .rule i{flex:1;height:1px;background:currentColor}
+  .rule span{color:var(--ink);font-size:.9rem;line-height:1}
+  .tagline{
+    margin:.95rem 0 0;font-size:clamp(.68rem,1.9vw,.86rem);
+    letter-spacing:.42em;text-indent:.42em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:400;
   }
 
-  /* ---------- closing band ---------- */
-  .close-band{
-    max-width:1180px;margin:0 auto;padding:0 1.5rem 5rem;
-    display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;
+  /* ---------- the photograph ---------- */
+  .plate{
+    margin:clamp(2.2rem,6vw,4rem) auto 0;max-width:760px;position:relative;
   }
-  .close-band .side-nav{display:flex;flex-direction:column;gap:.6rem}
-  .side-nav button{width:2.1rem;height:2.1rem;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center}
-  .side-nav svg{width:14px;height:14px;fill:none;stroke:var(--sub);stroke-width:1.6}
-  .close-band h2{font-family:var(--serif);font-size:clamp(1.9rem,4vw,2.6rem);font-weight:600}
-  .close-band p{color:var(--sub);max-width:52ch;margin-top:.6rem;font-size:.95rem}
-  @media(max-width:700px){ .close-band{flex-direction:column;align-items:flex-start;gap:1.4rem} }
+  .plate img{
+    width:100%;height:clamp(380px,60vh,580px);object-fit:cover;object-position:center 26%;
+    /* The plate was shot on a cool grey seamless. Warmed and lifted it moves
+       towards the room, but a hard rectangle of grey still sat on the cream —
+       so the edges are masked away and it reads as light falling on the wall
+       rather than a photograph pasted onto it. */
+    filter:sepia(.5) saturate(.95) brightness(1.26) contrast(.9);
+    /* only the outermost edge is feathered — the print must stay whole */
+    -webkit-mask-image:radial-gradient(ellipse 118% 112% at 50% 48%, #000 0 84%, transparent 100%);
+    mask-image:radial-gradient(ellipse 118% 112% at 50% 48%, #000 0 84%, transparent 100%);
+  }
+  .plate figcaption{
+    margin-top:1rem;text-align:center;
+    font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-soft);
+  }
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(3.4rem,9vw,6.5rem) 0}
+  .eyebrow{
+    font-size:.6rem;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 1.1rem;
+  }
+  h2{
+    font-family:var(--serif-light);font-weight:400;
+    font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.1;letter-spacing:.005em;
+    margin:0 0 1.1rem;
+  }
+  .lede{
+    font-size:clamp(1rem,2vw,1.12rem);color:var(--ink-soft);
+    max-width:52ch;margin:0;
+  }
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:start}
+  @media(max-width:820px){.split{grid-template-columns:1fr;gap:2.2rem}}
+
+  .facts{list-style:none;margin:2rem 0 0;padding:0;border-top:1px solid var(--line)}
+  .facts li{
+    display:flex;justify-content:space-between;gap:1.5rem;
+    padding:.95rem 0;border-bottom:1px solid var(--line);font-size:.92rem;
+  }
+  .facts dt,.facts b{
+    font-weight:400;color:var(--ink-soft);
+    font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;
+    flex:0 0 auto;padding-top:.28rem;
+  }
+  .facts span{text-align:right}
+
+  /* ---------- the price block ---------- */
+  .buy{
+    background:var(--cream-lit);border:1px solid var(--line);border-radius:3px;
+    padding:clamp(2rem,5vw,3.4rem);text-align:center;
+  }
+  .price{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(2.4rem,7vw,4rem);line-height:1;margin:0;
+  }
+  .price s{
+    display:inline-block;font-size:.34em;color:var(--ink-soft);
+    margin-right:.6rem;vertical-align:.55em;text-decoration-thickness:1px;
+  }
+  .buy .note{
+    margin:.9rem 0 0;font-size:.62rem;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .cta{
+    display:inline-block;margin-top:2rem;padding:1.05rem 3.2rem;
+    background:var(--ink);color:var(--cream);text-decoration:none;
+    font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;
+    border-radius:2px;transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .cta:hover{transform:translateY(-1px);box-shadow:0 14px 30px -12px rgba(51,39,31,.55)}
+  .reassure{
+    margin:1.6rem 0 0;font-size:.78rem;color:var(--ink-soft);
+  }
+
+  /* ---------- the line, set as a pull quote ---------- */
+  .quote{text-align:center;padding:clamp(3rem,8vw,5.5rem) 0}
+  .quote p{
+    font-family:var(--serif-light);font-weight:300;font-style:italic;
+    font-size:clamp(1.5rem,4.4vw,2.9rem);line-height:1.28;
+    margin:0 auto;max-width:20ch;letter-spacing:.01em;
+  }
+
+  /* ---------- questions ---------- */
+  details{border-bottom:1px solid var(--line)}
+  details summary{
+    cursor:pointer;list-style:none;padding:1.15rem 0;
+    font-size:.95rem;display:flex;justify-content:space-between;gap:1rem;align-items:center;
+  }
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";color:var(--ink-soft);font-size:1.1rem;line-height:1}
+  details[open] summary::after{content:"–"}
+  details div{padding:0 0 1.2rem;color:var(--ink-soft);font-size:.92rem;max-width:60ch}
+
+  /* ---------- foot ---------- */
+  footer{
+    border-top:1px solid var(--line);padding:2.6rem 0 3.4rem;text-align:center;
+    font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  footer .fm{
+    font-family:var(--serif);font-size:1.05rem;letter-spacing:.22em;
+    text-transform:none;color:var(--ink);display:inline-block;margin-bottom:.9rem;text-decoration:none;
+  }
+
+  /* one quiet arrival, nothing that delays reading */
+  .rise{animation:rise .9s cubic-bezier(.22,.7,.2,1) both}
+  .rise:nth-of-type(2){animation-delay:.08s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
+<div class="room" aria-hidden="true"></div>
 
-<header>
-  <div class="hdr-in">
-    <div class="hdr-left">
-      <button class="hdr-btn" id="burger" aria-label="Menu">
-        <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      </button>
-      <a class="logo" href="index.html">PHENOMENAL</a>
-    </div>
-    <nav class="hdr-nav">
-      <a href="index.html#spec">The Tee</a>
-      <a href="index.html#order">Sizing</a>
-      <a href="index.html#order">Order</a>
-      <a href="index.html#faq">FAQ</a>
-    </nav>
-    <button class="hdr-btn" aria-label="Notifications">
-      <svg viewBox="0 0 24 24"><path d="M12 3a5 5 0 0 0-5 5v3.2c0 .6-.2 1.2-.6 1.7L5 15h14l-1.4-2.1c-.4-.5-.6-1.1-.6-1.7V8a5 5 0 0 0-5-5Z"/><path d="M9.5 18a2.5 2.5 0 0 0 5 0"/></svg>
-    </button>
+<div class="wrap">
+<div class="shell">
+
+  <header class="top">
+    <a href="/">← The studio</a>
+    <span>Karachi · Pakistan</span>
+    <a href="#order">Order</a>
+  </header>
+
+  <div class="mast rise">
+    <h1>PHENOMENAL</h1>
+    <div class="rule" aria-hidden="true"><i></i><span>✦</span><i></i></div>
+    <p class="tagline">Strong and rare</p>
   </div>
-</header>
 
-<div class="bento-wrap">
-  <div class="bento">
+  <figure class="plate rise">
+    <img src="assets/product.jpg" width="1100" height="1400"
+         alt="The oversized cream tee, printed with a vintage whiskey label reading I'd rather be someone's shot of whiskey than everyone's cup of tea">
+    <figcaption>The first drop · One colourway</figcaption>
+  </figure>
 
-    <div class="card c-hero" id="top">
-      <span class="eyebrow">01 / The statement</span>
-      <h1>PHENOMENAL</h1>
-      <p>One tee. Strong and rare, never mild and everywhere. An oversized drop-shoulder cut with a vintage whiskey-label print, in bone cream.</p>
-      <a class="pill" href="index.html#order">Order now</a>
-    </div>
-
-    <div class="card c-tee">
-      <span class="eyebrow">Detail</span>
-      <h2>The Tee</h2>
-      <p>35/65 cotton-poly, oversized drop shoulder, soft-hand print that stays put.</p>
-      <a class="pill" href="index.html#spec">Learn more</a>
-    </div>
-
-    <div class="card c-sizing">
-      <span class="eyebrow">Fit guide</span>
-      <h2>Sizing</h2>
-      <p>True oversized through the body — size down one if you want it closer to true-to-size.</p>
-      <a class="pill" href="index.html#order">Size guide</a>
-    </div>
-
-    <div class="card c-swirl">
-      <span class="eyebrow">Colour</span>
-      <p class="tag">Bone cream, warmer than white.</p>
-    </div>
-
-    <div class="card c-fabric">
-      <span class="eyebrow">Fabric</span>
-      <h2>Fabric</h2>
-      <p>Cotton-poly blend that holds its shape wash after wash and resists shrinking.</p>
-    </div>
-
-    <div class="card c-drop">
-      <span class="eyebrow">03 / The drop</span>
-      <h2><s style="color:rgba(255,250,242,.45);font-size:.55em;font-weight:400;margin-right:.5rem;vertical-align:.3em">Rs 7,999</s>Rs 4,999. This drop only.</h2>
-      <p>First-drop price · small batch · free shipping nationwide · cash on delivery.</p>
-      <a class="pill solid" href="index.html#order">Checkout</a>
-      <div class="dots"><span></span><span></span><span></span></div>
-    </div>
-
-  </div>
 </div>
 
-<div class="close-band">
-  <div class="side-nav">
-    <button aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>
-    </button>
-    <button aria-label="Scroll down" onclick="window.scrollBy({top:600,behavior:'smooth'})">
-      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-  </div>
-  <div>
-    <span class="eyebrow">Closing</span>
-    <h2>Someone's shot of whiskey. Never everyone's cup of tea.</h2>
-    <p>One product, obsessed over. No accounts, no card forms — pick a size and pay cash on delivery.</p>
-  </div>
-  <a class="pill" href="index.html#order">Learn more</a>
-</div>
+<div class="shell">
+  <section class="quote">
+    <p>I'd rather be someone's shot of whiskey than everyone's cup of tea.</p>
+  </section>
 
+  <section class="split">
+    <div>
+      <p class="eyebrow">The tee</p>
+      <h2>Cut heavy, worn easy.</h2>
+      <p class="lede">
+        An oversized drop-shoulder body in a 35/65 cotton-poly blend, printed
+        with a high-density soft-hand ink that stays put through the wash. One
+        colourway, one print, made in a small batch.
+      </p>
+      <ul class="facts">
+        <li><b>Fabric</b><span>35/65 cotton-poly blend</span></li>
+        <li><b>Cut</b><span>Oversized, drop shoulder</span></li>
+        <li><b>Print</b><span>High-density soft-hand ink</span></li>
+        <li><b>Sizes</b><span>S · M · L · XL</span></li>
+      </ul>
+    </div>
+    <div>
+      <p class="eyebrow">The idea</p>
+      <h2>Not for everyone. That is the point.</h2>
+      <p class="lede">
+        We make one product and put everything into it. No seasonal churn, no
+        forty colourways, no filler. When this batch is gone it is gone, and
+        the next one will be something else.
+      </p>
+    </div>
+  </section>
+
+  <section id="order">
+    <div class="buy">
+      <p class="eyebrow">First-drop price</p>
+      <p class="price"><s>Rs 7,999</s>Rs 4,999</p>
+      <p class="note">Small batch · Free shipping nationwide</p>
+      <a class="cta" href="/#order">Order now</a>
+      <p class="reassure">
+        Cash on delivery, anywhere in Pakistan. You pay the rider when the tee
+        is in your hands. Takes about thirty seconds to order.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Questions</p>
+    <details><summary>How do I pay?</summary><div>Cash on delivery, nationwide. You pay the rider when the tee is in your hands, nothing upfront.</div></details>
+    <details><summary>How long is delivery?</summary><div>Free shipping anywhere in Pakistan. Dispatched within 24 hours, then 2–3 days to major cities and 3–5 everywhere else.</div></details>
+    <details><summary>What if the size is wrong?</summary><div>Message us within 7 days and we will swap it free. Keep the tags on and unwashed.</div></details>
+    <details><summary>Will the print crack?</summary><div>The lived-in texture is the design, printed that way on purpose. High-density soft ink holds through regular machine washes — wash inside out and skip the dryer.</div></details>
+  </section>
+
+  <footer>
+    <a class="fm" href="/">Phenomenal</a><br>
+    Strong and rare · Never mild, never everywhere
+  </footer>
+</div>
+</div>
 </body>
 </html>
