@@ -89,6 +89,7 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   html.intro .hdr,
   html.intro .chapters,
   html.intro .scroll-cue,
+  html.intro .sticky-bar,
   html.intro #bgvid,
   html.intro #bgposter,
   html.intro .chapter[data-chapter="0"] > div > *{opacity:0}
@@ -103,6 +104,10 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   html.revealed .chapter[data-chapter="0"] > div > *:nth-child(3){animation-delay:.60s}
   html.revealed .chapters{animation:riseIn .8s ease .9s both}
   html.revealed .scroll-cue{animation:riseIn .8s ease 1.02s both}
+  /* The checkout bar is the last thing to arrive. Sitting there through the
+     curtain it reads as an ad bolted onto the page; sliding up once the hero
+     has landed, it reads as the page offering the next step. */
+  html.revealed .sticky-bar{animation:barIn .7s cubic-bezier(.22,.7,.2,1) 1.25s both}
 
   @keyframes wordIn{
     from{opacity:0;letter-spacing:.85em;transform:translateY(8px)}
@@ -110,6 +115,7 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   }
   @keyframes ruleIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
   @keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes barIn{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:none}}
   @keyframes hdrDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
   @keyframes mediaIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
 
@@ -522,6 +528,8 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   .sticky-bar .p{font-family:var(--display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
   .sticky-bar .btn-wa{width:auto;margin:0;padding:.7rem 1.2rem;font-size:.88rem}
   @media(max-width:700px){.sticky-bar{display:flex}}
+  /* opacity alone would leave it invisible but still tappable over the curtain */
+  html.intro .sticky-bar{pointer-events:none}
 </style>
 <script>
   // Stamped before paint so nothing flashes in ahead of the intro. Skipped when the
