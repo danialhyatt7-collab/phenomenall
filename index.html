@@ -235,7 +235,10 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
 
   /* ---------- immersive scroll world ---------- */
   #world{position:relative;height:400vh}
-  .world-fix{position:sticky;top:0;height:100vh;overflow:hidden}
+  /* 100vh on iOS is the chrome-hidden height, so the pane's bottom sits under
+     Safari's URL bar and the copy in it gets cut. svh is what is really on
+     screen; the vh line stays as the fallback for browsers without svh. */
+  .world-fix{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
   .world-fix{background:var(--void)}
   /* the wrapper carries scroll + cursor motion; the video keeps its own intro animation */
   .media{position:absolute;inset:0;transform-origin:center center;will-change:transform}
@@ -248,7 +251,9 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
      the header. Pin it to the top instead and seat the chapter copy over its lower smoke. */
   @media (max-aspect-ratio: 4/3){
     /* portrait source is 828x1108, so full-width height = 100vw * 1.338 */
-    .world-fix{--vidh:min(100vh, calc(100vw * 1.338))}
+    /* capped at 58svh so the copy below it always has a band to sit in,
+       however tall the phone */
+    .world-fix{--vidh:min(58svh, calc(100vw * 1.338))}
     #bgvid,#bgposter{top:0;bottom:auto;height:var(--vidh);object-position:center top;transform-origin:center top}
     .media{transform-origin:center top}
     .vignette{
@@ -280,7 +285,7 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   }
   @media (max-aspect-ratio: 4/3){
     /* the copy lives in the band below the video, so the shirt is never covered */
-    .chapter{place-items:center center;padding:min(var(--vidh), 62vh) 1.25rem 9vh}
+    .chapter{place-items:start center;padding:var(--vidh) 1.25rem 3vh}
   }
   @media(max-width:700px){
     .chapter > div:not(.callouts){padding:1.5rem 1rem}
@@ -342,6 +347,27 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   }
   .chapter p{max-width:44ch;margin:1.2rem auto 0;color:var(--ice);opacity:.85;font-size:clamp(.98rem,2vw,1.15rem);text-shadow:0 1px 30px rgba(7,6,6,.9)}
   .chapter .price-line{margin-top:1.4rem;font-family:var(--mono);font-size:clamp(.78rem,1.6vw,1rem);letter-spacing:.12em;color:var(--ice-blue);display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;white-space:nowrap}
+
+  /* Portrait: the band under the video is a fixed height, so the gaps inside
+     the copy decide whether the last line fits. Desktop spacing overflows it.
+     Placed after the rules above so it actually wins the cascade. */
+  @media (max-aspect-ratio: 4/3){
+    .chapter > div:not(.callouts){padding:1rem}
+    .chapter .mono{margin-bottom:.7rem}
+    .chapter .price-line{margin-top:.9rem}
+    .chapter .chapter-cta{margin-top:1rem;padding:.8rem 1.6rem}
+    .chapter p.chapter-note{margin-top:.6rem}
+  }
+
+  /* Short phones (SE, older Androids) leave a shallower band still, and
+     chapter 02 has the longest headline. Give it a smaller type ramp rather
+     than let the last line fall off the screen. */
+  @media (max-aspect-ratio: 4/3) and (max-height: 700px){
+    .world-fix{--vidh:min(50svh, calc(100vw * 1.338))}
+    .chapter h1, .chapter h2{font-size:clamp(1.5rem,7.2vw,2rem)}
+    .chapter p{font-size:.9rem}
+    .chapter .mono{margin-bottom:.5rem}
+  }
   .chapter .price-line s{color:var(--dim)}
   .chapter .price-line > *:not(:last-child)::after{content:'·';margin-left:.9rem;color:var(--dim)}
   .chapter h2 .was{color:var(--dim);font-size:.5em;font-weight:400;letter-spacing:0;margin-right:.5rem;vertical-align:.32em}
