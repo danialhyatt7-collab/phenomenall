@@ -7,7 +7,13 @@
 <meta name="description" content="One oversized tee, printed with a vintage whiskey label. Rs 4,999 first-drop price. Cash on delivery, free shipping across Pakistan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap">
+<!-- The font stylesheet is a third-party render-blocking request: the page
+     stayed blank until it answered. Loaded as a preload that promotes itself
+     to a stylesheet, so text paints immediately in the fallback stack and
+     swaps when the webfonts arrive. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap"></noscript>
 <style>
   /* ---------------------------------------------------------------------------
    * Home 01 — the warm room

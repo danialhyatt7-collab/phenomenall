@@ -411,6 +411,23 @@ function serveStatic(req, res, urlPath) {
     }
     const type = MIME[path.extname(file)] || "application/octet-stream";
     const head = { "Content-Type": type, "Accept-Ranges": "bytes" };
+
+    // Without this the browser re-fetches the 5 MB hero clip for every element
+    // that references it, and again on the next page view. The HTML itself is
+    // revalidated so a deploy is picked up immediately; the media and the
+    // vendored library are content that only changes when their name does.
+    const ext = path.extname(file);
+    if (ext === ".html") {
+      head["Cache-Control"] = "no-cache";
+    } else {
+      head["Cache-Control"] = "public, max-age=604800";
+    }
+    head["ETag"] = '"' + st.size.toString(16) + "-" + st.mtimeMs.toString(16) + '"';
+    if (req.headers["if-none-match"] === head.ETag) {
+      res.writeHead(304, head);
+      res.end();
+      return;
+    }
     const range = req.headers.range;
     const m = range && /^bytes=(\d*)-(\d*)$/.exec(range.trim());
 
