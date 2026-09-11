@@ -24,11 +24,26 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '927494272063012');
-fbq('track', 'PageView');
+
+/* The dataset id is injected by the server from META_PIXEL_ID, so it lives in
+   the environment and not in this file. */
+window.PX_ID = '__META_PIXEL_ID__';
+
+/* Every event is sent twice: once here by the pixel and once from the server,
+   both carrying the same event_id. That id is what tells Meta the two are one
+   event, so Ads Manager shows it received from Browser and Server and counts
+   it once. Generated here because the browser fires first. */
+window.PX_EVID = function(){
+  try{ if(crypto && crypto.randomUUID) return crypto.randomUUID(); }catch(e){}
+  return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 11);
+};
+
+fbq('init', window.PX_ID);
+window.PX_PAGEVIEW_ID = window.PX_EVID();
+fbq('track', 'PageView', {}, {eventID: window.PX_PAGEVIEW_ID});
 </script>
 <noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
+src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel -->
 <style>
@@ -712,7 +727,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
       <a href="#order">Order</a>
       <a href="#faq">FAQ</a>
       <a href="https://wa.me/923374841818">Support</a>
-      <a href="home-01.html">Home 01</a>
     </nav>
     <div class="hdr-utils">
       <button class="hdr-btn" id="search-btn" aria-label="Search" aria-expanded="false" aria-controls="search-panel">
@@ -990,6 +1004,77 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
   var size = "M", qty = 1;
   var fmt = function(n){ return "Rs " + n.toLocaleString("en-PK"); };
   var $ = function(s){ return document.querySelector(s); };
+  var CONTENT_ID = "shot-of-whiskey-tee";
+  var CONTENT_NAME = "Shot of Whiskey Tee";
+
+  /* ---------- Meta events ----------
+     Everything goes out twice, browser and server, under one event_id. The
+     browser copy is instant and carries the cookies; the server copy survives
+     ad blockers and iOS. Meta matches them on the id and counts one.
+
+     Personal details are posted to our own server in the clear over HTTPS and
+     hashed there — the access token never comes near the browser. */
+
+  /* _fbp is set by the pixel; _fbc only exists once someone lands from an ad,
+     so rebuild it from ?fbclid= when it is missing. */
+  function cookie(name){
+    var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+    return m ? m.pop() : null;
+  }
+  function fbcValue(){
+    var existing = cookie("_fbc");
+    if(existing) return existing;
+    var id = new URLSearchParams(location.search).get("fbclid");
+    return id ? "fb.1." + Date.now() + "." + id : null;
+  }
+
+  /* Mirrors normalisePhone in server.js: Meta wants E.164 digits with the
+     country code and no plus, so 0300 1234567 becomes 923001234567. */
+  function normalisePhoneClient(raw){
+    var d = String(raw || "").replace(/\D/g, "");
+    if(!d) return "";
+    if(d.indexOf("00") === 0) d = d.slice(2);
+    if(d.indexOf("92") === 0) return d;
+    if(d.indexOf("0") === 0) return "92" + d.slice(1);
+    if(d.length === 10) return "92" + d;
+    return d;
+  }
+
+  function serverTrack(name, eventId, custom, user){
+    var payload = {
+      event_name: name,
+      event_id: eventId,
+      event_source_url: location.href,
+      custom_data: custom || {},
+      user_data: {
+        name: (user && user.name) || null,
+        phone: (user && user.phone) || null,
+        email: (user && user.email) || null,
+        fbp: cookie("_fbp"), fbc: fbcValue()
+      }
+    };
+    var body = JSON.stringify(payload);
+    try{
+      // keepalive so an event fired as the page goes away still lands
+      fetch("/api/track", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: body, keepalive: true
+      }).catch(function(){});
+    }catch(err){}
+  }
+
+  /* Fires both halves and hands back the id, so a caller that needs to record
+     it (the order log does) can keep it. */
+  function track(name, custom, user){
+    var eventId = window.PX_EVID ? window.PX_EVID() : String(Date.now());
+    if(window.fbq) fbq('track', name, custom || {}, {eventID: eventId});
+    serverTrack(name, eventId, custom, user);
+    return eventId;
+  }
+
+  // The pixel already fired PageView in the head with this id; this is its
+  // server half, sent under the same id so the two deduplicate.
+  if(window.PX_PAGEVIEW_ID) serverTrack("PageView", window.PX_PAGEVIEW_ID, {});
 
   /* ---------- landing sequence ---------- */
   (function intro(){
@@ -1042,6 +1127,10 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
       chip.setAttribute("aria-pressed","true");
       size = chip.textContent.trim();
       render();
+      track('AddToCart', {
+        content_ids: [CONTENT_ID], content_name: CONTENT_NAME, content_type: 'product',
+        size: size, quantity: qty, value: PRICE * qty, currency: 'PKR'
+      });
     });
   });
   $("#q-minus").addEventListener("click", function(){ if(qty>1){ qty--; render(); } });
@@ -1050,21 +1139,6 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     document.getElementById(id).addEventListener("input", render);
   });
   $("#f-optin").addEventListener("change", render);
-  /* Meta's browser cookies. _fbp is set by the pixel; _fbc only exists once
-     someone lands from an ad, so rebuild it from ?fbclid= when it is missing.
-     Both are handed to the server, which needs them to match the Conversions
-     API Purchase back to the ad click. */
-  function cookie(name){
-    var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
-    return m ? m.pop() : null;
-  }
-  function fbcValue(){
-    var existing = cookie("_fbc");
-    if(existing) return existing;
-    var id = new URLSearchParams(location.search).get("fbclid");
-    return id ? "fb.1." + Date.now() + "." + id : null;
-  }
-
   /* Opening WhatsApp switches apps on a phone, and a browser is free to kill a
      plain in-flight fetch when it backgrounds — losing the order and the
      customer's details with it. sendBeacon is the one request the browser
@@ -1095,8 +1169,27 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     if(btn) btn.disabled = true;
     setTimeout(function(){ submitting = false; if(btn) btn.disabled = false; }, 4000);
 
+    var buyerName = $("#f-name").value.trim();
+    var buyerPhone = $("#f-phone").value.trim();
+    var buyerEmail = $("#f-email").value.trim();
+
+    /* Advanced matching. fbq takes these unhashed and hashes them itself before
+       anything leaves the browser; the server hashes its own copy separately. */
+    if(window.fbq && window.PX_ID){
+      var am = { ph: normalisePhoneClient(buyerPhone), country: 'pk' };
+      if(buyerName) am.fn = buyerName.split(/\s+/)[0].toLowerCase();
+      if(buyerEmail) am.em = buyerEmail.toLowerCase();
+      fbq('init', window.PX_ID, am);
+    }
+
+    var icEventId = track('InitiateCheckout', {
+      value: PRICE * qty, currency: 'PKR', num_items: qty,
+      content_ids: [CONTENT_ID], content_name: CONTENT_NAME, content_type: 'product'
+    }, { name: buyerName, phone: buyerPhone, email: buyerEmail });
+
     var payload = {
       product: PRODUCT, size: size, qty: qty,
+      ic_event_id: icEventId,
       unit_price: PRICE, total: PRICE*qty,
       name: $("#f-name").value.trim() || null,
       phone: $("#f-phone").value.trim() || null,
@@ -1110,16 +1203,34 @@ src="https://www.facebook.com/tr?id=927494272063012&ev=PageView&noscript=1"
     // Opening WhatsApp is an intent to buy, not a sale — this is cash on
     // delivery, so nothing is paid yet. Purchase is sent server-side once the
     // order is actually confirmed; see sendMetaPurchase in server.js.
-    if(window.fbq){
-      fbq('track', 'InitiateCheckout', {
-        value: payload.total, currency: 'PKR',
-        content_name: PRODUCT, content_type: 'product',
-        content_ids: ['shot-of-whiskey-tee'], num_items: qty
-      });
-    }
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(message()), "_blank", "noopener");
   });
   render();
+
+  /* ViewContent once the order section is actually on screen, and only once a
+     session — scrolling past it four times is not four product views. */
+  (function viewContent(){
+    var target = document.getElementById("order");
+    if(!target || !window.IntersectionObserver) return;
+    var KEY = "px_vc_sent";
+    try{ if(sessionStorage.getItem(KEY)) return; }catch(e){}
+    new IntersectionObserver(function(entries, obs){
+      if(!entries.some(function(e){ return e.isIntersecting; })) return;
+      obs.disconnect();
+      try{ sessionStorage.setItem(KEY, "1"); }catch(e){}
+      track('ViewContent', {
+        content_name: CONTENT_NAME, content_type: 'product',
+        content_ids: [CONTENT_ID], value: PRICE, currency: 'PKR'
+      });
+    }, {threshold:.25}).observe(target);
+  })();
+
+  /* Contact on any WhatsApp link, however it was added to the page. */
+  document.addEventListener("click", function(e){
+    var a = e.target && e.target.closest && e.target.closest('a[href*="wa.me"]');
+    if(!a) return;
+    track('Contact', { content_name: CONTENT_NAME, content_category: 'whatsapp' });
+  }, {capture:true, passive:true});
 
   /* ---------- header: scroll state, menu, search ---------- */
   var hdr = $("#hdr"), burger = $("#burger"), hdrNav = $("#hdr-nav");

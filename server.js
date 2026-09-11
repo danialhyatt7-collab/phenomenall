@@ -112,24 +112,33 @@ function normalisePhone(raw) {
   return d;
 }
 
-function buildMetaPurchase(order) {
+/**
+ * The user_data block every event shares. Personal details are hashed here and
+ * only here: the browser never sees the hashing, and the raw values never
+ * leave this process. Meta's own identifiers (fbp, fbc, IP, user agent) are
+ * sent unhashed by design and carry most of the match quality.
+ */
+function buildMetaUser(src) {
   const user = {};
-  const email = normaliseEmail(order.email);
+  const email = normaliseEmail(src.email);
   if (email) user.em = [sha256(email)];
-  const phone = normalisePhone(order.phone);
+  const phone = normalisePhone(src.phone);
   if (phone) user.ph = [sha256(phone)];
-  if (order.name) {
-    const parts = String(order.name).trim().toLowerCase().split(/\s+/);
+  if (src.name) {
+    const parts = String(src.name).trim().toLowerCase().split(/\s+/);
     if (parts[0]) user.fn = [sha256(parts[0])];
     if (parts.length > 1) user.ln = [sha256(parts.slice(1).join(" "))];
   }
   user.country = [sha256("pk")];
-  // Unhashed by design — these are Meta's own identifiers and carry most of
-  // the match quality for an ad-driven order.
-  if (order.fbp) user.fbp = order.fbp;
-  if (order.fbc) user.fbc = order.fbc;
-  if (order.client_ip) user.client_ip_address = order.client_ip;
-  if (order.client_ua) user.client_user_agent = order.client_ua;
+  if (src.fbp) user.fbp = src.fbp;
+  if (src.fbc) user.fbc = src.fbc;
+  if (src.client_ip) user.client_ip_address = src.client_ip;
+  if (src.client_ua) user.client_user_agent = src.client_ua;
+  return user;
+}
+
+function buildMetaPurchase(order) {
+  const user = buildMetaUser(order);
 
   // Meta rejects events older than seven days, so an order confirmed late
   // still reports, just stamped at the edge of the window.
@@ -155,6 +164,64 @@ function buildMetaPurchase(order) {
       order_id: order.id,
     },
   };
+}
+
+/* ---------------------------------------------------------------------------
+ * Browser events, mirrored server side
+ *
+ * Every event the pixel fires is sent again from here with the SAME event_id,
+ * which is how Meta knows the two are one event and not two. Ads Manager shows
+ * each as received from Browser and Server, deduplicated.
+ *
+ * The browser posts the raw details; the hashing happens in buildMetaUser, so
+ * the access token and the hashing both stay on this side of the wire.
+ * ------------------------------------------------------------------------- */
+const TRACKABLE = new Set(["PageView", "ViewContent", "AddToCart", "InitiateCheckout", "Contact"]);
+
+// This endpoint is public, so a bored visitor could otherwise post events all
+// day and pollute the dataset. One burst per IP per minute is far more than a
+// real session needs.
+const TRACK_LIMIT = 40;
+const TRACK_WINDOW_MS = 60 * 1000;
+const trackHits = new Map();
+function trackAllowed(key) {
+  const now = Date.now();
+  const hit = trackHits.get(key);
+  if (!hit || now - hit.start > TRACK_WINDOW_MS) {
+    trackHits.set(key, { start: now, n: 1 });
+    if (trackHits.size > 5000) trackHits.clear(); // never grow without bound
+    return true;
+  }
+  hit.n += 1;
+  return hit.n <= TRACK_LIMIT;
+}
+
+function buildMetaEvent(name, opts) {
+  const event = {
+    event_name: name,
+    event_time: Math.floor(Date.now() / 1000),
+    event_id: opts.event_id,
+    action_source: "website",
+    event_source_url: opts.event_source_url || "https://phenomenal.pk/",
+    user_data: buildMetaUser(opts.user || {}),
+  };
+  if (opts.custom_data && Object.keys(opts.custom_data).length) {
+    event.custom_data = opts.custom_data;
+  }
+  return event;
+}
+
+async function sendMetaEvent(event) {
+  if (!META_CAPI_TOKEN) return { skipped: "META_CAPI_TOKEN is not set" };
+  const payload = { data: [event], access_token: META_CAPI_TOKEN };
+  if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
+  const result = await postToMeta(payload);
+  if (result.status >= 200 && result.status < 300) return { sent: true };
+  console.error(
+    "Meta " + event.event_name + " failed: " + (result.error || "HTTP " + result.status) +
+    " " + (result.body || "")
+  );
+  return { sent: false, error: result.error || "HTTP " + result.status };
 }
 
 function postToMeta(payload) {
@@ -410,6 +477,26 @@ function serveStatic(req, res, urlPath) {
       return;
     }
     const type = MIME[path.extname(file)] || "application/octet-stream";
+
+    // HTML carries one placeholder, the pixel id, so the dataset lives in the
+    // environment rather than in the markup. Small files, always revalidated,
+    // so reading them whole costs nothing worth optimising.
+    if (path.extname(file) === ".html") {
+      fs.readFile(file, "utf8", (readErr, text) => {
+        if (readErr) return json(res, 404, { error: "not found" });
+        const out = text.split("__META_PIXEL_ID__").join(META_PIXEL_ID);
+        const buf = Buffer.from(out, "utf8");
+        res.writeHead(200, {
+          "Content-Type": type,
+          "Cache-Control": "no-cache",
+          "Content-Length": buf.length,
+        });
+        if (req.method === "HEAD") return res.end();
+        res.end(buf);
+      });
+      return;
+    }
+
     const head = { "Content-Type": type, "Accept-Ranges": "bytes" };
 
     // Without this the browser re-fetches the 5 MB hero clip for every element
@@ -520,6 +607,41 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, products);
     }
 
+    // The server half of every browser event. Same event_id as the pixel, so
+    // Meta collapses the pair into one deduplicated event.
+    if (p === "/api/track" && req.method === "POST") {
+      if (!trackAllowed(clientKey(req))) return json(res, 429, { error: "slow down" });
+      let body;
+      try {
+        body = JSON.parse(await readBody(req));
+      } catch (err) {
+        return json(res, 400, { error: "invalid JSON body" });
+      }
+      if (!TRACKABLE.has(body.event_name)) {
+        return json(res, 400, { error: "unknown event_name" });
+      }
+      if (!body.event_id || typeof body.event_id !== "string") {
+        return json(res, 400, { error: "event_id is required" });
+      }
+      const u = body.user_data || {};
+      const event = buildMetaEvent(body.event_name, {
+        event_id: String(body.event_id).slice(0, 100),
+        event_source_url: body.event_source_url,
+        custom_data: body.custom_data,
+        user: {
+          // The browser sends these in the clear over HTTPS; they are hashed
+          // here, never stored, and never echoed back.
+          name: u.name, phone: u.phone, email: u.email,
+          fbp: u.fbp, fbc: u.fbc,
+          // Taken from the connection, not from the body, so they cannot be forged.
+          client_ip: String(clientKey(req)).split(",")[0].trim(),
+          client_ua: req.headers["user-agent"] ? String(req.headers["user-agent"]).slice(0, 500) : null,
+        },
+      });
+      const outcome = await sendMetaEvent(event);
+      return json(res, 200, { ok: true, event: body.event_name, ...outcome });
+    }
+
     if (p === "/api/orders" && req.method === "GET") {
       if (!requireAuth(req, res)) return;
       return json(res, 200, readOrders());
@@ -552,6 +674,9 @@ const server = http.createServer(async (req, res) => {
         // confirmed — without them Meta cannot tie the sale to the ad click.
         fbp: body.fbp ? String(body.fbp).slice(0, 120) : null,
         fbc: body.fbc ? String(body.fbc).slice(0, 255) : null,
+        // The InitiateCheckout the browser fired for this same order, kept so a
+        // sale can be traced back to the click that started it.
+        ic_event_id: body.ic_event_id ? String(body.ic_event_id).slice(0, 100) : null,
         event_source_url: body.event_source_url ? String(body.event_source_url).slice(0, 500) : null,
         client_ip: String(clientKey(req)).split(",")[0].trim(),
         client_ua: req.headers["user-agent"] ? String(req.headers["user-agent"]).slice(0, 500) : null,

@@ -432,6 +432,15 @@
                 }).join("")+
               '</select>'+
               (o.updated_at ? '<div class="muted" style="color:var(--faint);font-size:12px">Updated '+esc(when(o.updated_at))+'</div>' : '')+
+              // Whether the Conversions API Purchase for this order actually
+              // reached Meta, so it can be checked here rather than guessed at.
+              (function(){
+                var c = o.capi;
+                if(!c) return '<div class="muted" style="color:var(--faint);font-size:12px">Purchase not reported yet</div>';
+                if(c.purchase_sent_at) return '<div class="muted" style="color:var(--faint);font-size:12px">Purchase reported to Meta '+esc(when(c.purchase_sent_at))+'</div>';
+                if(c.skipped) return '<div class="muted" style="color:var(--faint);font-size:12px">Purchase not sent: '+esc(c.skipped)+'</div>';
+                return '<div class="muted" style="color:#b4342a;font-size:12px">Purchase failed: '+esc(c.error || "unknown")+'</div>';
+              })()+
             '</div>'+
           '</div>'+
           '<div class="card"><div class="card-head"><h2>Customer</h2></div>'+
