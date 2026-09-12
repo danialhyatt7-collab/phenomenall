@@ -10,6 +10,12 @@
      attributing for iOS visitors. -->
 <meta name="facebook-domain-verification" content="8a1xv9g1kvjgmxry08yxz8g1eb1ljc" />
 <meta name="description" content="PHENOMENAL — one tee, done properly. Oversized drop-shoulder tee with a vintage whiskey-label print.">
+<!-- The mark is far wider than it is tall, so the icons are the star alone —
+     the full lockup is unreadable at tab size. Kept on the artwork's own black
+     ground because iOS flattens transparency onto white, which would erase a
+     silver mark completely. -->
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- The font stylesheet is a third-party render-blocking request: the page
@@ -151,10 +157,10 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     max-width:1440px;margin:0 auto;height:58px;padding:0 1.25rem;
     display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.5rem;
   }
-  .hdr-logo{
-    font-family:var(--display);font-weight:700;font-size:.9rem;letter-spacing:.3em;text-decoration:none;color:var(--ice);
-    white-space:nowrap;
-  }
+  .hdr-logo{display:flex;align-items:center;text-decoration:none;line-height:0}
+  /* Static here on purpose: the hero video is already moving behind this bar
+     and a second animation would compete with it. */
+  .hdr-mark{width:86px;height:auto;display:block;flex:none}
   .hdr-nav{display:flex;gap:1.6rem;align-items:center}
   .hdr-nav a,.hdr-nav button{
     font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
@@ -229,7 +235,8 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     .hdr-nav a,.hdr-nav button{padding:.95rem 0;border-bottom:1px solid rgba(201,194,180,.08);font-size:.8rem;text-align:left;background:none;border-left:none;border-right:none;border-top:none;width:100%}
     .hdr-nav a::after,.hdr-nav button::after{display:none}
     .hdr-burger{display:grid}
-    .hdr-logo{justify-self:center;font-size:.8rem;letter-spacing:.26em}
+    .hdr-logo{justify-self:center}
+    .hdr-mark{width:62px}
     .hdr-region{display:none}
     .hdr-acct{display:none}
     .search-panel{top:52px}
@@ -691,7 +698,8 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   details.faq div{padding:0 0 1.3rem;color:var(--dim);max-width:62ch;font-size:.95rem}
 
   footer{background:var(--void);border-top:1px solid var(--line);padding:2.6rem 1.5rem 3rem;text-align:center;color:var(--dim);font-size:.88rem;position:relative;z-index:5}
-  footer .f-brand{font-family:var(--display);font-weight:700;letter-spacing:.32em;color:var(--ice);display:inline-block;margin-bottom:.6rem;text-decoration:none}
+  footer .f-brand{display:inline-block;margin-bottom:.9rem;text-decoration:none;line-height:0}
+  footer .f-mark{width:116px;height:auto;display:block}
   footer a{color:var(--dim)}
 
 </style>
@@ -727,7 +735,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     <button class="hdr-btn hdr-burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="hdr-nav">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
-    <a class="hdr-logo" href="#top">PHENOMENAL</a>
+    <a class="hdr-logo" href="#top" aria-label="Phenomenal — home"><img class="hdr-mark" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"></a>
     <nav class="hdr-nav" id="hdr-nav">
       <a href="#spec">The Tee</a>
       <button type="button" data-size-guide>Sizing</button>
@@ -957,7 +965,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
 </section>
 
 <footer>
-  <a class="f-brand" href="#top">PHENOMENAL</a>
+  <a class="f-brand" href="#top" aria-label="Phenomenal — back to top"><img class="f-mark" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"></a>
   <p>One tee, done right. Support: <a href="https://wa.me/923374841818">0337 4841818</a></p>
   <p>© 2026 Phenomenal. All rights reserved.</p>
 </footer>
