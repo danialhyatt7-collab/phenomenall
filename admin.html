@@ -248,18 +248,43 @@
 
   @media(max-width:820px){
     .app{grid-template-columns:1fr}
-    .side{flex-direction:row;align-items:center;gap:10px;overflow-x:auto;padding:10px 12px;
-      border-right:none;border-bottom:1px solid var(--border)}
-    .side-brand{padding:0;white-space:nowrap;border-bottom:none;font-size:14px}
+    /* The sidebar becomes a header. It wraps onto two rows rather than
+       scrolling sideways: a scrolling nav hid Products and Customers off the
+       right edge of a phone with nothing to indicate they were there. */
+    .side{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;overflow:visible;
+      padding:10px 12px;border-right:none;border-bottom:1px solid var(--border)}
+    .side-brand{order:0;padding:0;white-space:nowrap;border-bottom:none;font-size:14px}
     .side-brand .dot{width:32px;height:32px;border-radius:10px;font-size:13px}
     .side-sec{display:none}
-    .side nav{flex-direction:row;gap:6px;padding:0}
-    .side nav a{white-space:nowrap;padding:8px 12px}
+    .side nav{order:2;flex:1 0 100%;flex-direction:row;flex-wrap:wrap;gap:6px;padding:0}
+    .side nav a{white-space:nowrap;padding:7px 11px;gap:8px;font-size:13.5px}
     .side nav a.on::before,.side nav a.on::after{display:none}
     .side nav .ico{width:26px;height:26px}
-    .side-foot{display:none}
+    .side nav svg{width:15px;height:15px}
+    .side nav .count{margin-left:0}
+    /* Sign out was unreachable on a phone — the whole footer was hidden. Only
+       the storefront blurb goes; the control itself moves up beside the brand. */
+    .side-foot{order:1;display:block;margin:0 0 0 auto;padding:0;border-top:none;width:auto}
+    .foot-note{display:none}
+    .who{margin:0;padding:0;border-top:none;gap:0}
+    .who .lbl{display:none}
     .content{padding:18px 14px 54px}
     .topbar{padding:0 14px;min-height:62px}
+  }
+  /* Four stacked KPI cards pushed the orders table off a phone screen. */
+  @media(max-width:600px){
+    .kpis{grid-template-columns:1fr 1fr;gap:10px}
+    .kpi{padding:14px}
+    .kpi .value{font-size:21px}
+    .kpi .label,.kpi .foot{font-size:11.5px}
+    /* The table keeps its sideways scroll — it is a data table and that is
+       the honest way to show six columns on a phone — but tighter cells fit
+       more per swipe, and an order ID must never break across two lines. */
+    th,td{padding:11px 12px}
+    table{min-width:560px}
+    td .id{white-space:nowrap}
+    .card-head,.toolbar{padding-left:14px;padding-right:14px}
+    .detail-grid{gap:12px}
   }
 </style>
 </head>
@@ -299,8 +324,8 @@
         Customers <span class="count" id="nav-customers">0</span></a>
     </nav>
     <div class="side-foot">
-      Storefront <a href="/" target="_blank" rel="noopener">View store</a><br>
-      Orders arrive here the moment a customer checks out.
+      <p class="foot-note">Storefront <a href="/" target="_blank" rel="noopener">View store</a><br>
+      Orders arrive here the moment a customer checks out.</p>
       <div class="who"><span class="lbl">Signed in as <b id="who">—</b></span><button type="button" id="signout">Sign out</button></div>
     </div>
   </aside>
