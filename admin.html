@@ -68,6 +68,8 @@
   .btn:hover{background:#f7f7f7}
   .btn-primary{background:#303030;border-color:#303030;color:#fff}
   .btn-primary:hover{background:#1a1a1a}
+  .btn-danger{color:#b4342a;border-color:#e3c4c1}
+  .btn-danger:hover{background:#fdf4f3;border-color:#b4342a}
   .content{padding:20px 22px 60px;max-width:1180px;width:100%}
 
   /* ---------- cards ---------- */
@@ -432,6 +434,7 @@
                 }).join("")+
               '</select>'+
               (o.updated_at ? '<div class="muted" style="color:var(--faint);font-size:12px">Updated '+esc(when(o.updated_at))+'</div>' : '')+
+              '<button class="btn btn-danger" data-delete="'+esc(o.id)+'">Delete order</button>'+
               // Whether the Conversions API Purchase for this order actually
               // reached Meta, so it can be checked here rather than guessed at.
               (function(){
@@ -526,6 +529,8 @@
     if(tab){ state.filter = tab.dataset.filter; render(); return; }
     var adv = e.target.closest("[data-advance]");
     if(adv){ setStatus(route().id, adv.dataset.advance); }
+    var del = e.target.closest("[data-delete]");
+    if(del){ removeOrder(del.dataset.delete); }
   });
   $("#view").addEventListener("input", function(e){
     if(e.target.id === "q"){
@@ -538,6 +543,19 @@
   $("#view").addEventListener("change", function(e){
     if(e.target.id === "status-select") setStatus(route().id, e.target.value);
   });
+
+  // Used to clear test rows. Permanent, and a Purchase already reported to
+  // Meta stays reported — deleting the row here cannot take it back.
+  function removeOrder(id){
+    var o = state.orders.filter(function(x){ return x.id === id; })[0];
+    var reported = o && o.capi && o.capi.purchase_sent_at;
+    if(!confirm("Delete order " + id + " for good?" +
+      (reported ? "\n\nThis order already reported a Purchase to Meta. Deleting it here does not withdraw that event." : ""))) return;
+    fetch("/api/orders/"+id, {method:"DELETE"}).then(function(){
+      location.hash = "#/orders";
+      load();
+    });
+  }
 
   function setStatus(id, status){
     fetch("/api/orders/"+id, {

@@ -599,6 +599,8 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   table.sizes tbody tr:last-child th,table.sizes tbody tr:last-child td{border-bottom:none}
   table.sizes tbody tr:hover th,table.sizes tbody tr:hover td{background:rgba(242,239,233,.03)}
   .size-note{margin-top:1.1rem;color:var(--dim);font-size:.9rem;max-width:64ch}
+  .size-note a{color:var(--ice);text-decoration:none;border-bottom:1px solid rgba(242,239,233,.35)}
+  .size-note a:hover{border-bottom-color:var(--ice)}
   .size-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.3rem;margin-top:1.8rem}
   .size-how div{border-left:1px solid var(--line);padding-left:1rem}
   .size-how .mono{display:block;margin-bottom:.4rem}
@@ -809,12 +811,12 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   <div class="wrap">
     <span class="mono">Specification</span>
     <h2 class="sec-h">Built right. Worn easy.</h2>
-    <p class="sec-sub">We make one product and obsess over it — a cotton-poly blend that keeps its shape wash after wash, printed with high-density soft ink that stays put.</p>
+    <p class="sec-sub">We make one product and obsess over it — a cotton-poly blend cut oversized, printed with a soft-hand ink that sits into the fabric rather than on top of it.</p>
     <div class="spec-grid">
-      <div class="spec"><span class="mono">Fabric</span><p>35% cotton, 65% polyester. Holds its shape, resists shrinking, stays fully opaque.</p></div>
+      <div class="spec"><span class="mono">Fabric</span><p>35% cotton, 65% polyester. Mid-weight, opaque, with the drape you want on an oversized cut.</p></div>
       <div class="spec"><span class="mono">Fit</span><p>True oversized: dropped shoulders, boxy body. Size down one for a relaxed fit.</p></div>
-      <div class="spec"><span class="mono">Print</span><p>Vintage whiskey-label artwork in crack-resistant soft ink with a lived-in texture.</p></div>
-      <div class="spec"><span class="mono">Colour</span><p>Bone cream — warmer than white, neutral enough for everything you own.</p></div>
+      <div class="spec"><span class="mono">Print</span><p>Vintage whiskey-label artwork in a soft-hand ink with a deliberately lived-in texture.</p></div>
+      <div class="spec"><span class="mono">Colour</span><p>Bone cream — an off-white with a warm cast, neutral enough for everything you own. Screens vary; expect cream, not bright white.</p></div>
     </div>
   </div>
 </section>
@@ -973,7 +975,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
       </button>
     </div>
     <div class="modal-body">
-      <p class="sec-sub">Standard oversized drop-shoulder measurements. The cut runs roomy by design — if you want it relaxed rather than baggy, take one size down from your usual.</p>
+      <p class="sec-sub">Standard oversized drop-shoulder measurements, as a guide to how the cut runs — roomy by design. If you want it relaxed rather than baggy, take one size down from your usual.</p>
       <div class="size-table-wrap">
         <table class="sizes">
           <thead>
@@ -991,7 +993,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
           </tbody>
         </table>
       </div>
-      <p class="size-note">Garment measurements in inches, taken flat — not body measurements. Allow about half an inch either way; that is normal cut-and-sew tolerance.</p>
+      <p class="size-note">Garment measurements in inches, taken flat — not body measurements. These are the standard figures for this cut and are a guide, not a measurement of your individual tee; cut-and-sew runs vary, so allow roughly an inch either way. Not sure between two sizes? <a href="https://wa.me/923374841818?text=Hi%2C%20I%20need%20help%20picking%20a%20size" target="_blank" rel="noopener">Message us on WhatsApp</a> with your usual size and we will tell you which to take.</p>
       <div class="size-how">
         <div><span class="mono">Chest</span><p>Armpit to armpit across the front, doubled.</p></div>
         <div><span class="mono">Length</span><p>Highest point of the shoulder straight down to the hem.</p></div>
@@ -1276,7 +1278,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   var INDEX = [
     {t:"Shot of Whiskey tee — Rs 4,999 (was Rs 7,999)", tag:"Product", href:"#order", k:"tee shirt tshirt product price rs 4999 7999 buy shot whiskey cost sale discount first drop"},
     {t:"Size chart — chest, length, shoulder, sleeve", tag:"Sizing", href:"#size-modal", modal:true, k:"size sizes chart guide small medium large xl xxl fit oversized measurement measurements chest length shoulder sleeve inches drop"},
-    {t:"35% cotton, 65% polyester blend", tag:"Fabric", href:"#spec", k:"fabric cotton polyester poly blend material quality 35 65 gsm weight"},
+    {t:"35% cotton, 65% polyester blend", tag:"Fabric", href:"#spec", k:"fabric cotton polyester poly blend material quality 35 65 weight"},
     {t:"Vintage whiskey-label print, soft ink", tag:"Print", href:"#spec", k:"print ink artwork label design crack fade"},
     {t:"Bone cream colour", tag:"Colour", href:"#spec", k:"colour color cream white bone"},
     {t:"Cash on delivery, nationwide", tag:"Payment", href:"#faq", k:"payment pay cash cod delivery money price"},
@@ -1576,41 +1578,26 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     window.addEventListener("resize", updateFitScale, {passive:true});
   })();
 
-  /* ---------- three.js frost layer ----------
-     Drifting ice particles over the video with scroll + pointer parallax.
-     Kept light: 260 points, capped DPR, renders only while the world is on screen.
+  /* ---------- frost layer ----------
+     Drifting ice particles over the video with pointer parallax.
+     Plain canvas 2D: 160 points, capped DPR, renders only while on screen.
 
-     The library is 670 KB for an effect three screens down, so it is no longer
-     a blocking tag in the markup: it is fetched when that section comes within
-     a screen of the viewport, and the frost simply never appears if it fails. */
+     This used to be three.js — 670 KB of WebGL for a field of soft dots three
+     screens down. The same effect in 2D costs nothing to fetch, needs no
+     lazy-load dance, and works where WebGL is blocked or unavailable. */
   var canvas = document.getElementById("frost");
-  if(!window.WebGLRenderingContext || !canvas) return;
+  var ctx = canvas && canvas.getContext && canvas.getContext("2d");
+  if(!ctx) return;
 
-  function startFrost(){
-  var renderer;
-  try{
-    renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:false, alpha:true, powerPreference:"low-power"});
-  }catch(err){ return; }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
-
-  var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 30);
-  camera.position.z = 6;
-
-  var N = 160, pos = new Float32Array(N*3), spd = new Float32Array(N);
+  var N = 160, dots = [];
   for(var i=0;i<N;i++){
-    pos[i*3]   = (Math.random()-0.5)*14;
-    pos[i*3+1] = (Math.random()-0.5)*9;
-    pos[i*3+2] = (Math.random()-0.5)*5;
-    spd[i] = 0.1 + Math.random()*0.35;
+    dots.push({
+      x:Math.random(), y:Math.random(),
+      z:0.35 + Math.random()*0.65,            // depth: drives size and parallax
+      spd:0.1 + Math.random()*0.35,
+      phase:Math.random()*Math.PI*2
+    });
   }
-  var geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  var pts = new THREE.Points(geo, new THREE.PointsMaterial({
-    color:0xC9C2B4, size:0.04, transparent:true, opacity:0.4,
-    blending:THREE.AdditiveBlending, depthWrite:false
-  }));
-  scene.add(pts);
 
   var target={x:0,y:0}, cur={x:0,y:0};
   window.addEventListener("pointermove", function(e){
@@ -1618,12 +1605,15 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     target.y = -(e.clientY/window.innerHeight - 0.5)*2;
   }, {passive:true});
 
+  var w=0, h=0, dpr=1;
   function resize(){
-    var w = canvas.clientWidth, h = canvas.clientHeight;
-    if(!w||!h) return;
-    renderer.setSize(w,h,false);
-    camera.aspect = w/h;
-    camera.updateProjectionMatrix();
+    var cw = canvas.clientWidth, ch = canvas.clientHeight;
+    if(!cw||!ch) return;
+    dpr = Math.min(window.devicePixelRatio||1, 1.25);
+    w = cw; h = ch;
+    canvas.width = Math.round(cw*dpr);
+    canvas.height = Math.round(ch*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   window.addEventListener("resize", resize);
   resize();
@@ -1632,57 +1622,41 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   if("IntersectionObserver" in window){
     new IntersectionObserver(function(en){ visible = en[0].isIntersecting; }).observe(canvas);
   }
+
   var t0 = performance.now(), last = 0, FRAME_MS = 1000/30; // 30fps cap for older devices
   function frame(now){
     requestAnimationFrame(frame);
-    if(!visible || now - last < FRAME_MS) return;
+    if(!visible || !w || now - last < FRAME_MS) return;
     last = now;
-    var t=(now-t0)/1000;
+    var t = (now-t0)/1000;
+
     cur.x += (target.x-cur.x)*0.04;
     cur.y += (target.y-cur.y)*0.04;
-    pts.rotation.y = cur.x*0.08;
-    pts.rotation.x = -cur.y*0.05;
-    if(!reduced){
-      var arr = geo.attributes.position.array;
-      for(var i=0;i<N;i++){
-        arr[i*3+1] -= spd[i]*0.006;
-        arr[i*3]   += Math.sin(t*0.6 + i)*0.0012;
-        if(arr[i*3+1] < -4.6) arr[i*3+1] = 4.6;
+
+    ctx.clearRect(0,0,w,h);
+    // Matches the old additive WebGL blend: overlapping dots brighten.
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = "rgba(201,194,180,0.4)";   // --ice at the old 0.4 opacity
+
+    for(var i=0;i<N;i++){
+      var d = dots[i];
+      if(!reduced){
+        d.y -= d.spd*0.0007;
+        if(d.y < -0.05) d.y = 1.05;
+        d.x += Math.sin(t*0.6 + d.phase)*0.00014;
+        if(d.x < -0.05) d.x = 1.05; else if(d.x > 1.05) d.x = -0.05;
       }
-      geo.attributes.position.needsUpdate = true;
+      // Nearer dots swing further with the pointer, which reads as depth.
+      var px = (d.x*w) + cur.x*28*d.z;
+      var py = (d.y*h) - cur.y*18*d.z;
+      var r  = 0.7 + d.z*1.9;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI*2);
+      ctx.fill();
     }
-    renderer.render(scene, camera);
+    ctx.globalCompositeOperation = "source-over";
   }
   requestAnimationFrame(frame);
-  }
-
-  // Fetch the library only once its section is within a screen of the viewport,
-  // and only once. If it never loads, the page is simply without frost.
-  (function lazyFrost(){
-    var host = document.getElementById("world");
-    if(!host) return;
-    var asked = false;
-    function load(){
-      if(asked) return;
-      asked = true;
-      var tag = document.createElement("script");
-      tag.src = "vendor/three.min.js";
-      tag.async = true;
-      tag.onload = function(){ if(window.THREE) startFrost(); };
-      document.head.appendChild(tag);
-    }
-    if(window.IntersectionObserver){
-      new IntersectionObserver(function(es, obs){
-        if(es.some(function(e){ return e.isIntersecting; })){ obs.disconnect(); load(); }
-      }, {rootMargin:"100% 0px"}).observe(host);
-    } else {
-      window.addEventListener("scroll", function once(){
-        if(host.getBoundingClientRect().top < window.innerHeight * 2){
-          window.removeEventListener("scroll", once); load();
-        }
-      }, {passive:true});
-    }
-  })();
 })();
 </script>
 </body>

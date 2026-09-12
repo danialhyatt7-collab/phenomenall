@@ -6,6 +6,7 @@
  *   GET  /api/orders          all recorded orders (admin)
  *   POST /api/orders          record a new order (called at checkout)
  *   PATCH /api/orders/:id     update order status (pending → confirmed → shipped → delivered)
+ *   DELETE /api/orders/:id    remove an order for good (admin; used to clear test rows)
  *   GET  /api/stats           revenue / order-count summary
  *   GET  /api/customers       customers derived from the order log
  *   GET  /admin               orders dashboard (owner login required)\n *\n * Set or change the owner login:  node server.js --set-login
@@ -505,8 +506,8 @@ function serveStatic(req, res, urlPath) {
 
     // Without this the browser re-fetches the 5 MB hero clip for every element
     // that references it, and again on the next page view. The HTML itself is
-    // revalidated so a deploy is picked up immediately; the media and the
-    // vendored library are content that only changes when their name does.
+    // revalidated so a deploy is picked up immediately; the media is content
+    // that only changes when its name does.
     const ext = path.extname(file);
     if (ext === ".html") {
       head["Cache-Control"] = "no-cache";
@@ -715,6 +716,22 @@ const server = http.createServer(async (req, res) => {
       }
       writeOrders(orders);
       return json(res, 200, order);
+    }
+
+    if (patchMatch && req.method === "DELETE") {
+      if (!requireAuth(req, res)) return;
+      const orders = readOrders();
+      const i = orders.findIndex((o) => o.id === patchMatch[1]);
+      if (i === -1) return json(res, 404, { error: "order not found" });
+      const [removed] = orders.splice(i, 1);
+      writeOrders(orders);
+      // A Purchase already sent to Meta cannot be withdrawn by deleting the
+      // row here, so say plainly whether this order had reported one.
+      return json(res, 200, {
+        ok: true,
+        id: removed.id,
+        purchase_reported: !!(removed.capi && removed.capi.purchase_sent_at),
+      });
     }
 
     if (p === "/api/stats" && req.method === "GET") {
