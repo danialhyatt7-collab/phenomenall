@@ -53,18 +53,60 @@
   }
   .side-brand .mark{width:132px}
 
-  /* ---------- brand mark ---------- */
-  .mark{display:block;height:auto;overflow:visible}
-  .pm-spec{opacity:.35;animation:pm-spec 9s ease-in-out infinite}
-  .pm-spec-b{animation-delay:-4.5s}
-  .pm-star{transform-box:fill-box;transform-origin:center;animation:pm-tw 6s ease-in-out infinite}
-  .pm-glint{opacity:.3;animation:pm-glint 6s ease-in-out infinite}
-  @keyframes pm-spec{0%,100%{opacity:.3}45%{opacity:1}}
-  @keyframes pm-tw{0%,74%,100%{transform:scale(1)}86%{transform:scale(1.07)}}
-  @keyframes pm-glint{0%,72%,100%{opacity:.25}86%{opacity:1}}
+  /* ---------- brand mark ----------
+     The artwork is the real chrome render, keyed to transparency so it sits on
+     the dark ground with no plate behind it. Everything that moves is layered
+     around it rather than baked in, because the render is a flat raster: orbit
+     echoes behind, a specular band across, a sparkle tracking the ring. Slow on
+     purpose — the mark should read as settled, not busy. */
+  .mark{position:relative;display:block;line-height:0}
+  .mk-img{display:block;width:100%;height:auto;position:relative;z-index:1}
+  .mark svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;
+    pointer-events:none}
+
+  /* Orbit echoes: rings bloom out of the mark and fade. */
+  .mk-echo{z-index:0}
+  .mk-e{fill:none;stroke:#cfd6e2;stroke-width:.7;vector-effect:non-scaling-stroke;
+    transform-origin:100px 51px;opacity:0;animation:mk-echo 7s cubic-bezier(.22,.7,.3,1) infinite}
+  .mk-e2{animation-delay:2.33s}
+  .mk-e3{animation-delay:4.66s}
+  @keyframes mk-echo{
+    0%{transform:scale(.72);opacity:0}
+    18%{opacity:.5}
+    100%{transform:scale(1.26);opacity:0}
+  }
+
+  /* One hard specular band crossing the metal, masked to the artwork so it
+     lights the mark and never the panel behind it. */
+  .mk-sheen{
+    position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
+    background:linear-gradient(102deg,transparent 38%,rgba(255,255,255,.6) 47%,
+      rgba(255,255,255,.9) 50%,rgba(255,255,255,.6) 53%,transparent 62%);
+    background-size:260% 100%;background-repeat:no-repeat;
+    -webkit-mask:url(assets/brand-mark.webp) center/100% 100% no-repeat;
+            mask:url(assets/brand-mark.webp) center/100% 100% no-repeat;
+    animation:mk-sheen 7s ease-in-out infinite;
+  }
+  @keyframes mk-sheen{
+    0%,8%{background-position:170% 0}
+    46%,100%{background-position:-70% 0}
+  }
+
+  /* A sparkle riding the ring, left to right. */
+  .mk-spark{z-index:3}
+  .mk-sp{fill:#fff;opacity:0;animation:mk-spark 11s cubic-bezier(.4,0,.6,1) infinite}
+  @keyframes mk-spark{
+    0%{transform:translate(14px,64px) scale(.5);opacity:0}
+    12%{opacity:.95}
+    50%{transform:translate(104px,26px) scale(1.15);opacity:1}
+    88%{opacity:.85}
+    100%{transform:translate(188px,44px) scale(.5);opacity:0}
+  }
+
   @media(prefers-reduced-motion:reduce){
-    .pm-spec,.pm-star,.pm-glint{animation:none}
-    .pm-spec,.pm-glint{opacity:.7}
+    .mk-e,.mk-sheen,.mk-sp{animation:none}
+    .mk-e,.mk-sp{opacity:0}
+    .mk-sheen{display:none}
   }
   .side-sec{padding:18px 18px 6px;font-size:11px;font-weight:600;letter-spacing:.14em;
     text-transform:uppercase;color:var(--faint)}
@@ -234,7 +276,7 @@
   .login-card{width:100%;max-width:368px;background:var(--surface);border:1px solid var(--border);
     border-radius:18px;box-shadow:var(--shadow);padding:30px 28px}
   .login-brand{display:flex;align-items:center}
-  .login-brand .mark{width:150px;margin:-6px 0 -4px -8px}
+  .login-brand .mark{width:156px}
   .login h2{font-size:18px;font-weight:600;margin-top:22px;letter-spacing:-.015em}
   .login .sub{color:var(--sub);font-size:13px;margin-top:4px}
   .login .field{margin-top:16px}
@@ -300,43 +342,9 @@
 </style>
 </head>
 <body>
-<!-- Brand mark. Defined once and referenced twice (sidebar + sign-in) so the
-     gradients are not duplicated; <use> clones inherit the CSS animations that
-     match the originals. -->
-<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-  <defs>
-    <linearGradient id="pm-chrome" x1="0" y1="0" x2="1" y2="0.35">
-      <stop offset="0%" stop-color="#43434b"/><stop offset="18%" stop-color="#e9ecf2"/>
-      <stop offset="30%" stop-color="#99a0ab"/><stop offset="44%" stop-color="#ffffff"/>
-      <stop offset="58%" stop-color="#6c7480"/><stop offset="74%" stop-color="#dfe4ec"/>
-      <stop offset="88%" stop-color="#3b4048"/><stop offset="100%" stop-color="#b9c0cb"/>
-      <animateTransform attributeName="gradientTransform" type="translate"
-        values="-0.85 0; 0.85 0; -0.85 0" dur="9s" repeatCount="indefinite"/>
-    </linearGradient>
-    <linearGradient id="pm-star" x1="0.1" y1="0" x2="0.9" y2="1">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#c4cad4"/>
-      <stop offset="55%" stop-color="#ffffff"/><stop offset="78%" stop-color="#8e96a3"/>
-      <stop offset="100%" stop-color="#f2f5fa"/>
-    </linearGradient>
-    <filter id="pm-soft" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="3.2"/>
-    </filter>
-    <g id="pmark">
-      <path class="pm-ring" d="M-79.19 25.90L-70.96 47.98L-72.91 48.49L-74.82 48.86L-76.71 49.12L-78.56 49.31L-80.39 49.45L-82.18 49.53L-83.94 49.56L-85.66 49.55L-87.35 49.50L-89.01 49.41L-90.63 49.28L-92.21 49.11L-93.76 48.90L-95.27 48.65L-96.75 48.36L-98.19 48.04L-99.60 47.67L-100.97 47.27L-102.30 46.82L-103.60 46.33L-104.86 45.79L-106.08 45.21L-107.26 44.58L-108.41 43.89L-109.51 43.15L-110.57 42.35L-111.58 41.49L-112.54 40.57L-113.44 39.58L-114.28 38.54L-115.04 37.42L-115.73 36.26L-116.34 35.03L-116.85 33.76L-117.27 32.45L-117.60 31.10L-117.82 29.74L-117.95 28.36L-117.98 26.97L-117.91 25.59L-117.76 24.21L-117.53 22.84L-117.21 21.48L-116.82 20.14L-116.36 18.81L-115.83 17.50L-115.23 16.20L-114.58 14.92L-113.86 13.64L-113.09 12.38L-112.26 11.14L-111.37 9.90L-110.43 8.67L-109.44 7.44L-108.40 6.23L-107.31 5.02L-106.16 3.82L-104.97 2.62L-103.73 1.43L-102.44 0.25L-101.10 -0.93L-99.71 -2.11L-98.28 -3.28L-96.81 -4.44L-95.28 -5.60L-93.71 -6.76L-92.10 -7.91L-90.45 -9.05L-88.75 -10.19L-87.01 -11.32L-85.23 -12.45L-83.41 -13.57L-81.55 -14.68L-79.65 -15.79L-77.72 -16.89L-75.74 -17.98L-73.73 -19.06L-71.69 -20.14L-69.61 -21.20L-67.50 -22.26L-65.36 -23.30L-63.18 -24.33L-60.98 -25.36L-58.74 -26.37L-56.48 -27.37L-54.19 -28.36L-51.88 -29.34L-49.54 -30.30L-47.18 -31.25L-44.79 -32.19L-42.39 -33.11L-39.96 -34.01L-37.52 -34.91L-35.05 -35.78L-32.58 -36.64L-30.08 -37.49L-27.57 -38.32L-25.05 -39.13L-22.52 -39.92L-19.98 -40.70L-17.43 -41.45L-14.87 -42.19L-12.31 -42.91L-9.73 -43.61L-7.16 -44.29L-4.58 -44.96L-2.01 -45.60L0.57 -46.22L3.15 -46.81L5.72 -47.39L8.29 -47.95L10.86 -48.48L13.42 -49.00L15.97 -49.49L18.51 -49.95L21.05 -50.40L23.57 -50.82L26.08 -51.22L28.57 -51.59L31.05 -51.94L33.52 -52.27L35.97 -52.57L38.39 -52.85L40.80 -53.11L43.19 -53.34L45.56 -53.54L47.90 -53.72L50.22 -53.88L52.51 -54.01L54.78 -54.11L57.02 -54.19L59.23 -54.24L61.42 -54.27L63.57 -54.27L65.69 -54.25L67.78 -54.20L69.83 -54.12L71.85 -54.02L73.84 -53.89L75.79 -53.74L77.70 -53.56L79.58 -53.35L81.42 -53.12L83.22 -52.86L84.98 -52.57L86.71 -52.26L88.39 -51.92L90.03 -51.55L91.63 -51.15L93.19 -50.72L94.70 -50.27L96.18 -49.79L97.61 -49.28L98.99 -48.73L100.34 -48.16L101.63 -47.55L102.89 -46.91L104.10 -46.24L105.26 -45.53L106.37 -44.78L107.43 -44.00L108.44 -43.17L109.40 -42.31L110.30 -41.40L111.14 -40.46L111.92 -39.47L112.63 -38.43L113.27 -37.36L113.84 -36.26L114.32 -35.12L114.72 -33.95L115.03 -32.76L115.25 -31.55L115.39 -30.34L115.44 -29.12L115.40 -27.91L115.29 -26.70L115.09 -25.50L114.82 -24.31L114.49 -23.14L114.08 -21.98L113.62 -20.83L113.09 -19.69L112.50 -18.57L111.86 -17.45L111.16 -16.35L110.41 -15.25L109.61 -14.16L108.75 -13.08L107.84 -11.99L106.89 -10.92L105.88 -9.85L104.83 -8.78L103.72 -7.71L102.57 -6.64L101.37 -5.58L100.12 -4.52L98.83 -3.46L97.49 -2.40L96.10 -1.34L94.67 -0.29L93.19 0.76L91.67 1.81L90.10 2.86L88.50 3.90L86.84 4.94L85.15 5.98L83.42 7.01L81.64 8.04L79.83 9.07L77.98 10.09L76.09 11.10L74.16 12.11L72.20 13.11L70.20 14.10L68.17 15.09L66.10 16.07L64.00 17.04L61.87 18.00L59.71 18.96L57.52 19.90L55.31 20.84L53.06 21.76L50.79 22.67L48.50 23.57L46.18 24.46L43.84 25.34L41.48 26.20L39.10 27.05L36.69 27.89L34.28 28.71L31.84 29.52L29.39 30.31L26.92 31.09L24.45 31.85L21.96 32.60L19.46 33.33L16.95 34.04L14.43 34.73L11.91 35.41L9.38 36.07L6.85 36.71L4.32 37.33L1.78 37.93L-0.75 38.51L-3.29 39.07L-5.82 39.61L-8.35 40.13L-10.87 40.63L-13.38 41.11L-15.89 41.57L-18.39 42.00L-20.87 42.41L-23.35 42.80L-25.81 43.17L-28.26 43.51L-30.69 43.83L-33.11 44.13L-35.51 44.39L-35.51 44.39L-33.13 43.97L-30.74 43.53L-28.34 43.07L-25.92 42.58L-23.48 42.08L-21.04 41.55L-18.59 41.00L-16.12 40.43L-13.65 39.84L-11.18 39.23L-8.70 38.60L-6.21 37.95L-3.72 37.28L-1.24 36.59L1.25 35.89L3.74 35.16L6.22 34.41L8.70 33.65L11.17 32.87L13.64 32.07L16.09 31.25L18.54 30.42L20.98 29.57L23.40 28.71L25.82 27.83L28.21 26.93L30.59 26.03L32.96 25.10L35.30 24.17L37.63 23.22L39.94 22.26L42.22 21.28L44.48 20.30L46.71 19.30L48.92 18.30L51.10 17.28L53.25 16.25L55.38 15.22L57.47 14.18L59.53 13.13L61.56 12.07L63.55 11.01L65.51 9.94L67.43 8.86L69.32 7.78L71.16 6.70L72.97 5.61L74.73 4.52L76.46 3.43L78.14 2.34L79.78 1.24L81.37 0.15L82.92 -0.94L84.42 -2.04L85.87 -3.13L87.28 -4.21L88.63 -5.29L89.93 -6.37L91.19 -7.44L92.39 -8.51L93.54 -9.57L94.63 -10.62L95.67 -11.66L96.66 -12.69L97.59 -13.70L98.46 -14.71L99.27 -15.70L100.03 -16.67L100.73 -17.62L101.37 -18.56L101.96 -19.47L102.48 -20.36L102.94 -21.23L103.35 -22.07L103.70 -22.88L104.00 -23.65L104.24 -24.40L104.42 -25.11L104.56 -25.78L104.65 -26.41L104.69 -27.00L104.69 -27.55L104.66 -28.07L104.59 -28.54L104.50 -28.99L104.37 -29.41L104.22 -29.81L104.04 -30.19L103.83 -30.55L103.60 -30.92L103.33 -31.27L103.03 -31.63L102.68 -32.00L102.29 -32.36L101.86 -32.73L101.37 -33.11L100.83 -33.49L100.23 -33.86L99.58 -34.24L98.87 -34.61L98.10 -34.98L97.27 -35.34L96.38 -35.70L95.44 -36.04L94.44 -36.37L93.38 -36.69L92.26 -36.99L91.09 -37.28L89.87 -37.55L88.59 -37.80L87.26 -38.04L85.88 -38.26L84.45 -38.46L82.97 -38.63L81.45 -38.79L79.87 -38.93L78.25 -39.04L76.59 -39.14L74.88 -39.21L73.13 -39.26L71.35 -39.29L69.52 -39.29L67.65 -39.28L65.74 -39.24L63.80 -39.17L61.82 -39.09L59.81 -38.98L57.77 -38.85L55.70 -38.69L53.59 -38.52L51.46 -38.31L49.29 -38.09L47.11 -37.85L44.89 -37.58L42.66 -37.29L40.40 -36.97L38.12 -36.64L35.81 -36.28L33.49 -35.90L31.16 -35.50L28.80 -35.07L26.43 -34.63L24.05 -34.16L21.66 -33.68L19.25 -33.17L16.84 -32.64L14.41 -32.09L11.99 -31.52L9.55 -30.93L7.11 -30.33L4.67 -29.70L2.22 -29.06L-0.22 -28.39L-2.66 -27.71L-5.10 -27.01L-7.54 -26.30L-9.97 -25.57L-12.40 -24.82L-14.81 -24.05L-17.22 -23.27L-19.62 -22.48L-22.01 -21.67L-24.38 -20.84L-26.74 -20.00L-29.08 -19.15L-31.40 -18.29L-33.71 -17.41L-36.00 -16.53L-38.26 -15.63L-40.51 -14.72L-42.73 -13.80L-44.93 -12.87L-47.10 -11.93L-49.24 -10.98L-51.36 -10.03L-53.44 -9.07L-55.50 -8.10L-57.52 -7.12L-59.51 -6.14L-61.47 -5.16L-63.39 -4.17L-65.28 -3.17L-67.12 -2.18L-68.93 -1.18L-70.70 -0.18L-72.43 0.82L-74.12 1.82L-75.77 2.82L-77.37 3.82L-78.93 4.81L-80.44 5.81L-81.90 6.79L-83.32 7.78L-84.69 8.76L-86.01 9.73L-87.28 10.69L-88.50 11.64L-89.67 12.59L-90.78 13.52L-91.85 14.44L-92.86 15.35L-93.81 16.25L-94.71 17.12L-95.56 17.98L-96.35 18.82L-97.08 19.64L-97.76 20.44L-98.39 21.21L-98.96 21.95L-99.47 22.67L-99.93 23.35L-100.34 24.00L-100.70 24.62L-101.01 25.20L-101.27 25.75L-101.50 26.25L-101.68 26.72L-101.83 27.14L-101.95 27.53L-102.04 27.89L-102.12 28.22L-102.17 28.52L-102.21 28.81L-102.23 29.09L-102.23 29.36L-102.22 29.65L-102.18 29.95L-102.11 30.27L-102.00 30.61L-101.86 30.98L-101.66 31.38L-101.42 31.80L-101.11 32.25L-100.74 32.71L-100.30 33.20L-99.80 33.70L-99.23 34.21L-98.60 34.73L-97.89 35.26L-97.11 35.79L-96.27 36.32L-95.36 36.85L-94.39 37.37L-93.35 37.89L-92.24 38.41L-91.08 38.91L-89.85 39.41L-88.57 39.91L-87.23 40.39L-85.83 40.87L-84.38 41.34L-82.87 41.80L-81.31 42.26L-79.69 42.73L-78.03 43.19L-76.32 43.67L-74.55 44.17L-72.74 44.72L-70.89 45.38L-68.99 46.72Z" fill="url(#pm-chrome)"/>
-      <circle class="pm-spec pm-spec-a" cx="-54" cy="-30" r="4.5" fill="#fff" filter="url(#pm-soft)"/>
-      <circle class="pm-spec pm-spec-b" cx="60" cy="-44" r="5.5" fill="#fff" filter="url(#pm-soft)"/>
-      <g class="pm-star">
-        <path d="M30.00 -60.00Q33.08 0.52 58.00 8.00Q33.08 15.48 30.00 76.00Q26.92 15.48 2.00 8.00Q26.92 0.52 30.00 -60.00Z" fill="url(#pm-star)"/>
-        <path d="M30.00 -24.00Q31.32 4.48 42.00 8.00Q31.32 11.52 30.00 40.00Q28.68 11.52 18.00 8.00Q28.68 4.48 30.00 -24.00Z" fill="#fff" opacity=".9"/>
-        <circle class="pm-glint" cx="30" cy="8" r="3.4" fill="#fff" filter="url(#pm-soft)"/>
-      </g>
-    </g>
-  </defs>
-</svg>
-
 <div class="login" id="login" hidden>
   <form class="login-card" id="login-form">
-    <div class="login-brand"><svg class="mark" viewBox="-132 -88 264 176" role="img" aria-label="Phenomenal"><use href="#pmark"/></svg></div>
+    <div class="login-brand"><span class="mark"><svg class="mk-echo" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><g transform="rotate(-13 100 51)"><ellipse class="mk-e mk-e1" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e2" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e3" cx="100" cy="51" rx="88" ry="29"/></g></svg><img class="mk-img" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"><span class="mk-sheen" aria-hidden="true"></span><svg class="mk-spark" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><path class="mk-sp" d="M0 -7Q0.9 -0.9 4.6 0Q0.9 0.9 0 7Q-0.9 0.9 -4.6 0Q-0.9 -0.9 0 -7Z"/></svg></span></div>
     <h2>Sign in</h2>
     <p class="sub">Owner access to orders and customers.</p>
     <div class="field">
@@ -354,7 +362,7 @@
 
 <div class="app" id="app" style="display:none">
   <aside class="side">
-    <div class="side-brand"><svg class="mark" viewBox="-132 -88 264 176" role="img" aria-label="Phenomenal"><use href="#pmark"/></svg></div>
+    <div class="side-brand"><span class="mark"><svg class="mk-echo" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><g transform="rotate(-13 100 51)"><ellipse class="mk-e mk-e1" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e2" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e3" cx="100" cy="51" rx="88" ry="29"/></g></svg><img class="mk-img" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"><span class="mk-sheen" aria-hidden="true"></span><svg class="mk-spark" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><path class="mk-sp" d="M0 -7Q0.9 -0.9 4.6 0Q0.9 0.9 0 7Q-0.9 0.9 -4.6 0Q-0.9 -0.9 0 -7Z"/></svg></span></div>
     <div class="side-sec">Main menu</div>
     <nav id="nav">
       <a href="#/home" data-view="home">
@@ -392,12 +400,6 @@
 <script>
 (function(){
   "use strict";
-  // CSS handles the rest of the mark, but the gradient sweep is SMIL and a
-  // media query cannot reach it.
-  if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-    var defs = document.querySelector('svg[aria-hidden="true"]');
-    if(defs && defs.pauseAnimations) defs.pauseAnimations();
-  }
   var STATUSES = ["pending","confirmed","shipped","delivered","cancelled"];
   var NEXT = {pending:"confirmed", confirmed:"shipped", shipped:"delivered"};
   var state = {orders:[], customers:[], products:[], stats:{}, filter:"all", q:""};
