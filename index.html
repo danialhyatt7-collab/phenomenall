@@ -1127,10 +1127,6 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
       chip.setAttribute("aria-pressed","true");
       size = chip.textContent.trim();
       render();
-      track('AddToCart', {
-        content_ids: [CONTENT_ID], content_name: CONTENT_NAME, content_type: 'product',
-        size: size, quantity: qty, value: PRICE * qty, currency: 'PKR'
-      });
     });
   });
   $("#q-minus").addEventListener("click", function(){ if(qty>1){ qty--; render(); } });
@@ -1181,6 +1177,14 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
       if(buyerEmail) am.em = buyerEmail.toLowerCase();
       fbq('init', window.PX_ID, am);
     }
+
+    /* AddToCart fires here rather than on the size chips. M is preselected, so
+       most buyers never "select" a size and the event was missing for them.
+       At checkout every real order counts, which is what the funnel needs. */
+    track('AddToCart', {
+      content_ids: [CONTENT_ID], content_name: CONTENT_NAME, content_type: 'product',
+      size: size, quantity: qty, value: PRICE * qty, currency: 'PKR'
+    }, { name: buyerName, phone: buyerPhone, email: buyerEmail });
 
     var icEventId = track('InitiateCheckout', {
       value: PRICE * qty, currency: 'PKR', num_items: qty,
