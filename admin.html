@@ -267,6 +267,42 @@
     border-radius:var(--radius);padding:13px 15px;font-size:13px;margin-bottom:16px;display:none}
   .banner code{background:rgba(0,0,0,.4);border-radius:5px;padding:1px 6px}
 
+  /* ---------- live view ---------- */
+  .live-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .live-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);
+    font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-edge);border-radius:100px;padding:5px 12px}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 0 rgba(168,232,49,.6);animation:live-pulse 1.8s ease-out infinite}
+  .live-sub{color:var(--faint);font-size:12.5px}
+  @keyframes live-pulse{0%{box-shadow:0 0 0 0 rgba(168,232,49,.55)}70%{box-shadow:0 0 0 8px rgba(168,232,49,0)}100%{box-shadow:0 0 0 0 rgba(168,232,49,0)}}
+  #nav .live-dot{margin-left:auto}
+  .live-hot{color:var(--accent)}
+
+  .live-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  @media(max-width:760px){.live-cols{grid-template-columns:1fr}}
+
+  .live-spark{display:flex;align-items:flex-end;gap:3px;height:120px;padding:16px 18px}
+  .live-spark .sb{flex:1;min-width:0;background:#2a2a2a;border-radius:3px 3px 0 0;transition:height .4s ease}
+  .live-spark .sb.now{background:var(--accent);box-shadow:0 0 10px rgba(168,232,49,.5)}
+
+  .live-funnel{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+  .fn-row .fn-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .fn-row .fn-top b{font-variant-numeric:tabular-nums}
+  .fn-bar{height:8px;background:#1c1c1c;border-radius:6px;overflow:hidden}
+  .fn-bar span{display:block;height:100%;border-radius:6px;
+    background:linear-gradient(90deg,var(--accent),#7fb327);transition:width .5s ease}
+
+  .live-feed{padding:6px 0}
+  .fe-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--line-soft)}
+  .fe-row:last-child{border-bottom:none}
+  .fe-ic{width:9px;height:9px;border-radius:50%;flex:none;background:var(--faint)}
+  .fe-ViewContent{background:#9d9dff}.fe-AddToCart{background:#f5b43c}
+  .fe-InitiateCheckout{background:var(--accent)}.fe-Contact{background:#4fd99a}.fe-PageView{background:#5a5a5a}
+  .fe-t{flex:1;font-size:13.5px}
+  .fe-ago{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+  .live-empty{padding:34px 18px;text-align:center;color:var(--faint);font-size:13px}
+
   /* ---------- sign in ---------- */
   .login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:20px;z-index:50}
   /* display:grid above outranks the browser's own [hidden]{display:none}, so
@@ -365,6 +401,9 @@
     <div class="side-brand"><span class="mark"><svg class="mk-echo" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><g transform="rotate(-13 100 51)"><ellipse class="mk-e mk-e1" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e2" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e3" cx="100" cy="51" rx="88" ry="29"/></g></svg><img class="mk-img" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"><span class="mk-sheen" aria-hidden="true"></span><svg class="mk-spark" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><path class="mk-sp" d="M0 -7Q0.9 -0.9 4.6 0Q0.9 0.9 0 7Q-0.9 0.9 -4.6 0Q-0.9 -0.9 0 -7Z"/></svg></span></div>
     <div class="side-sec">Main menu</div>
     <nav id="nav">
+      <a href="#/live" data-view="live">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 12v.01"/><path d="M8.8 8.8a4.5 4.5 0 0 0 0 6.4M15.2 8.8a4.5 4.5 0 0 1 0 6.4"/><path d="M6 6a9 9 0 0 0 0 12M18 6a9 9 0 0 1 0 12"/></svg></span>
+        Live <span class="live-dot" id="nav-live-dot" hidden></span></a>
       <a href="#/home" data-view="home">
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></span> Home</a>
       <a href="#/orders" data-view="orders">
@@ -515,6 +554,87 @@
       '</tr></thead><tbody>'+rows+'</tbody></table></div>';
   }
 
+  /* ---------- live view ----------
+     A Shopify-style live board: who is on the storefront right now, what they
+     are doing, and today's takings. It polls /api/live every few seconds while
+     this view is open and stops the moment you leave it. */
+  var liveTimer = null;
+  function viewLive(){
+    return '<div class="live-head">'+
+        '<span class="live-badge"><span class="live-dot"></span> LIVE</span>'+
+        '<span class="live-sub" id="live-updated">Connecting…</span>'+
+      '</div>'+
+      '<div class="kpis" id="live-kpis">'+ liveTile("—","Visitors now")+liveTile("—","Views · 30 min")+liveTile("—","Orders today")+liveTile("—","Sales today") +'</div>'+
+      '<div class="live-cols">'+
+        '<div class="card"><div class="card-head"><h2>Sessions</h2><span class="spacer"></span><span class="muted" style="font-size:12px;color:var(--faint)">Pageviews · last 30 min</span></div>'+
+          '<div class="live-spark" id="live-spark"></div></div>'+
+        '<div class="card"><div class="card-head"><h2>Customer behaviour</h2><span class="spacer"></span><span class="muted" style="font-size:12px;color:var(--faint)">Last 30 min</span></div>'+
+          '<div class="live-funnel" id="live-funnel"></div></div>'+
+      '</div>'+
+      '<div class="card"><div class="card-head"><h2>Activity</h2></div>'+
+        '<div class="live-feed" id="live-feed"><div class="live-empty">Waiting for the first visitor…</div></div></div>';
+  }
+  function liveTile(v,l){ return '<div class="kpi"><div class="label">'+esc(l)+'</div><div class="value">'+v+'</div></div>'; }
+
+  var LIVE_LABELS = {ViewContent:"Product viewed", AddToCart:"Added to cart", InitiateCheckout:"Checkout started", Contact:"Tapped WhatsApp", PageView:"Page viewed"};
+  function ago(s){ if(s<60) return s+"s ago"; var m=Math.floor(s/60); return m+"m ago"; }
+
+  function liveStart(){
+    liveStop();
+    liveTick();
+    liveTimer = setInterval(liveTick, 5000);
+  }
+  function liveStop(){
+    if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
+    var dot = document.getElementById("nav-live-dot"); if(dot) dot.hidden = true;
+  }
+
+  function liveTick(){
+    grab("/api/live").then(function(d){
+      if(route().view !== "live") return;   // navigated away mid-request
+      liveRender(d);
+    }).catch(function(err){ if(err && err.auth) showLogin(); });
+  }
+
+  function liveRender(d){
+    var dot = $("#nav-live-dot"); if(dot) dot.hidden = d.visitorsNow === 0;
+    var up = $("#live-updated"); if(up) up.textContent = "Updated " + new Date().toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit",second:"2-digit"});
+    var kp = $("#live-kpis");
+    if(kp) kp.innerHTML = liveTile('<span class="'+(d.visitorsNow?"live-hot":"")+'">'+d.visitorsNow+'</span>',"Visitors now")+
+      liveTile(d.views30,"Views · 30 min")+liveTile(d.ordersToday,"Orders today")+liveTile(money(d.salesToday),"Sales today");
+
+    // sparkline
+    var sp = $("#live-spark");
+    if(sp){
+      var max = Math.max.apply(null, d.perMinute.concat([1]));
+      sp.innerHTML = d.perMinute.map(function(v,i){
+        var h = Math.round(v/max*100);
+        return '<span class="sb'+(i===d.perMinute.length-1?" now":"")+'" style="height:'+Math.max(h,3)+'%" title="'+v+'"></span>';
+      }).join("");
+    }
+
+    // funnel
+    var fn = $("#live-funnel");
+    if(fn){
+      var rows = [["Product viewed",d.funnel.view],["Added to cart",d.funnel.cart],["Reached checkout",d.funnel.checkout],["Tapped WhatsApp",d.funnel.contact]];
+      var top = Math.max(rows[0][1],1);
+      fn.innerHTML = rows.map(function(r){
+        var pct = Math.round(r[1]/top*100);
+        return '<div class="fn-row"><div class="fn-top"><span>'+esc(r[0])+'</span><b>'+r[1]+'</b></div>'+
+          '<div class="fn-bar"><span style="width:'+Math.max(pct,2)+'%"></span></div></div>';
+      }).join("");
+    }
+
+    // activity feed
+    var fd = $("#live-feed");
+    if(fd){
+      if(!d.feed.length){ fd.innerHTML = '<div class="live-empty">Quiet right now — no activity in the last 30 minutes.</div>'; }
+      else fd.innerHTML = d.feed.map(function(e){
+        return '<div class="fe-row"><span class="fe-ic fe-'+e.n+'"></span><span class="fe-t">'+esc(LIVE_LABELS[e.n]||e.n)+'</span><span class="fe-ago">'+ago(e.ago)+'</span></div>';
+      }).join("");
+    }
+  }
+
   function viewHome(){
     var recent = state.orders.slice(0,5);
     return kpiRow()+
@@ -648,7 +768,13 @@
   }
   function render(){
     var r = route(), html, title;
-    if(r.view === "orders" && r.id){ html = viewOrder(r.id); title = "Order " + r.id; }
+    // The live view owns its own DOM and refresh loop. A background load()
+    // must not tear it down and reprint placeholders, so if it is already up,
+    // just make sure the poll is running and leave it be.
+    if(r.view === "live" && document.getElementById("live-kpis")){ liveStart(); return; }
+    liveStop();
+    if(r.view === "live"){ html = viewLive(); title = "Live"; liveStart(); }
+    else if(r.view === "orders" && r.id){ html = viewOrder(r.id); title = "Order " + r.id; }
     else if(r.view === "orders"){ html = viewOrders(); title = "Orders"; }
     else if(r.view === "products"){ html = viewProducts(); title = "Products"; }
     else if(r.view === "customers"){ html = viewCustomers(); title = "Customers"; }
@@ -705,7 +831,7 @@
     }).then(load);
   }
 
-  $("#refresh").addEventListener("click", load);
+  $("#refresh").addEventListener("click", function(){ load(); if(route().view === "live") liveTick(); });
   $("#export").addEventListener("click", function(){
     var cols = ["id","created_at","status","product","size","qty","unit_price","total","name","phone","email","address","marketing_opt_in","channel"];
     var csv = [cols.join(",")].concat(state.orders.map(function(o){
@@ -725,6 +851,12 @@
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(d){ d ? showApp(d.user) : showLogin(); })
     .catch(function(){ showLogin(); });
+
+  // Pause the live poll when the tab is hidden; resume on return.
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden) liveStop();
+    else if(route().view === "live" && !$("#login").hidden) liveStart();
+  });
 
   setInterval(function(){ if(!$("#login").hidden) return; load(); }, 20000);
 })();

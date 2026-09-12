@@ -190,6 +190,34 @@ const TRACKABLE = new Set(["PageView", "ViewContent", "AddToCart", "InitiateChec
 const TRACK_LIMIT = 40;
 const TRACK_WINDOW_MS = 60 * 1000;
 const trackHits = new Map();
+
+// Live view. Every storefront event that passes through /api/track leaves a
+// tiny, anonymous footprint here — the event name, the moment, and a short
+// per-browser hash — kept only for a rolling window. It is in memory, so a
+// deploy clears it and it refills from live traffic within seconds; nothing
+// here is written to disk and no personal detail is stored.
+const LIVE_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
+const NOW_MS = 5 * 60 * 1000;          // "visitors now" = seen in the last 5 min
+const LIVE_MAX = 5000;                 // hard cap so a flood cannot grow it forever
+const liveEvents = [];
+// A per-process salt means a visitor hash cannot be tied back to a cookie or
+// to another day; it only has to stay stable long enough to count one browser
+// once inside a five-minute window.
+const LIVE_SALT = crypto.randomBytes(16).toString("hex");
+function visitorHash(fbp, ipua) {
+  return sha256(LIVE_SALT + "|" + (fbp || ipua || "anon")).slice(0, 12);
+}
+function recordLive(name, vid) {
+  const now = Date.now();
+  liveEvents.push({ t: now, n: name, v: vid });
+  const cut = now - LIVE_WINDOW_MS;
+  // Drop anything past the window; also trim from the front if the array is
+  // somehow over the cap (a burst faster than events age out).
+  let i = 0;
+  while (i < liveEvents.length && liveEvents[i].t < cut) i++;
+  if (i > 0) liveEvents.splice(0, i);
+  if (liveEvents.length > LIVE_MAX) liveEvents.splice(0, liveEvents.length - LIVE_MAX);
+}
 function trackAllowed(key) {
   const now = Date.now();
   const hit = trackHits.get(key);
@@ -645,6 +673,10 @@ const server = http.createServer(async (req, res) => {
         },
       });
       const outcome = await sendMetaEvent(event);
+      recordLive(
+        body.event_name,
+        visitorHash(u.fbp, String(clientKey(req)) + "|" + (req.headers["user-agent"] || ""))
+      );
       return json(res, 200, { ok: true, event: body.event_name, ...outcome });
     }
 
@@ -732,6 +764,57 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         id: removed.id,
         purchase_reported: !!(removed.capi && removed.capi.purchase_sent_at),
+      });
+    }
+
+    if (p === "/api/live" && req.method === "GET") {
+      if (!requireAuth(req, res)) return;
+      const now = Date.now();
+      const win = liveEvents.filter((e) => e.t >= now - LIVE_WINDOW_MS);
+      const recent = win.filter((e) => e.t >= now - NOW_MS);
+
+      // Visitors now: distinct browsers seen in the last five minutes.
+      const visitorsNow = new Set(recent.map((e) => e.v)).size;
+
+      // Pageviews per minute across the window, oldest bucket first, for a
+      // sparkline. Thirty buckets, one a minute.
+      const buckets = new Array(30).fill(0);
+      for (const e of win) {
+        if (e.n !== "PageView") continue;
+        const idx = 29 - Math.floor((now - e.t) / 60000);
+        if (idx >= 0 && idx < 30) buckets[idx]++;
+      }
+
+      // Behaviour funnel over the window: one visitor counted once per stage.
+      const stage = (name) => new Set(win.filter((e) => e.n === name).map((e) => e.v)).size;
+      const funnel = {
+        view: stage("ViewContent"),
+        cart: stage("AddToCart"),
+        checkout: stage("InitiateCheckout"),
+        contact: stage("Contact"),
+      };
+
+      // A short activity feed: the last handful of events, newest first, as
+      // types and ages only — never who.
+      const feed = win.slice(-14).reverse().map((e) => ({ n: e.n, ago: Math.round((now - e.t) / 1000) }));
+
+      // Today's hard numbers come from the durable order log, not the window.
+      const orders = readOrders();
+      const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+      const since = midnight.getTime();
+      const todays = orders.filter((o) => new Date(o.created_at).getTime() >= since && o.status !== "cancelled");
+      const salesToday = todays.reduce((s, o) => s + o.total, 0);
+
+      return json(res, 200, {
+        visitorsNow,
+        views30: win.filter((e) => e.n === "PageView").length,
+        ordersToday: todays.length,
+        salesToday,
+        perMinute: buckets,
+        funnel,
+        feed,
+        windowMinutes: 30,
+        serverTime: now,
       });
     }
 
