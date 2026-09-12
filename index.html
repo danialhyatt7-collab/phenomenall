@@ -619,6 +619,55 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   }
   .size-guide-link:hover{color:var(--ice);border-bottom-color:var(--ice)}
 
+  @media(max-width:700px){
+  /* The total is the moment the offer lands, so on a phone it stops being a
+       quiet summary row and becomes the hero: a lifted panel, the old price and
+       a discount pill over one enormous chrome numeral. */
+    .total-block{
+      margin-top:1.8rem;border:1px solid var(--line);border-radius:14px;
+      background:
+        radial-gradient(120% 100% at 50% 0%, rgba(201,194,180,.10), transparent 70%),
+        linear-gradient(180deg, rgba(242,239,233,.04), rgba(7,6,6,0));
+      padding:1.5rem 1.25rem 1.4rem;text-align:center;position:relative;overflow:hidden;
+    }
+    /* A hairline of light along the top edge. */
+    .total-block::before{
+      content:"";position:absolute;top:0;left:18%;right:18%;height:1px;
+      background:linear-gradient(90deg,transparent,var(--ice-blue),transparent);opacity:.7;
+    }
+    .total-block .total-row{display:block;border-top:none;margin:0;padding:0}
+    .total-block .t-label{display:block;font-size:.64rem;letter-spacing:.22em;opacity:.9}
+    .total-block .t-val{display:block;white-space:normal;margin-top:1rem}
+    /* struck price and pill share a line above the big number */
+    .total-block .t-was{
+      display:inline-block;margin:0 .55rem 0 0;font-size:1.05rem;
+      text-decoration-thickness:1px;text-decoration-color:rgba(119,113,106,.8);
+    }
+    .total-block .save-pill{
+      display:inline-block;vertical-align:.15em;font-family:var(--mono);
+      font-size:.6rem;font-weight:600;letter-spacing:.14em;
+      color:var(--void);background:var(--ice-blue);
+      padding:.28em .6em;border-radius:100px;
+    }
+    /* the numeral: oversized, chrome-filled, its own line */
+    .total-block .t-now{
+      display:block;margin-top:.35rem;
+      font-size:clamp(3.4rem,19vw,5rem);line-height:.96;letter-spacing:-.03em;
+      background:linear-gradient(178deg,#fff 4%,#d7d2c8 34%,#8f897f 52%,#f4f1ea 74%,#b7b1a6 100%);
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;color:var(--ice);
+      text-shadow:0 1px 30px rgba(201,194,180,.18);
+    }
+    .total-block .save-note{
+      margin-top:1rem;font-size:.66rem;letter-spacing:.08em;line-height:1.5;
+      color:var(--ice-blue);opacity:.85;max-width:32ch;margin-left:auto;margin-right:auto;
+    }
+    @media (prefers-reduced-motion: no-preference){
+      .save-pill{animation:pill-pulse 2.6s ease-in-out infinite}
+      @keyframes pill-pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,194,180,.5)}55%{box-shadow:0 0 0 7px rgba(201,194,180,0)}}
+    }
+  }
+
   /* order */
   #order{border-top:1px solid var(--line)}
   .order-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:3.5rem;align-items:start;margin-top:2.5rem}
@@ -668,6 +717,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   .total-row .t-val{font-family:var(--display);font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
   .total-row .t-was{color:var(--dim);font-size:.62em;font-weight:400;margin-right:.55rem}
   .save-note{margin-top:.7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ice-blue)}
+  .save-pill{display:none}
   .preview{
     margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ice-blue);
     border-radius:3px;padding:1rem 1.1rem;font-size:.92rem;color:var(--ice);opacity:.85;
@@ -922,11 +972,13 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
           <input id="f-optin" type="checkbox">
           <span>Send me updates and offers on new drops and sales</span>
         </label>
-        <div class="total-row">
-          <span class="t-label">Total · Free shipping</span>
-          <span class="t-val"><s class="t-was" id="was-total">Rs 7,999</s><span id="total">Rs 4,999</span></span>
+        <div class="total-block">
+          <div class="total-row">
+            <span class="t-label">Total · Free shipping</span>
+            <span class="t-val"><s class="t-was" id="was-total">Rs 7,999</s><span class="t-now" id="total">Rs 4,999</span><span class="save-pill" aria-hidden="true">37% OFF</span></span>
+          </div>
+          <p class="save-note">First-drop price — you save <span id="save-amt">Rs 3,000</span>. Small batch, this drop only.</p>
         </div>
-        <p class="save-note">First-drop price — you save <span id="save-amt">Rs 3,000</span>. Small batch, this drop only.</p>
         <div class="preview">
           <span class="mono">Order summary</span>
           <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 4,999).</span>
