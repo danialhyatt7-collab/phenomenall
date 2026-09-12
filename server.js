@@ -140,12 +140,16 @@ function buildMetaUser(src) {
 function buildMetaPurchase(order) {
   const user = buildMetaUser(order);
 
-  // Meta rejects events older than seven days, so an order confirmed late
-  // still reports, just stamped at the edge of the window.
-  const placed = Date.parse(order.created_at);
-  const now = Date.now();
-  const floor = now - 6 * 24 * 60 * 60 * 1000;
-  const when = Number.isFinite(placed) ? Math.min(Math.max(placed, floor), now) : now;
+  // Stamped at the moment of confirmation, not when the order was placed.
+  //
+  // Stamping it with the order time attributes revenue to the day the ad ran,
+  // which is tidier for reporting — but it makes Events Manager show Purchase
+  // at the checkout time, which reads exactly like the event fired at checkout.
+  // For a cash-on-delivery shop that is worth avoiding: a number the owner
+  // cannot trust is worse than one that is slightly less precisely attributed.
+  // Meta still ties the sale to the original click through fbc, fbp and the
+  // hashed customer details, which is what actually drives attribution.
+  const when = Date.now();
 
   return {
     event_name: "Purchase",
