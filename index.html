@@ -158,9 +158,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.5rem;
   }
   .hdr-logo{display:flex;align-items:center;text-decoration:none;line-height:0}
-  /* Static here on purpose: the hero video is already moving behind this bar
-     and a second animation would compete with it. */
-  .hdr-mark{width:86px;height:auto;display:block;flex:none}
+  .hdr-logo .mark{width:86px;flex:none}
   .hdr-nav{display:flex;gap:1.6rem;align-items:center}
   .hdr-nav a,.hdr-nav button{
     font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
@@ -235,8 +233,8 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     .hdr-nav a,.hdr-nav button{padding:.95rem 0;border-bottom:1px solid rgba(201,194,180,.08);font-size:.8rem;text-align:left;background:none;border-left:none;border-right:none;border-top:none;width:100%}
     .hdr-nav a::after,.hdr-nav button::after{display:none}
     .hdr-burger{display:grid}
-    .hdr-logo{justify-self:center}
-    .hdr-mark{width:62px}
+    .hdr-logo{justify-self:start}
+    .hdr-logo .mark{width:62px}
     .hdr-region{display:none}
     .hdr-acct{display:none}
     .search-panel{top:52px}
@@ -699,9 +697,55 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
 
   footer{background:var(--void);border-top:1px solid var(--line);padding:2.6rem 1.5rem 3rem;text-align:center;color:var(--dim);font-size:.88rem;position:relative;z-index:5}
   footer .f-brand{display:inline-block;margin-bottom:.9rem;text-decoration:none;line-height:0}
-  footer .f-mark{width:116px;height:auto;display:block}
+  footer .f-brand .mark{width:116px}
   footer a{color:var(--dim)}
 
+
+  /* ---------- brand mark ----------
+     Same treatment as the admin, dialled back: the hero video is moving behind
+     the header, so this runs two echoes rather than three and a softer band.
+     The mark itself is a flat raster, so everything that moves is layered
+     around it. */
+  .hdr-logo .mark,.f-brand .mark{position:relative;display:block;line-height:0}
+  .hdr-mark,.f-mark{display:block;width:100%;height:auto;position:relative;z-index:1}
+  .hdr-logo .mark svg,.f-brand .mark svg{
+    position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .mk-echo{z-index:0}
+  .mk-e{fill:none;stroke:#dbe2ee;stroke-width:1.1;vector-effect:non-scaling-stroke;
+    transform-origin:100px 51px;opacity:0;animation:mk-echo 6s cubic-bezier(.22,.7,.3,1) infinite}
+  .mk-e2{animation-delay:3s}
+  @keyframes mk-echo{
+    0%{transform:scale(.7);opacity:0}
+    16%{opacity:.62}
+    100%{transform:scale(1.34);opacity:0}
+  }
+  .mk-sheen{
+    position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
+    background:linear-gradient(102deg,transparent 36%,rgba(255,255,255,.7) 46%,
+      rgba(255,255,255,1) 50%,rgba(255,255,255,.7) 54%,transparent 64%);
+    background-size:260% 100%;background-repeat:no-repeat;
+    -webkit-mask:url(assets/brand-mark.webp) center/100% 100% no-repeat;
+            mask:url(assets/brand-mark.webp) center/100% 100% no-repeat;
+    animation:mk-sheen 6s ease-in-out infinite;
+  }
+  @keyframes mk-sheen{
+    0%,8%{background-position:170% 0}
+    46%,100%{background-position:-70% 0}
+  }
+  .mk-spark{z-index:3}
+  .mk-sp{fill:#fff;opacity:0;animation:mk-spark 11s cubic-bezier(.4,0,.6,1) infinite}
+  @keyframes mk-spark{
+    0%{transform:translate(14px,64px) scale(.5);opacity:0}
+    12%{opacity:.95}
+    50%{transform:translate(104px,26px) scale(1.15);opacity:1}
+    88%{opacity:.85}
+    100%{transform:translate(188px,44px) scale(.5);opacity:0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .mk-e,.mk-sheen,.mk-sp{animation:none}
+    .mk-e,.mk-sp{opacity:0}
+    .mk-sheen{display:none}
+  }
 </style>
 <script>
   // Stamped before paint so nothing flashes in ahead of the intro. Skipped when the
@@ -735,7 +779,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     <button class="hdr-btn hdr-burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="hdr-nav">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
-    <a class="hdr-logo" href="#top" aria-label="Phenomenal — home"><img class="hdr-mark" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"></a>
+    <a class="hdr-logo" href="#top" aria-label="Phenomenal — home"><span class="mark"><svg class="mk-echo" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><g transform="rotate(-13 100 51)"><ellipse class="mk-e mk-e1" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e2" cx="100" cy="51" rx="88" ry="29"/></g></svg><img class="hdr-mark" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"><span class="mk-sheen" aria-hidden="true"></span><svg class="mk-spark" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><path class="mk-sp" d="M0 -7Q0.9 -0.9 4.6 0Q0.9 0.9 0 7Q-0.9 0.9 -4.6 0Q-0.9 -0.9 0 -7Z"/></svg></span></a>
     <nav class="hdr-nav" id="hdr-nav">
       <a href="#spec">The Tee</a>
       <button type="button" data-size-guide>Sizing</button>
@@ -965,7 +1009,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
 </section>
 
 <footer>
-  <a class="f-brand" href="#top" aria-label="Phenomenal — back to top"><img class="f-mark" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"></a>
+  <a class="f-brand" href="#top" aria-label="Phenomenal — back to top"><span class="mark"><svg class="mk-echo" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><g transform="rotate(-13 100 51)"><ellipse class="mk-e mk-e1" cx="100" cy="51" rx="88" ry="29"/><ellipse class="mk-e mk-e2" cx="100" cy="51" rx="88" ry="29"/></g></svg><img class="f-mark" src="assets/brand-mark.webp" alt="Phenomenal" width="480" height="247" decoding="async"><span class="mk-sheen" aria-hidden="true"></span><svg class="mk-spark" viewBox="0 0 200 103" aria-hidden="true" focusable="false"><path class="mk-sp" d="M0 -7Q0.9 -0.9 4.6 0Q0.9 0.9 0 7Q-0.9 0.9 -4.6 0Q-0.9 -0.9 0 -7Z"/></svg></span></a>
   <p>One tee, done right. Support: <a href="https://wa.me/923374841818">0337 4841818</a></p>
   <p>© 2026 Phenomenal. All rights reserved.</p>
 </footer>
