@@ -620,52 +620,35 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   .size-guide-link:hover{color:var(--ice);border-bottom-color:var(--ice)}
 
   @media(max-width:700px){
-  /* The total is the moment the offer lands, so on a phone it stops being a
-       quiet summary row and becomes the hero: a lifted panel, the old price and
-       a discount pill over one enormous chrome numeral. */
+    /* On a phone the label and price cannot share one line, so the total
+       becomes a small panel in the same language as the order summary below
+       it — the panel fill, hairline border and cream left-accent — rather than
+       a loud hero. Label on top, the price left-aligned beneath, the saving as
+       a quiet tag. */
     .total-block{
-      margin-top:1.8rem;border:1px solid var(--line);border-radius:14px;
-      background:
-        radial-gradient(120% 100% at 50% 0%, rgba(201,194,180,.10), transparent 70%),
-        linear-gradient(180deg, rgba(242,239,233,.04), rgba(7,6,6,0));
-      padding:1.5rem 1.25rem 1.4rem;text-align:center;position:relative;overflow:hidden;
-    }
-    /* A hairline of light along the top edge. */
-    .total-block::before{
-      content:"";position:absolute;top:0;left:18%;right:18%;height:1px;
-      background:linear-gradient(90deg,transparent,var(--ice-blue),transparent);opacity:.7;
+      margin-top:1.6rem;background:var(--panel);
+      border:1px solid var(--line);border-left:2px solid var(--ice-blue);border-radius:3px;
+      padding:1.05rem 1.15rem;
     }
     .total-block .total-row{display:block;border-top:none;margin:0;padding:0}
-    .total-block .t-label{display:block;font-size:.64rem;letter-spacing:.22em;opacity:.9}
-    .total-block .t-val{display:block;white-space:normal;margin-top:1rem}
-    /* struck price and pill share a line above the big number */
+    .total-block .t-label{display:block;margin-bottom:.7rem}
+    .total-block .t-val{display:flex;align-items:baseline;flex-wrap:wrap;gap:.55rem;white-space:normal}
     .total-block .t-was{
-      display:inline-block;margin:0 .55rem 0 0;font-size:1.05rem;
-      text-decoration-thickness:1px;text-decoration-color:rgba(119,113,106,.8);
+      font-size:1rem;order:1;
+      text-decoration-thickness:1px;text-decoration-color:rgba(119,113,106,.85);
     }
-    .total-block .save-pill{
-      display:inline-block;vertical-align:.15em;font-family:var(--mono);
-      font-size:.6rem;font-weight:600;letter-spacing:.14em;
-      color:var(--void);background:var(--ice-blue);
-      padding:.28em .6em;border-radius:100px;
-    }
-    /* the numeral: oversized, chrome-filled, its own line */
     .total-block .t-now{
-      display:block;margin-top:.3rem;
-      font-size:clamp(2.4rem,12vw,3.1rem);line-height:1;letter-spacing:-.02em;
-      background:linear-gradient(178deg,#fff 4%,#d7d2c8 34%,#8f897f 52%,#f4f1ea 74%,#b7b1a6 100%);
-      -webkit-background-clip:text;background-clip:text;
-      -webkit-text-fill-color:transparent;color:var(--ice);
-      text-shadow:0 1px 30px rgba(201,194,180,.18);
+      order:0;font-family:var(--display);font-weight:700;
+      font-size:1.9rem;line-height:1;letter-spacing:-.01em;color:var(--ice);
     }
-    .total-block .save-note{
-      margin-top:1rem;font-size:.66rem;letter-spacing:.08em;line-height:1.5;
-      color:var(--ice-blue);opacity:.85;max-width:32ch;margin-left:auto;margin-right:auto;
+    /* a restrained tag, not a sticker: cream text, hairline border, sharp corner */
+    .total-block .save-pill{
+      display:inline-block;order:2;margin-left:auto;
+      font-family:var(--mono);font-size:.58rem;font-weight:500;letter-spacing:.14em;
+      color:var(--ice-blue);background:rgba(201,194,180,.08);
+      border:1px solid var(--line);border-radius:3px;padding:.4em .6em;
     }
-    @media (prefers-reduced-motion: no-preference){
-      .save-pill{animation:pill-pulse 2.6s ease-in-out infinite}
-      @keyframes pill-pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,194,180,.5)}55%{box-shadow:0 0 0 7px rgba(201,194,180,0)}}
-    }
+    .total-block .save-note{margin-top:.75rem}
   }
 
   /* order */
