@@ -28,6 +28,39 @@
 <meta name="twitter:title" content="PHENOMENAL — Shot of Whiskey Tee">
 <meta name="twitter:description" content="Oversized drop-shoulder tee with a vintage whiskey-label print. Rs 4,999, free shipping nationwide, cash on delivery.">
 <meta name="twitter:image" content="https://phenomenal.pk/assets/ice-hero-wide.jpg">
+<!-- Structured data for Google. Controls the rich result (price, "in stock")
+     under the search listing — the search-engine counterpart to the Open Graph
+     tags above, which control the social share card. Values mirror the live
+     product; keep them in step with data/products.json and the on-page price. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Shot of Whiskey Tee",
+  "description": "Oversized drop-shoulder tee with a vintage whiskey-label DTF print, in white. 35% cotton, 65% polyester.",
+  "image": [
+    "https://phenomenal.pk/assets/product.jpg",
+    "https://phenomenal.pk/assets/ice-hero-wide.jpg"
+  ],
+  "brand": { "@type": "Brand", "name": "PHENOMENAL" },
+  "color": "White",
+  "material": "35% cotton, 65% polyester",
+  "audience": { "@type": "PeopleAudience" },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://phenomenal.pk/",
+    "priceCurrency": "PKR",
+    "price": "4999",
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "PKR" },
+      "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "PK" }
+    }
+  }
+}
+</script>
 <!-- The mark is far wider than it is tall, so the icons are the star alone —
      the full lockup is unreadable at tab size. Kept on the artwork's own black
      ground because iOS flattens transparency onto white, which would erase a
