@@ -194,6 +194,13 @@ const TRACK_LIMIT = 40;
 const TRACK_WINDOW_MS = 60 * 1000;
 const trackHits = new Map();
 
+// A far tighter budget for order writes, which land on disk. A real buyer
+// places one order; this leaves room for a couple of retries but stops a
+// script from flooding orders.json (and, worse, seeding fake fbp/fbc rows).
+const ORDER_LIMIT = 6;
+const ORDER_WINDOW_MS = 10 * 60 * 1000;
+const orderHits = new Map();
+
 // Live view. Every storefront event that passes through /api/track leaves a
 // tiny, anonymous footprint here — the event name, the moment, and a short
 // per-browser hash — kept only for a rolling window. It is in memory, so a
@@ -235,6 +242,17 @@ function trackAllowed(key) {
   }
   hit.n += 1;
   return hit.n <= TRACK_LIMIT;
+}
+function orderAllowed(key) {
+  const now = Date.now();
+  const hit = orderHits.get(key);
+  if (!hit || now - hit.start > ORDER_WINDOW_MS) {
+    orderHits.set(key, { start: now, n: 1 });
+    if (orderHits.size > 5000) orderHits.clear(); // never grow without bound
+    return true;
+  }
+  hit.n += 1;
+  return hit.n <= ORDER_LIMIT;
 }
 
 function buildMetaEvent(name, opts) {
@@ -601,6 +619,18 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   const p = url.pathname;
 
+  // Baseline security headers on every response. Set with setHeader so they
+  // ride along with each route's own writeHead without being overwritten.
+  // No CSP here on purpose: the pages carry inline scripts (the pixel, the
+  // storefront logic), so a real policy needs nonces — a separate, larger job.
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  if (req.headers["x-forwarded-proto"] === "https") {
+    res.setHeader("Strict-Transport-Security", "max-age=15552000");
+  }
+
   try {
     if (p === "/api/me" && req.method === "GET") {
       const user = currentUser(req);
@@ -699,6 +729,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === "/api/orders" && req.method === "POST") {
+      if (!orderAllowed(clientKey(req))) return json(res, 429, { error: "slow down" });
       let body;
       try {
         body = JSON.parse(await readBody(req));
