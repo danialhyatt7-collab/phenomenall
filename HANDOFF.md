@@ -36,7 +36,7 @@ Set them, then **redeploy** — they are only read at boot.
 | --- | --- | --- |
 | `META_CAPI_TOKEN` | yes | Conversions API. Without it every server event silently no-ops. |
 | `PHENOMENAL_DATA_DIR` | yes | `/home/u572472735/phenomenal-data`. Orders, admin login, session replays and the analytics tally live here, **outside** the app directory a deploy replaces. |
-| `ADMIN_USER` / `ADMIN_PASSWORD` | yes | Admin sign-in. Current values: user `phenomenal808`, password `phenomenal888`. Seeds `auth.json` (scrypt-hashed) on boot. |
+| `ADMIN_USER` / `ADMIN_PASSWORD` | yes | Admin sign-in. User is `phenomenal808`. **The password is not recorded here on purpose** — read the live value in hPanel → Environment variables, never in this file or in git. These seed `auth.json` (scrypt-hashed) on boot; to rotate, change `ADMIN_PASSWORD` here and redeploy. |
 | `META_TEST_EVENT_CODE` | no | **Only while testing.** While set, events reach Test Events and nothing else — they do not count toward reporting or ad optimisation. Delete the row (do not blank it) and redeploy when done. |
 | `META_PIXEL_ID` | no | Defaults to the dataset above. Injected into the HTML at serve time. |
 | `META_PURCHASE_ON` | no | Order status that triggers Purchase. Default `confirmed`. |
