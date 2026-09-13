@@ -24,6 +24,7 @@ const path = require("path");
 const crypto = require("crypto");
 const readline = require("readline");
 const { tzToPoint, addressToPoint } = require("./tz-geo");
+const rec = require("./rec-store");
 
 const ROOT = __dirname;
 
@@ -349,6 +350,7 @@ function migrateDataDir() {
 // The whole point of the split is invisible unless the log says where the data
 // ended up and how much of it is there. A deploy that wipes the app directory
 // shows up here as an order count that dropped to zero.
+rec.init(DATA_DIR);
 function reportDataDir() {
   const orders = readOrders();
   console.log("Data directory: " + DATA_DIR + " (" + orders.length + " orders on file)");
@@ -392,12 +394,13 @@ function json(res, code, body) {
   res.end(s);
 }
 
-function readBody(req) {
+function readBody(req, maxBytes) {
+  const cap = maxBytes || 64 * 1024;
   return new Promise((resolve, reject) => {
     let buf = "";
     req.on("data", (c) => {
       buf += c;
-      if (buf.length > 64 * 1024) {
+      if (buf.length > cap) {
         reject(new Error("payload too large"));
         req.destroy();
       }
@@ -728,6 +731,9 @@ const server = http.createServer(async (req, res) => {
       const orders = readOrders();
       orders.unshift(order);
       writeOrders(orders);
+      // If this checkout was being recorded, flag its replay as converted so it
+      // can be picked out from the abandoned ones.
+      if (body.sid) rec.markOrdered(String(body.sid));
       return json(res, 201, order);
     }
 
@@ -771,6 +777,35 @@ const server = http.createServer(async (req, res) => {
         id: removed.id,
         purchase_reported: !!(removed.capi && removed.capi.purchase_sent_at),
       });
+    }
+
+    // Session replay ingest. Public (the storefront posts here), rate-limited,
+    // and capped in rec-store so it cannot fill the disk. The recorder masks
+    // every form field, so no typed customer detail arrives here.
+    if (p === "/api/rec" && req.method === "POST") {
+      if (!trackAllowed(clientKey(req))) return json(res, 429, { error: "slow down" });
+      let body;
+      // Replay chunks are larger than the default 64 KB — a full DOM snapshot
+      // alone can be big — so allow up to 2 MB per flush.
+      try { body = JSON.parse(await readBody(req, 2 * 1024 * 1024)); } catch (e) { return json(res, 413, { error: "chunk too large or invalid" }); }
+      const out = rec.appendChunk(body.sid, body.events, body.meta);
+      return json(res, out.ok ? 200 : 400, out);
+    }
+    if (p === "/api/rec" && req.method === "GET") {
+      if (!requireAuth(req, res)) return;
+      return json(res, 200, rec.list());
+    }
+    const recMatch = p.match(/^\/api\/rec\/([A-Za-z0-9]+)$/);
+    if (recMatch && req.method === "GET") {
+      if (!requireAuth(req, res)) return;
+      const r = rec.read(recMatch[1]);
+      if (!r) return json(res, 404, { error: "recording not found" });
+      return json(res, 200, r);
+    }
+    if (recMatch && req.method === "DELETE") {
+      if (!requireAuth(req, res)) return;
+      rec.remove(recMatch[1]);
+      return json(res, 200, { ok: true });
     }
 
     if (p === "/api/live" && req.method === "GET") {

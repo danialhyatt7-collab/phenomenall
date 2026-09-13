@@ -981,7 +981,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
         </div>
         <div class="preview">
           <span class="mono">Order summary</span>
-          <span id="msg-preview">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 4,999).</span>
+          <span id="msg-preview" class="pxr-mask">Hi! I'd like to order the Shot of Whiskey tee — Size M × 1 (Rs 4,999).</span>
         </div>
         <button type="submit" class="btn-wa">
           <svg class="wa-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.4-2.9c-.3-.4.3-.4.7-1.3 0-.2 0-.3-.1-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.1 2.8c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3Z"/></svg>
@@ -1279,6 +1279,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     // twice and double-count the conversion.
     if(submitting) return;
     submitting = true;
+    if(window.PXR) window.PXR.arm("checkout");
     var btn = $("#order-form button[type=submit]");
     if(btn) btn.disabled = true;
     setTimeout(function(){ submitting = false; if(btn) btn.disabled = false; }, 4000);
@@ -1319,7 +1320,8 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
       email: $("#f-email").value.trim() || null,
       marketing_opt_in: $("#f-optin").checked,
       fbp: cookie("_fbp"), fbc: fbcValue(),
-      event_source_url: location.href
+      event_source_url: location.href,
+      sid: (window.PXR && window.PXR.sid) || null
     };
     recordOrder(payload);
     // Opening WhatsApp is an intent to buy, not a sale — this is cash on
@@ -1344,6 +1346,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
         content_name: CONTENT_NAME, content_type: 'product',
         content_ids: [CONTENT_ID], value: PRICE, currency: 'PKR'
       });
+      if(window.PXR) window.PXR.arm("viewed-product");
     }, {threshold:.25}).observe(target);
   })();
 
@@ -1353,6 +1356,73 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     if(!a) return;
     track('Contact', { content_name: CONTENT_NAME, content_category: 'whatsapp' });
   }, {capture:true, passive:true});
+
+  /* ---------- session replay ----------
+     For understanding where people get stuck. Nothing loads until a visitor is
+     actually engaged (reaches the product, opens sizing, or checks out), so a
+     bounce costs zero — the library is only fetched once arm() is called. Every
+     form field is masked at the source, so a replay shows that someone typed and
+     struggled, never what they typed. Chunks post to our own server. */
+  window.PXR = (function(){
+    var sid = null, started = false, armed = false, reason = null, metaSent = false, buf = [], timer = null;
+    function newSid(){
+      try{ var s = sessionStorage.getItem("pxr_sid"); if(s) return s; }catch(e){}
+      var s = (Date.now().toString(36) + Math.random().toString(36).slice(2,12)).replace(/[^a-z0-9]/gi,"").slice(0,32);
+      try{ sessionStorage.setItem("pxr_sid", s); }catch(e){}
+      return s;
+    }
+    function post(final){
+      if(!buf.length && !final) return;
+      var chunk = buf; buf = [];
+      var payload = { sid: sid, events: chunk };
+      if(!metaSent){
+        metaSent = true;
+        payload.meta = { ua:navigator.userAgent, vw:window.innerWidth, vh:window.innerHeight,
+                         referrer:document.referrer || null, url:location.href, engaged:reason };
+      }
+      var body = JSON.stringify(payload);
+      if(final && navigator.sendBeacon){
+        try{ if(navigator.sendBeacon("/api/rec", new Blob([body],{type:"application/json"}))) return; }catch(e){}
+      }
+      try{ fetch("/api/rec", {method:"POST", headers:{"Content-Type":"application/json"}, body:body, keepalive:!!final}).catch(function(){}); }catch(e){}
+    }
+    function begin(){
+      if(started || !window.rrwebRecord) return;
+      started = true;
+      try{
+        window.rrwebRecord({
+          emit: function(ev){ buf.push(ev); if(buf.length >= 60) post(false); },
+          maskAllInputs: true,       // mask typed values in every form field
+          // The order-summary preview echoes the name, phone, address and email
+          // back as plain text — inputs are masked but text nodes are not, so
+          // this class masks that node's characters too.
+          maskTextClass: "pxr-mask",
+          maskTextSelector: "#msg-preview",
+          recordCanvas: false, collectFonts: false,
+          sampling: { mousemove: 50, scroll: 150, input: "last" }
+        });
+      }catch(e){ return; }
+      timer = setInterval(function(){ post(false); }, 5000);
+      window.addEventListener("pagehide", function(){ post(true); }, {passive:true});
+      document.addEventListener("visibilitychange", function(){ if(document.hidden) post(true); }, {passive:true});
+    }
+    function loadLib(){
+      if(window.rrwebRecord){ begin(); return; }
+      var s = document.createElement("script");
+      s.src = "vendor/rrweb-record.min.js"; s.async = true;
+      s.onload = begin;
+      document.head.appendChild(s);
+    }
+    var api = { sid: null };
+    api.arm = function(r){
+      if(armed) return; armed = true; reason = r || "engaged";
+      // Do not record automated crawlers.
+      if(navigator.webdriver) return;
+      sid = api.sid = newSid();
+      loadLib();
+    };
+    return api;
+  })();
 
   /* ---------- header: scroll state, menu, search ---------- */
   var hdr = $("#hdr"), burger = $("#burger"), hdrNav = $("#hdr-nav");
@@ -1441,7 +1511,7 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   // delegated so search results rendered later also open the guide
   document.addEventListener("click", function(e){
     var opener = e.target.closest("[data-size-guide]");
-    if(opener){ e.preventDefault(); openSizeGuide(opener); return; }
+    if(opener){ e.preventDefault(); if(window.PXR) window.PXR.arm("opened-sizing"); openSizeGuide(opener); return; }
     if(!sizeModal.hidden && e.target.closest("[data-close]")) closeSizeGuide();
   });
   document.addEventListener("keydown", function(e){

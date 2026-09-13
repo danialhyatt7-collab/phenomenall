@@ -325,6 +325,12 @@
   .fe-ago{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
   .live-empty{padding:34px 18px;text-align:center;color:var(--faint);font-size:13px}
 
+  /* ---------- session replay ---------- */
+  .replay-stage{padding:14px 16px;display:flex;justify-content:center;min-height:200px}
+  .replay-stage .rr-player{box-shadow:none;border-radius:10px;overflow:hidden;max-width:100%}
+  .replay-stage .rr-controller{background:#141414;color:var(--ink)}
+  .replay-stage .rr-timeline__time{color:var(--sub)}
+
   /* ---------- sign in ---------- */
   .login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:20px;z-index:50}
   /* display:grid above outranks the browser's own [hidden]{display:none}, so
@@ -436,6 +442,9 @@
       <a href="#/customers" data-view="customers">
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.8 20c.8-3.6 3.7-5.4 7.2-5.4s6.4 1.8 7.2 5.4"/></svg></span>
         Customers <span class="count" id="nav-customers">0</span></a>
+      <a href="#/sessions" data-view="sessions">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="m10 9 5 3-5 3V9Z"/></svg></span>
+        Sessions</a>
     </nav>
     <div class="side-foot">
       <p class="foot-note">Storefront <a href="/" target="_blank" rel="noopener">View store</a><br>
@@ -796,6 +805,94 @@
     }
   }
 
+  /* ---------- session replay ----------
+     Lists the recordings the storefront captured and plays one back with
+     rrweb-player. The player and its stylesheet load only when you open a
+     replay — they never touch the rest of the admin. */
+  function viewSessions(){
+    return '<div class="card"><div class="card-head"><h2>Session replays</h2><span class="spacer"></span>'+
+        '<span class="muted" style="font-size:12px;color:var(--faint)">Engaged visits only · newest first</span></div>'+
+      '<div id="sess-list"><div class="live-empty" style="padding:40px 18px">Loading…</div></div></div>';
+  }
+  function fmtDur(ms){ var s=Math.round(ms/1000); if(s<60) return s+"s"; var m=Math.floor(s/60); return m+"m "+(s%60)+"s"; }
+  function device(ua, vw){
+    ua = ua||""; var mob = /Mobi|Android|iPhone|iPad/i.test(ua) || (vw && vw<700);
+    var os = /iPhone|iPad|iOS/i.test(ua) ? "iOS" : /Android/i.test(ua) ? "Android" : /Windows/i.test(ua) ? "Windows" : /Mac/i.test(ua) ? "Mac" : "";
+    return (mob?"Mobile":"Desktop") + (os?" · "+os:"");
+  }
+  function engagedLabel(e){
+    return {"viewed-product":"Viewed product","opened-sizing":"Opened sizing","checkout":"Checkout"}[e] || (e||"Engaged");
+  }
+  function loadSessions(){
+    grab("/api/rec").then(function(list){
+      if(route().view !== "sessions" || route().id) return;
+      var el = $("#sess-list"); if(!el) return;
+      if(!list.length){ el.innerHTML = '<div class="live-empty" style="padding:44px 18px"><h3>No recordings yet</h3><p>A replay is saved once a visitor engages — reaches the product, opens sizing, or starts checkout.</p></div>'; return; }
+      el.innerHTML = '<div class="tbl-wrap"><table><thead><tr>'+
+          '<th>When</th><th>Duration</th><th>Device</th><th>Engaged</th><th>Pages</th><th>Outcome</th><th></th></tr></thead><tbody>'+
+        list.map(function(m){
+          return '<tr class="click" data-sid="'+esc(m.sid)+'">'+
+            '<td><span class="id">'+esc(when(m.start))+'</span></td>'+
+            '<td class="tnum">'+esc(fmtDur(m.duration))+'</td>'+
+            '<td>'+esc(device(m.ua, m.vw))+'</td>'+
+            '<td>'+esc(engagedLabel(m.engaged))+'</td>'+
+            '<td class="tnum">'+esc(m.pages||1)+'</td>'+
+            '<td>'+(m.ordered ? '<span class="pill confirmed">ordered</span>' : '<span class="pill cancelled">no order</span>')+'</td>'+
+            '<td style="text-align:right"><button class="btn btn-danger" data-del-rec="'+esc(m.sid)+'">Delete</button></td>'+
+          '</tr>';
+        }).join("")+'</tbody></table></div>';
+    }).catch(function(err){ if(err && err.auth) showLogin(); });
+  }
+
+  function viewReplay(sid){
+    return '<a class="back" href="#/sessions">&larr; All sessions</a>'+
+      '<div class="card"><div class="card-head"><h2>Session replay</h2><span class="spacer"></span>'+
+        '<span class="muted" id="replay-meta" style="font-size:12px;color:var(--faint)"></span></div>'+
+      '<div class="replay-stage" id="replay-stage"><div class="live-empty" style="padding:40px 18px">Loading replay…</div></div></div>'+
+      '<p class="globe-note" style="padding:12px 2px 0">Form fields were masked while recording — you can see where a visitor hesitated or dropped off, never what they typed.</p>';
+  }
+  var replayInst = null;
+  function replayStop(){
+    if(replayInst){ try{ replayInst.pause && replayInst.pause(); }catch(e){} replayInst = null; }
+    var st = document.getElementById("replay-stage"); if(st) st.innerHTML = "";
+  }
+  function loadPlayerAssets(cb){
+    if(!document.getElementById("rrweb-player-css")){
+      var l = document.createElement("link"); l.id="rrweb-player-css"; l.rel="stylesheet"; l.href="vendor/rrweb-player.css";
+      document.head.appendChild(l);
+    }
+    if(window.rrwebPlayer){ cb(); return; }
+    var s = document.createElement("script"); s.src="vendor/rrweb-player.min.js"; s.async=true;
+    s.onload=function(){ cb(); }; s.onerror=function(){ cb(new Error("player failed to load")); };
+    document.head.appendChild(s);
+  }
+  function replayStart(sid){
+    grab("/api/rec/"+sid).then(function(rec){
+      if(route().view !== "sessions" || route().id !== sid) return;
+      var meta = $("#replay-meta"); if(meta && rec.meta) meta.textContent = device(rec.meta.ua, rec.meta.vw) + " · " + fmtDur(rec.meta.last - rec.meta.start);
+      if(!rec.events || rec.events.length < 2){
+        var st0 = $("#replay-stage"); if(st0) st0.innerHTML = '<div class="live-empty" style="padding:40px 18px">This recording is too short to play.</div>';
+        return;
+      }
+      loadPlayerAssets(function(err){
+        var st = $("#replay-stage"); if(!st || route().id !== sid) return;
+        if(err || !window.rrwebPlayer){ st.innerHTML = '<div class="live-empty" style="padding:40px 18px">Could not load the player.</div>'; return; }
+        st.innerHTML = "";
+        var w = Math.min(st.clientWidth || 900, 1000);
+        try{
+          replayInst = new window.rrwebPlayer({
+            target: st,
+            props: { events: rec.events, width: w, height: Math.round(w*0.6), autoPlay: true, showController: true }
+          });
+        }catch(e){ st.innerHTML = '<div class="live-empty" style="padding:40px 18px">This recording could not be played.</div>'; }
+      });
+    }).catch(function(err){ if(err && err.auth) showLogin(); });
+  }
+  function delRec(sid){
+    if(!confirm("Delete this recording?")) return;
+    fetch("/api/rec/"+sid, {method:"DELETE"}).then(function(){ loadSessions(); });
+  }
+
   function viewHome(){
     var recent = state.orders.slice(0,5);
     return kpiRow()+
@@ -933,8 +1030,10 @@
     // must not tear it down and reprint placeholders, so if it is already up,
     // just make sure the poll is running and leave it be.
     if(r.view === "live" && document.getElementById("live-kpis")){ liveStart(); return; }
-    liveStop();
+    liveStop(); replayStop();
     if(r.view === "live"){ html = viewLive(); title = "Live"; }
+    else if(r.view === "sessions" && r.id){ html = viewReplay(r.id); title = "Session replay"; }
+    else if(r.view === "sessions"){ html = viewSessions(); title = "Sessions"; }
     else if(r.view === "orders" && r.id){ html = viewOrder(r.id); title = "Order " + r.id; }
     else if(r.view === "orders"){ html = viewOrders(); title = "Orders"; }
     else if(r.view === "products"){ html = viewProducts(); title = "Products"; }
@@ -943,6 +1042,8 @@
     $("#view").innerHTML = html;
     // Start the live loop only after its DOM (canvas included) is in the page.
     if(r.view === "live") liveStart();
+    else if(r.view === "sessions" && r.id) replayStart(r.id);
+    else if(r.view === "sessions") loadSessions();
     $("#page-title").textContent = title;
     document.querySelectorAll("#nav a").forEach(function(a){
       a.classList.toggle("on", a.dataset.view === (r.view || "home"));
@@ -953,7 +1054,10 @@
 
   /* ---------- interactions ---------- */
   $("#view").addEventListener("click", function(e){
+    var delRecBtn = e.target.closest("[data-del-rec]");
+    if(delRecBtn){ e.stopPropagation(); delRec(delRecBtn.dataset.delRec); return; }
     var row = e.target.closest("tr.click");
+    if(row && row.dataset.sid){ location.hash = "#/sessions/" + row.dataset.sid; return; }
     if(row){ location.hash = "#/orders/" + row.dataset.id; return; }
     var tab = e.target.closest("[data-filter]");
     if(tab){ state.filter = tab.dataset.filter; render(); return; }
