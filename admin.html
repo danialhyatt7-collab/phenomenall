@@ -282,6 +282,28 @@
   .live-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
   @media(max-width:760px){.live-cols{grid-template-columns:1fr}}
 
+  /* globe */
+  .globe-card{margin:16px 0}
+  .globe-legend{display:flex;gap:14px;font-size:12px;color:var(--faint)}
+  .globe-legend .gl{display:inline-flex;align-items:center;gap:6px}
+  .globe-legend .gl::before{content:"";width:8px;height:8px;border-radius:50%}
+  .globe-legend .gl-v::before{background:#9d9dff}
+  .globe-legend .gl-o::before{background:var(--accent)}
+  .globe-wrap{display:grid;grid-template-columns:1fr 220px;gap:8px;padding:8px 12px 4px;align-items:center}
+  #live-globe{width:100%;height:380px;display:block;margin:0 auto}
+  .globe-side{align-self:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .gs-row{display:flex;align-items:center;gap:9px;padding:7px 6px;border-bottom:1px solid var(--line-soft)}
+  .gs-row:last-child{border-bottom:none}
+  .gs-dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .gs-dot.gs-o{background:var(--accent)} .gs-dot.gs-v{background:#9d9dff}
+  .gs-city{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gs-kind{font-size:11px;color:var(--faint)}
+  .globe-note{padding:4px 14px 14px;font-size:11.5px;color:var(--faint)}
+  @media(max-width:700px){
+    .globe-wrap{grid-template-columns:1fr}
+    #live-globe{height:300px}
+  }
+
   .live-spark{display:flex;align-items:flex-end;gap:3px;height:120px;padding:16px 18px}
   .live-spark .sb{flex:1;min-width:0;background:#2a2a2a;border-radius:3px 3px 0 0;transition:height .4s ease}
   .live-spark .sb.now{background:var(--accent);box-shadow:0 0 10px rgba(168,232,49,.5)}
@@ -565,6 +587,12 @@
         '<span class="live-sub" id="live-updated">Connecting…</span>'+
       '</div>'+
       '<div class="kpis" id="live-kpis">'+ liveTile("—","Visitors now")+liveTile("—","Views · 30 min")+liveTile("—","Orders today")+liveTile("—","Sales today") +'</div>'+
+      '<div class="card globe-card">'+
+        '<div class="card-head"><h2>Around the world</h2><span class="spacer"></span>'+
+          '<span class="globe-legend"><span class="gl gl-v">Visitors</span><span class="gl gl-o">Orders</span></span></div>'+
+        '<div class="globe-wrap"><canvas id="live-globe"></canvas>'+
+          '<div class="globe-side" id="globe-side"></div></div>'+
+        '<div class="globe-note" id="globe-note"></div></div>'+
       '<div class="live-cols">'+
         '<div class="card"><div class="card-head"><h2>Sessions</h2><span class="spacer"></span><span class="muted" style="font-size:12px;color:var(--faint)">Pageviews · last 30 min</span></div>'+
           '<div class="live-spark" id="live-spark"></div></div>'+
@@ -583,10 +611,100 @@
     liveStop();
     liveTick();
     liveTimer = setInterval(liveTick, 5000);
+    globeStart();
   }
   function liveStop(){
     if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
+    globeStop();
     var dot = document.getElementById("nav-live-dot"); if(dot) dot.hidden = true;
+  }
+
+  /* ---------- the globe ----------
+     A canvas-2D orthographic globe — no WebGL, matching how the storefront
+     draws its frost. It spins slowly, hides the far hemisphere, and plots the
+     points /api/live returns: visitors coarse (by timezone), orders on their
+     real city (from the delivery address). */
+  var globeRAF = null, globePoints = [], globeTilt = 0.38, globeRot = 3.7; // start over South Asia
+  function globeStart(){
+    var c = document.getElementById("live-globe");
+    if(!c || globeRAF) return;
+    var last = performance.now();
+    function frame(now){
+      globeRAF = requestAnimationFrame(frame);
+      var dt = Math.min(now - last, 60); last = now;
+      globeRot += dt * 0.00016;              // a slow, steady turn
+      globeDraw(c, now);
+    }
+    globeRAF = requestAnimationFrame(frame);
+  }
+  function globeStop(){ if(globeRAF){ cancelAnimationFrame(globeRAF); globeRAF = null; } }
+
+  function project(latDeg, lonDeg, rot){
+    var lat = latDeg*Math.PI/180, lon = lonDeg*Math.PI/180 + rot;
+    var x = Math.cos(lat)*Math.sin(lon), y = Math.sin(lat), z = Math.cos(lat)*Math.cos(lon);
+    // tilt around X so it is not seen edge-on at the equator
+    var ct = Math.cos(globeTilt), st = Math.sin(globeTilt);
+    var y2 = y*ct - z*st, z2 = y*st + z*ct;
+    return {x:x, y:y2, z:z2};   // z2 > 0 faces the viewer
+  }
+
+  function globeDraw(c, now){
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    var box = c.getBoundingClientRect();
+    var w = box.width, h = box.height;
+    if(!w || !h) return;
+    if(c.width !== Math.round(w*dpr)){ c.width = Math.round(w*dpr); c.height = Math.round(h*dpr); }
+    var g = c.getContext("2d");
+    g.setTransform(dpr,0,0,dpr,0,0);
+    g.clearRect(0,0,w,h);
+    var cx = w/2, cy = h/2, R = Math.min(w,h)/2 - 8;
+
+    // atmosphere
+    var atm = g.createRadialGradient(cx,cy,R*0.75, cx,cy,R*1.14);
+    atm.addColorStop(0,"rgba(168,232,49,0)"); atm.addColorStop(1,"rgba(168,232,49,.06)");
+    g.fillStyle = atm; g.beginPath(); g.arc(cx,cy,R*1.14,0,7); g.fill();
+
+    // sphere body
+    var body = g.createRadialGradient(cx-R*0.3,cy-R*0.35,R*0.2, cx,cy,R);
+    body.addColorStop(0,"#17181b"); body.addColorStop(1,"#0b0c0d");
+    g.fillStyle = body; g.beginPath(); g.arc(cx,cy,R,0,7); g.fill();
+    g.strokeStyle="rgba(168,232,49,.18)"; g.lineWidth=1; g.beginPath(); g.arc(cx,cy,R,0,7); g.stroke();
+
+    // graticule — parallels and meridians, only the front hemisphere
+    g.lineWidth = 1;
+    function grat(pts){
+      g.beginPath(); var pen=false;
+      for(var i=0;i<pts.length;i++){
+        var p = pts[i];
+        if(p.z > 0.02){ var sx=cx+p.x*R, sy=cy-p.y*R; if(pen) g.lineTo(sx,sy); else { g.moveTo(sx,sy); pen=true; } }
+        else pen=false;
+      }
+      g.stroke();
+    }
+    g.strokeStyle="rgba(150,150,160,.12)";
+    for(var la=-60; la<=60; la+=30){ var row=[]; for(var lo=-180; lo<=180; lo+=4) row.push(project(la,lo,globeRot)); grat(row); }
+    for(var lo2=-180; lo2<180; lo2+=30){ var col=[]; for(var la2=-90; la2<=90; la2+=4) col.push(project(la2,lo2,globeRot)); grat(col); }
+
+    // points
+    var pulse = 0.5 + 0.5*Math.sin(now*0.004);
+    globePoints.forEach(function(p){
+      var pr = project(p.lat, p.lon, globeRot);
+      if(pr.z <= 0.02) return;                       // on the far side
+      var sx = cx+pr.x*R, sy = cy-pr.y*R;
+      var order = p.kind === "order";
+      var col = order ? "168,232,49" : "157,157,255";
+      var base = order ? 4 : 2.6;
+      var fade = 0.4 + 0.6*pr.z;                      // dim near the limb
+      if(order){
+        var rr = base + pulse*7;
+        g.strokeStyle="rgba("+col+","+(0.5*(1-pulse)*fade)+")"; g.lineWidth=1.5;
+        g.beginPath(); g.arc(sx,sy,rr,0,7); g.stroke();
+      }
+      g.fillStyle="rgba("+col+","+fade+")";
+      g.beginPath(); g.arc(sx,sy,base,0,7); g.fill();
+      g.fillStyle="rgba("+col+","+(0.18*fade)+")";
+      g.beginPath(); g.arc(sx,sy,base*2.4,0,7); g.fill();
+    });
   }
 
   function liveTick(){
@@ -623,6 +741,24 @@
         return '<div class="fn-row"><div class="fn-top"><span>'+esc(r[0])+'</span><b>'+r[1]+'</b></div>'+
           '<div class="fn-bar"><span style="width:'+Math.max(pct,2)+'%"></span></div></div>';
       }).join("");
+    }
+
+    // globe
+    globePoints = (d.geo || []).slice();
+    var side = $("#globe-side");
+    if(side){
+      // a compact list of the newest located points, order pins first
+      var pts = globePoints.slice().sort(function(a,b){ return (a.kind==="order"?0:1)-(b.kind==="order"?0:1) || a.ago-b.ago; }).slice(0,8);
+      side.innerHTML = pts.length ? pts.map(function(p){
+        return '<div class="gs-row"><span class="gs-dot '+(p.kind==="order"?"gs-o":"gs-v")+'"></span>'+
+          '<span class="gs-city">'+esc(p.city||"Unknown")+'</span>'+
+          '<span class="gs-kind">'+(p.kind==="order"?"order":"viewing")+'</span></div>';
+      }).join("") : '<div class="live-empty" style="padding:20px 6px">No located activity yet.</div>';
+    }
+    var note = $("#globe-note");
+    if(note){
+      var located = d.located||0, coarse = (d.geo||[]).filter(function(p){return p.kind==="visitor";}).length;
+      note.textContent = "Orders placed on their delivery city. Live visitors shown by timezone — Pakistan resolves to one point.";
     }
 
     // activity feed
@@ -773,13 +909,15 @@
     // just make sure the poll is running and leave it be.
     if(r.view === "live" && document.getElementById("live-kpis")){ liveStart(); return; }
     liveStop();
-    if(r.view === "live"){ html = viewLive(); title = "Live"; liveStart(); }
+    if(r.view === "live"){ html = viewLive(); title = "Live"; }
     else if(r.view === "orders" && r.id){ html = viewOrder(r.id); title = "Order " + r.id; }
     else if(r.view === "orders"){ html = viewOrders(); title = "Orders"; }
     else if(r.view === "products"){ html = viewProducts(); title = "Products"; }
     else if(r.view === "customers"){ html = viewCustomers(); title = "Customers"; }
     else { html = viewHome(); title = "Home"; }
     $("#view").innerHTML = html;
+    // Start the live loop only after its DOM (canvas included) is in the page.
+    if(r.view === "live") liveStart();
     $("#page-title").textContent = title;
     document.querySelectorAll("#nav a").forEach(function(a){
       a.classList.toggle("on", a.dataset.view === (r.view || "home"));

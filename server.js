@@ -23,6 +23,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const readline = require("readline");
+const { tzToPoint, addressToPoint } = require("./tz-geo");
 
 const ROOT = __dirname;
 
@@ -207,7 +208,11 @@ const LIVE_SALT = crypto.randomBytes(16).toString("hex");
 function visitorHash(fbp, ipua) {
   return sha256(LIVE_SALT + "|" + (fbp || ipua || "anon")).slice(0, 12);
 }
-function recordLive(name, vid) {
+// A visitor's coarse point, derived from the timezone their browser reported.
+// One point per zone — no IP lookup, nothing sent anywhere.
+const geoByVid = new Map(); // vid -> {lat,lon,city,cc} | null(once, "no match")
+function recordLive(name, vid, tz) {
+  if (vid && !geoByVid.has(vid)) geoByVid.set(vid, tzToPoint(tz));
   const now = Date.now();
   liveEvents.push({ t: now, n: name, v: vid });
   const cut = now - LIVE_WINDOW_MS;
@@ -675,7 +680,8 @@ const server = http.createServer(async (req, res) => {
       const outcome = await sendMetaEvent(event);
       recordLive(
         body.event_name,
-        visitorHash(u.fbp, String(clientKey(req)) + "|" + (req.headers["user-agent"] || ""))
+        visitorHash(u.fbp, String(clientKey(req)) + "|" + (req.headers["user-agent"] || "")),
+        typeof body.tz === "string" ? body.tz.slice(0, 64) : null
       );
       return json(res, 200, { ok: true, event: body.event_name, ...outcome });
     }
@@ -805,6 +811,26 @@ const server = http.createServer(async (req, res) => {
       const todays = orders.filter((o) => new Date(o.created_at).getTime() >= since && o.status !== "cancelled");
       const salesToday = todays.reduce((s, o) => s + o.total, 0);
 
+      // Globe points. Live visitors sit at the coarse point their timezone
+      // gives (one per zone — Pakistan clusters, since it is a single zone).
+      // Orders sit on the real city from the delivery address, so they place
+      // precisely. Visitors without a resolvable zone are counted, not faked.
+      const geo = [];
+      const seenV = new Set();
+      let coarse = 0;
+      for (let i = win.length - 1; i >= 0 && geo.length < 80; i--) {
+        const e = win[i];
+        if (seenV.has(e.v)) continue;
+        seenV.add(e.v);
+        const g = geoByVid.get(e.v);
+        if (g) { geo.push({ lat: g.lat, lon: g.lon, city: g.city, cc: g.cc, kind: "visitor", ago: Math.round((now - e.t) / 1000) }); coarse++; }
+      }
+      // Today's orders, newest first, placed on their delivery city.
+      for (const o of todays.slice(0, 40)) {
+        const g = addressToPoint(o.address);
+        if (g) geo.push({ lat: g.lat, lon: g.lon, city: g.city, cc: g.cc, kind: "order", ago: Math.round((now - new Date(o.created_at).getTime()) / 1000) });
+      }
+
       return json(res, 200, {
         visitorsNow,
         views30: win.filter((e) => e.n === "PageView").length,
@@ -813,6 +839,9 @@ const server = http.createServer(async (req, res) => {
         perMinute: buckets,
         funnel,
         feed,
+        geo,
+        located: geo.length,
+        coarseVisitors: coarse,
         windowMinutes: 30,
         serverTime: now,
       });

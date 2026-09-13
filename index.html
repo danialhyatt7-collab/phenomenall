@@ -1151,11 +1151,18 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
     return d;
   }
 
+  function browserTz(){
+    try{ return Intl.DateTimeFormat().resolvedOptions().timeZone || null; }catch(e){ return null; }
+  }
   function serverTrack(name, eventId, custom, user){
     var payload = {
       event_name: name,
       event_id: eventId,
       event_source_url: location.href,
+      // The browser's own timezone, read locally. Used only to place a dot on
+      // the admin's live globe — never forwarded to Meta, and no location
+      // permission or IP lookup is involved.
+      tz: browserTz(),
       custom_data: custom || {},
       user_data: {
         name: (user && user.name) || null,
