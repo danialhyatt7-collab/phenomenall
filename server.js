@@ -710,7 +710,7 @@ const server = http.createServer(async (req, res) => {
         id: "PA-" + crypto.randomBytes(4).toString("hex").toUpperCase(),
         created_at: new Date().toISOString(),
         product: String(body.product || "Shot of Whiskey tee").slice(0, 120),
-        size: ["S", "M", "L", "XL", "XXL"].includes(body.size) ? body.size : "M",
+        size: ["S", "M", "L", "XL"].includes(body.size) ? body.size : "M",
         qty,
         unit_price: 4999,
         total: 4999 * qty,
