@@ -529,11 +529,27 @@ setInterval(() => {
  * on a plain 200. Streaming the range also means a 5 MB hero is no longer
  * read into memory in full on every single request.
  */
+// Files that live in the deployed directory but must never be served: the
+// server source and its modules, package/config, the git directory, and the
+// docs — HANDOFF.md in particular carries the admin login. Only the storefront,
+// the admin app, the assets, and the vendored rrweb bundles are public.
+const NEVER_SERVE = new Set([
+  "server.js", "analytics.js", "rec-store.js", "tz-geo.js",
+  "package.json", "package-lock.json", ".gitignore",
+]);
+function blockedStatic(rel) {
+  return (
+    rel.startsWith("data") ||
+    rel.startsWith(".git") ||
+    rel.endsWith(".md") ||
+    NEVER_SERVE.has(rel)
+  );
+}
 function serveStatic(req, res, urlPath) {
   let rel = urlPath === "/" ? "index.html" : urlPath.replace(/^\/+/, "");
   if (rel === "admin") rel = "admin.html";
   const file = path.normalize(path.join(ROOT, rel));
-  if (!file.startsWith(ROOT) || rel.startsWith("data") || rel === "server.js") {
+  if (!file.startsWith(ROOT) || blockedStatic(rel)) {
     json(res, 404, { error: "not found" });
     return;
   }
