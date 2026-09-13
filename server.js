@@ -25,6 +25,7 @@ const crypto = require("crypto");
 const readline = require("readline");
 const { tzToPoint, addressToPoint } = require("./tz-geo");
 const rec = require("./rec-store");
+const analytics = require("./analytics");
 
 const ROOT = __dirname;
 
@@ -351,6 +352,11 @@ function migrateDataDir() {
 // ended up and how much of it is there. A deploy that wipes the app directory
 // shows up here as an order count that dropped to zero.
 rec.init(DATA_DIR);
+analytics.init(DATA_DIR);
+// Persist the day's counters on the way down so a deploy loses almost nothing.
+for (const sig of ["SIGTERM", "SIGINT"]) {
+  process.on(sig, () => { try { analytics.flush(); } catch (e) {} process.exit(0); });
+}
 function reportDataDir() {
   const orders = readOrders();
   console.log("Data directory: " + DATA_DIR + " (" + orders.length + " orders on file)");
@@ -681,11 +687,9 @@ const server = http.createServer(async (req, res) => {
         },
       });
       const outcome = await sendMetaEvent(event);
-      recordLive(
-        body.event_name,
-        visitorHash(u.fbp, String(clientKey(req)) + "|" + (req.headers["user-agent"] || "")),
-        typeof body.tz === "string" ? body.tz.slice(0, 64) : null
-      );
+      const _vid = visitorHash(u.fbp, String(clientKey(req)) + "|" + (req.headers["user-agent"] || ""));
+      recordLive(body.event_name, _vid, typeof body.tz === "string" ? body.tz.slice(0, 64) : null);
+      analytics.track(body.event_name, _vid); // durable per-day tally for trends
       return json(res, 200, { ok: true, event: body.event_name, ...outcome });
     }
 
@@ -810,6 +814,12 @@ const server = http.createServer(async (req, res) => {
       if (!requireAuth(req, res)) return;
       rec.remove(recMatch[1]);
       return json(res, 200, { ok: true });
+    }
+
+    if (p === "/api/trends" && req.method === "GET") {
+      if (!requireAuth(req, res)) return;
+      const n = parseInt(url.searchParams.get("days"), 10) || 30;
+      return json(res, 200, analytics.trends(n, readOrders()));
     }
 
     if (p === "/api/live" && req.method === "GET") {
