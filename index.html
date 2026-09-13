@@ -669,6 +669,14 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   .total-row .t-val{font-family:var(--display);font-size:1.5rem;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
   .total-row .t-was{color:var(--dim);font-size:.62em;font-weight:400;margin-right:.55rem}
   .save-note{margin-top:.7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ice-blue)}
+  /* On a phone the label and price share one line as on desktop, so keep the
+     label from wrapping ("Total · Free / shipping") and trim both a touch so
+     the pair fits even at 320px. */
+  @media(max-width:560px){
+    .total-row{gap:.6rem}
+    .total-row .t-label{white-space:nowrap;font-size:.64rem;letter-spacing:.12em}
+    .total-row .t-val{font-size:1.25rem}
+  }
   .save-pill{display:none}
   .preview{
     margin-top:1.3rem;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ice-blue);
