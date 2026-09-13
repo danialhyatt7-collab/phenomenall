@@ -619,37 +619,6 @@ src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"
   }
   .size-guide-link:hover{color:var(--ice);border-bottom-color:var(--ice)}
 
-  @media(max-width:700px){
-    /* On a phone the label and price cannot share one line, so the total
-       becomes a small panel in the same language as the order summary below
-       it — the panel fill, hairline border and cream left-accent — rather than
-       a loud hero. Label on top, the price left-aligned beneath, the saving as
-       a quiet tag. */
-    .total-block{
-      margin-top:1.6rem;background:var(--panel);
-      border:1px solid var(--line);border-left:2px solid var(--ice-blue);border-radius:3px;
-      padding:1.05rem 1.15rem;
-    }
-    .total-block .total-row{display:block;border-top:none;margin:0;padding:0}
-    .total-block .t-label{display:block;margin-bottom:.7rem}
-    .total-block .t-val{display:flex;align-items:baseline;flex-wrap:wrap;gap:.55rem;white-space:normal}
-    .total-block .t-was{
-      font-size:1rem;order:1;
-      text-decoration-thickness:1px;text-decoration-color:rgba(119,113,106,.85);
-    }
-    .total-block .t-now{
-      order:0;font-family:var(--display);font-weight:700;
-      font-size:1.9rem;line-height:1;letter-spacing:-.01em;color:var(--ice);
-    }
-    /* a restrained tag, not a sticker: cream text, hairline border, sharp corner */
-    .total-block .save-pill{
-      display:inline-block;order:2;margin-left:auto;
-      font-family:var(--mono);font-size:.58rem;font-weight:500;letter-spacing:.14em;
-      color:var(--ice-blue);background:rgba(201,194,180,.08);
-      border:1px solid var(--line);border-radius:3px;padding:.4em .6em;
-    }
-    .total-block .save-note{margin-top:.75rem}
-  }
 
   /* order */
   #order{border-top:1px solid var(--line)}
