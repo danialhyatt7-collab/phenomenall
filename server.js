@@ -795,6 +795,10 @@ const server = http.createServer(async (req, res) => {
       if (!requireAuth(req, res)) return;
       return json(res, 200, rec.list());
     }
+    if (p === "/api/rec/stats" && req.method === "GET") {
+      if (!requireAuth(req, res)) return;
+      return json(res, 200, rec.summary());
+    }
     const recMatch = p.match(/^\/api\/rec\/([A-Za-z0-9]+)$/);
     if (recMatch && req.method === "GET") {
       if (!requireAuth(req, res)) return;

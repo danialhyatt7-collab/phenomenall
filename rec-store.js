@@ -19,9 +19,21 @@ const MAX_SESSIONS = 150; // newest kept; oldest evicted past this
 const MAX_BYTES_PER = 4 * 1024 * 1024; // a single session cannot exceed this
 const MAX_EVENTS_PER = 20000;
 
+let STATS_FILE = null;
 function init(dataDir) {
   REC_DIR = path.join(dataDir, "recordings");
+  STATS_FILE = path.join(REC_DIR, "_stats.json");
   try { fs.mkdirSync(REC_DIR, { recursive: true }); } catch (e) {}
+}
+// An all-time tally that outlives eviction, so the count keeps climbing even
+// after old recordings are pruned to save disk.
+function readStats() {
+  try { return JSON.parse(fs.readFileSync(STATS_FILE, "utf8")); } catch (e) { return { total: 0 }; }
+}
+function bumpTotal() {
+  const s = readStats();
+  s.total = (s.total || 0) + 1;
+  try { fs.writeFileSync(STATS_FILE, JSON.stringify(s)); } catch (e) {}
 }
 function okSid(sid) { return typeof sid === "string" && /^[a-z0-9]{6,40}$/i.test(sid); }
 function metaPath(sid) { return path.join(REC_DIR, sid + ".json"); }
@@ -35,12 +47,16 @@ function writeMeta(sid, meta) {
 }
 
 // Keep at most MAX_SESSIONS, dropping the oldest by start time.
-function evict() {
+// Session meta files only — never the _stats.json tally or any stray file.
+function sessionSids() {
   let files;
-  try { files = fs.readdirSync(REC_DIR); } catch (e) { return; }
-  const metas = files.filter((f) => f.endsWith(".json"))
-    .map((f) => readMeta(f.slice(0, -5))).filter(Boolean)
-    .sort((a, b) => a.start - b.start);
+  try { files = fs.readdirSync(REC_DIR); } catch (e) { return []; }
+  return files.filter((f) => f.endsWith(".json"))
+    .map((f) => f.slice(0, -5))
+    .filter(okSid);
+}
+function evict() {
+  const metas = sessionSids().map(readMeta).filter(Boolean).sort((a, b) => a.start - b.start);
   let over = metas.length - MAX_SESSIONS;
   for (let i = 0; i < over; i++) remove(metas[i].sid);
 }
@@ -78,7 +94,7 @@ function appendChunk(sid, events, incomingMeta) {
   // rrweb type 2 is a full snapshot — a good proxy for a page/navigation.
   for (const e of events) if (e && e.type === 2) meta.pages++;
   writeMeta(sid, meta);
-  if (fresh) evict();
+  if (fresh) { bumpTotal(); evict(); }
   return { ok: true };
 }
 
@@ -89,12 +105,21 @@ function markOrdered(sid) {
 }
 
 function list() {
-  let files;
-  try { files = fs.readdirSync(REC_DIR); } catch (e) { return []; }
-  return files.filter((f) => f.endsWith(".json"))
-    .map((f) => readMeta(f.slice(0, -5))).filter(Boolean)
+  return sessionSids().map(readMeta).filter(Boolean)
     .map((m) => ({ ...m, duration: Math.max(0, m.last - m.start) }))
     .sort((a, b) => b.start - a.start);
+}
+
+// Counts for the admin: how many are stored right now, how many were ever
+// recorded (survives eviction), and how many converted.
+function summary() {
+  const metas = sessionSids().map(readMeta).filter(Boolean);
+  return {
+    stored: metas.length,
+    total: readStats().total || metas.length,
+    ordered: metas.filter((m) => m.ordered).length,
+    cap: MAX_SESSIONS,
+  };
 }
 
 function read(sid) {
@@ -121,4 +146,4 @@ function remove(sid) {
 function str(v, n) { return v == null ? null : String(v).slice(0, n); }
 function int(v) { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; }
 
-module.exports = { init, appendChunk, markOrdered, list, read, remove };
+module.exports = { init, appendChunk, markOrdered, list, read, remove, summary };
